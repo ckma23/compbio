@@ -8,7 +8,8 @@ from Bio import *      #use the BioPython Python library
 from Bio.PDB import *  #more specifically import the BioPython PDB library
 from helper.biopythonpdbretriever import FileRetriever
 from helper.PDBRestService import PDBRestServicehelper
-from helper.hbpluscli import hbplusclihelper
+from library.hbplusclilib.hbpluscli import hbplusclihelper
+from library.dssrclilib.dssrcli import dssrclihelper
 
 def structureRetriever(structure_id,filename):
     # this function returns to the caller a structure object from the pdb file name by parsing the pdb file and returns a structure object
@@ -92,7 +93,7 @@ def neighborSearcher(structure,distance):
 # run hbplus in hydrogenbond mode
 
 
-def fileretriever():
+def pdbfileretriever():
     with open('structures_of_interest.csv','rb') as csvfile:
         csvstore = csv.reader(csvfile,delimiter = ',')
         for i in csvstore:
@@ -100,58 +101,6 @@ def fileretriever():
             # note: had to strip the string as it was returning ['<string>'] for []
             FileRetriever().fileretrieving(''.join(i))
 
-
-def hbplushbcli():
-  os.chdir('/Users/curtisma/bioresearch/compbio/pdbfiles')
-  listoffiles = os.listdir('.')
-  os.chdir('/Users/curtisma/bioresearch/')
-  os.system('mkdir hbplusprocessedhbfiles')
-  os.chdir('/Users/curtisma/bioresearch/hbplus')
-  for f in listoffiles:
-    stringprep=('~/bioresearch/compbio/pdbfiles/%s' %f)
-    os.system('./hbplus %s' %stringprep)
-    lhs,rhs=f.split(".",1)
-    print lhs
-    #output file is an .hb2
-    os.system('mv %s.hb2 ~/bioresearch/hbplusprocessedhbfiles' %lhs)
-    print f
-
-# run hbplus in van der Waal mode
-def hbplusvdwcli():
-  os.chdir('/Users/curtisma/bioresearch/compbio/pdbfiles')
-  listoffiles = os.listdir('.')
-  os.chdir('/Users/curtisma/bioresearch/')
-  os.system('mkdir hbplusprocessedvdwfiles')
-  os.chdir('/Users/curtisma/bioresearch/hbplus')
-  for f in listoffiles:
-    stringprep=('~/bioresearch/compbio/pdbfiles/%s' %f)
-    os.system('./hbplus %s -N' %stringprep)
-    lhs,rhs=f.split(".",1)
-    print lhs
-    #output file is an .nb2
-    os.system('mv %s.nb2 ~/bioresearch/hbplusprocessedvdwfiles' %lhs)
-    print f
-
-def dssrcli():
-  os.chdir('/Users/curtisma/bioresearch/compbio/pdbfiles')
-  listoffiles = os.listdir('.')
-  os.chdir('/Users/curtisma/bioresearch/')
-  os.system('mkdir DSSRprocessedfiles')
-  for f in listoffiles:
-    stringprep=('~/bioresearch/compbio/pdbfiles/%s' %f)
-    os.chdir('/Users/curtisma/bioresearch/')
-    os.system('./x3dna-dssr input=%s' %stringprep)
-    pdblhs,pdbrhs=f.split(".",1)
-    # print pdblhs
-    os.system('mv dssr* /Users/curtisma/bioresearch/DSSRprocessedfiles')
-    os.chdir('/Users/curtisma/bioresearch/DSSRprocessedfiles')
-    dssrlistoffiles = os.listdir('.')
-    newdssrlist = filter(re.compile("dssr-").match,dssrlistoffiles)
-    for g in newdssrlist:
-      dssrlhs,dssrrhs=g.split("-",1)
-      dssrstringprep=('%s%s-%s' %(dssrlhs,pdblhs,dssrrhs))
-      os.system('cp %s %s' %(g,dssrstringprep))
-    #   print f
 
 def hbplusprocessedhbreader():
   os.chdir('/Users/curtisma/bioresearch/hbplusprocessedhbfiles')
@@ -316,14 +265,14 @@ def helpoutput():
 proinput=str(sys.argv[1])
 if proinput == "help":
   helpoutput()
-elif proinput == "dssrcli":
-  dssrcli()
-elif proinput == "fileretriever":
-  fileretriever()
+elif proinput == "pdbfileretriever":
+  pdbfileretriever()
 elif proinput == "hbplushbcli":
   hbplusclihelper().hbplushbcli()
 elif proinput == "hbplusvdwcli":
-  hbplusvdwcli()
+  hbplusclihelper().hbplusvdwcli()
+elif proinput == "dssrcli":
+  dssrclihelper().dssrcli()
 elif proinput == "dssrparse":
   dssrprocessedreader()
 elif proinput == "hbplushbparse":

@@ -1,5 +1,6 @@
 import os as os #import the python os library
 import csv as csv #import the python csv library
+import re #provides regular expression matching
 
 class hbplusclihelper(object):
     def __init__(self):
@@ -37,7 +38,7 @@ class hbplusclihelper(object):
         # os.chdir('/Users/curtisma/bioresearch/')
         # os.system('mkdir hbplusprocessedvdwfiles')
         # os.chdir('/Users/curtisma/bioresearch/hbplus')
-        for f in listoffiles:
+        for f in self.listoffiles:
             stringprep=('~/bioresearch/compbio/pdbfiles/%s' %f)
             os.system('./hbplus %s -N' %stringprep)
             lhs,rhs=f.split(".",1)
