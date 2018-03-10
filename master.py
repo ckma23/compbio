@@ -1,12 +1,11 @@
-import os as os
-import csv as csv
+import os as os #import the python os library
+import csv as csv #import the python csv library
 import sys # import the sys to retrieve command line arguments
-import getopt
 import re #provides regular expression matching
-import json
-from pprint import pprint
+import json #import the biopython json library
+from pprint import pprint #pprint for json
 from Bio import *      #use the BioPython Python library
-from Bio.PDB import *
+from Bio.PDB import *  #more specifically import the BioPython PDB library
 from helper.biopythonpdbretriever import FileRetriever
 from helper.PDBRestService import PDBRestServicehelper
 
@@ -89,17 +88,36 @@ def neighborSearcher(structure,distance):
             # print residue.child_list
         # the next thing we can do is get the individual atoms in the residue, if it's a hydrogen atom then it's hydrogen bonding
         # we can start classifyign the contacts here if this is then incrementer counter to. If this is then increment the counter here.
-
-def hbpluscli():
+# run hbplus in hydrogenbond mode
+def hbplushbcli():
   os.chdir('/Users/curtisma/bioresearch/compbio/pdbfiles')
   listoffiles = os.listdir('.')
+  os.chdir('/Users/curtisma/bioresearch/')
+  os.system('mkdir hbplusprocessedhbfiles')
   os.chdir('/Users/curtisma/bioresearch/hbplus')
   for f in listoffiles:
     stringprep=('~/bioresearch/compbio/pdbfiles/%s' %f)
     os.system('./hbplus %s' %stringprep)
     lhs,rhs=f.split(".",1)
     print lhs
-    os.system('mv %s.hb2 ~/bioresearch/hbplusprocessedfiles' %lhs)
+    #output file is an .hb2
+    os.system('mv %s.hb2 ~/bioresearch/hbplusprocessedhbfiles' %lhs)
+    print f
+
+# run hbplus in van der Waal mode
+def hbplusvdwcli():
+  os.chdir('/Users/curtisma/bioresearch/compbio/pdbfiles')
+  listoffiles = os.listdir('.')
+  os.chdir('/Users/curtisma/bioresearch/')
+  os.system('mkdir hbplusprocessedvdwfiles')
+  os.chdir('/Users/curtisma/bioresearch/hbplus')
+  for f in listoffiles:
+    stringprep=('~/bioresearch/compbio/pdbfiles/%s' %f)
+    os.system('./hbplus %s -N' %stringprep)
+    lhs,rhs=f.split(".",1)
+    print lhs
+    #output file is an .nb2
+    os.system('mv %s.nb2 ~/bioresearch/hbplusprocessedvdwfiles' %lhs)
     print f
 
 def dssrcli():
@@ -123,8 +141,8 @@ def dssrcli():
       os.system('cp %s %s' %(g,dssrstringprep))
     #   print f
 
-def hbplusprocessedreader():
-  os.chdir('/Users/curtisma/bioresearch/hbplusprocessedfiles')
+def hbplusprocessedhbreader():
+  os.chdir('/Users/curtisma/bioresearch/hbplusprocessedhbfiles')
   listofprocessedfiles = os.listdir('.')
   listofprocessedfiles=["pdb1mnb.hb2"]
   totalHH=0
@@ -276,8 +294,9 @@ def aminoacidrnamatcher(aminoacid,nucleotidebase):
         for nb in nucleotidebase:
             print aa
             print nb
+
 def helpoutput():
-  print"\nWelcome to the compbio project help section\n \nThe following commands are available: \ndssrcli \nhbpluscli \ndssrprocessedreader \nhbplusprocessedreader"
+  print"\nWelcome to the compbio project help section\n \nThe following commands are available: \ndssrcli \nhbplushbcli \n\nhbplusvdwcli \ndssrprocessedreader \nhbplusprocessedreader"
 # testprotein = structureRetriever('1mnb','pdbfiles/pdb1mnb.ent')
 # neighborSearcher(testprotein,3.0)
 # aminoacidmatcher()
@@ -287,11 +306,13 @@ if proinput == "help":
   helpoutput()
 elif proinput == "dssrcli":
   dssrcli()
-elif proinput == "hbpluscli":
-  hbpluscli()
+elif proinput == "hbplushbcli":
+  hbplushbcli()
+elif proinput == "hbplusvdwcli":
+  hbplusvdwcli()
 elif proinput == "dssrparse":
   dssrprocessedreader()
-elif proinput == "hbplusparse":
-  hbplusprocessedreader()
+elif proinput == "hbplushbparse":
+  hbplusprocessedhbreader()
 
 
