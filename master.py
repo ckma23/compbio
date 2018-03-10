@@ -8,6 +8,7 @@ from Bio import *      #use the BioPython Python library
 from Bio.PDB import *  #more specifically import the BioPython PDB library
 from helper.biopythonpdbretriever import FileRetriever
 from helper.PDBRestService import PDBRestServicehelper
+from helper.hbpluscli import hbplusclihelper
 
 def structureRetriever(structure_id,filename):
     # this function returns to the caller a structure object from the pdb file name by parsing the pdb file and returns a structure object
@@ -89,6 +90,17 @@ def neighborSearcher(structure,distance):
         # the next thing we can do is get the individual atoms in the residue, if it's a hydrogen atom then it's hydrogen bonding
         # we can start classifyign the contacts here if this is then incrementer counter to. If this is then increment the counter here.
 # run hbplus in hydrogenbond mode
+
+
+def fileretriever():
+    with open('structures_of_interest.csv','rb') as csvfile:
+        csvstore = csv.reader(csvfile,delimiter = ',')
+        for i in csvstore:
+            print (i)
+            # note: had to strip the string as it was returning ['<string>'] for []
+            FileRetriever().fileretrieving(''.join(i))
+
+
 def hbplushbcli():
   os.chdir('/Users/curtisma/bioresearch/compbio/pdbfiles')
   listoffiles = os.listdir('.')
@@ -296,7 +308,7 @@ def aminoacidrnamatcher(aminoacid,nucleotidebase):
             print nb
 
 def helpoutput():
-  print"\nWelcome to the compbio project help section\n \nThe following commands are available: \ndssrcli \nhbplushbcli \n\nhbplusvdwcli \ndssrprocessedreader \nhbplusprocessedreader"
+  print"\nWelcome to the compbio project help section\n \nThe following commands are available: \ndssrcli \nfileretriever \nhbplushbcli \nhbplusvdwcli \ndssrprocessedreader \nhbplusprocessedreader"
 # testprotein = structureRetriever('1mnb','pdbfiles/pdb1mnb.ent')
 # neighborSearcher(testprotein,3.0)
 # aminoacidmatcher()
@@ -306,8 +318,10 @@ if proinput == "help":
   helpoutput()
 elif proinput == "dssrcli":
   dssrcli()
+elif proinput == "fileretriever":
+  fileretriever()
 elif proinput == "hbplushbcli":
-  hbplushbcli()
+  hbplusclihelper().hbplushbcli()
 elif proinput == "hbplusvdwcli":
   hbplusvdwcli()
 elif proinput == "dssrparse":
