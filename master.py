@@ -208,8 +208,11 @@ def dssrprocessedreader():
     listofdssrprocessedfiles = os.listdir('.')
     listofdssrprocessedfiles = ["1mnb.json"]
     for i in listofdssrprocessedfiles:
+        dssrstore=[]
+        lhs,rhs=i.split(".",1)
+        print lhs
         data = json.load(open(i))
-        dssroutputcategories = ["stems","hairpins","torsions","stacks","splays","pairs","multiplets","helices","bulges","atom2bases"]
+        dssroutputcategories = ["stems","junction","hairpins","torsions","stacks","splays","pairs","multiplets","helices","bulges","atom2bases"]
         for j in dssroutputcategories:
             print j
             try:
@@ -218,6 +221,8 @@ def dssrprocessedreader():
                   # print data[j][0]["nts_long"]
                   hairpinnt=data[j][0]["nts_long"]
                   print "%s %s" %(j,hairpinnt)
+                  # for y in hairpinnt:
+                  #   dssrstore.append("%s %s"%(j,y))
                 elif j == "stems":
                   k=0 
                   while k < len(data[j]):
@@ -228,6 +233,11 @@ def dssrprocessedreader():
                       snt1 = data[j][k]["pairs"][h]["nt1"]
                       snt2 = data[j][k]["pairs"][h]["nt2"]
                       print "%s %s %s %s %s" %(j,sindex, siindex, snt1,snt2)
+                      snt1=snt1[2:]
+                      snt2=snt2[2:]
+                      dssrstore.append("%s %s %s %s" %(j,snt1,sindex,siindex))
+                      dssrstore.append("%s %s %s %s" %(j,snt2,sindex,siindex))
+                      # dssrstore.append("%s %s %s %s %s" %(j,sindex, siindex, snt1,snt2))
                       h+=1
                     k+=1
                 elif j == "helices":
@@ -246,7 +256,33 @@ def dssrprocessedreader():
                     k+=1
             except:
                 print "There was an exception likely null"
+        print dssrstore
+        dssrstorefilewriter(lhs,dssrstore)
 
+def dssrstorefilewriter(proteinname,dssrstore):
+  os.chdir("/Users/curtisma/bioresearch")
+  os.system('mkdir DSSRprocessedfiles')
+  os.chdir("/Users/curtisma/bioresearch/DSSRparsedfiles")
+  # os.system('touch dssrparsed.dsr')
+  filenamestring="%s.dsr" %proteinname
+  print filenamestring
+  os.system("rm %s" %filenamestring )
+  file = open(filenamestring,"a")
+  for line in dssrstore:
+    file.write("%s\n" %line)
+  os.chdir('/Users/curtisma/bioresearch')
+
+
+# we need to write this output into another file for now
+#lets call this file dssr_cleaned
+#secondarystructuretype residue
+
+
+#compare the hbplus hydrogen bond residues against this file 
+# if residue = residue in dssr_cleaned file, bin this as Category
+#Category 1 = Helix
+#Category 2 = Stem
+#Category 3 = Junction
 
 def aminoacidrnamatcher(aminoacid,nucleotidebase):
     aminoacidlist=["ARG","ALA","ARG","GLY","CYS,""ILE","LYS","MET","PHE,""PRO","SER","THR","TYR","VAL"]
