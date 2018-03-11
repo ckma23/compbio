@@ -104,7 +104,7 @@ def pdbfileretriever():
 
 def hbplusprocessedhbreader():
   os.chdir('/Users/curtisma/bioresearch/hbplusprocessedhbfiles')
-  listofprocessedfiles = os.listdir('.')
+  # listofprocessedfiles = os.listdir('.')
   listofprocessedfiles=["pdb1mnb.hb2"]
   totalHH=0
   totalMS=0
@@ -123,6 +123,18 @@ def hbplusprocessedhbreader():
   info8=[]
   aminoacid_proteinstore=[]
   for hbplusprocessedfile in listofprocessedfiles:
+    #bring this inside to scale it across all files lets write this into a for loop
+    # for k in range(0:8):
+    #   info=info+k
+    #   info=[]
+    # info1=[]
+    # info2=[]
+    # info3=[]
+    # info4=[]
+    # info5=[]
+    # info6=[]
+    # info7=[]
+    # info8=[]
     individualfileobject=open(hbplusprocessedfile)
     # print individualfileobject
     lines=individualfileobject.readlines()
@@ -161,6 +173,7 @@ def hbplusprocessedhbreader():
               info6.append(store[24:27])
     print hbplusprocessedfile
     print totalaanb
+  hbplushbstorefilewriter(hbplusprocessedfile,info1,info2,info3,info4,info5,info6) 
   for i in range(len(info1)):
     print "%s %s %s %s %s %s" %(info1[i],info2[i],info3[i],info4[i],info5[i],info6[i])
 
@@ -200,8 +213,87 @@ def hbplusprocessedhbreader():
 # def hbondcontactmatcher(info1,info2):
 #     if infor1 == info2:
 
+def hbplushbstorefilewriter(proteinname,col1,col2,col3,col4,col5,col6):
+  os.chdir("/Users/curtisma/bioresearch")
+  os.system('mkdir hbplushbsortedfiles')
+  os.chdir("/Users/curtisma/bioresearch/hbplushbsortedfiles")
+  filenamestring="%s.hbsorted" %proteinname
+  os.system("rm %s" %filenamestring)
+  file = open(filenamestring,"a")
+  print "%s has been created" %filenamestring
+  # WE HAVE TO ASSUME FOR NOW THAT RNA IS THE B STRAND!
+  for i in range(len(col1)):
+    #we need to clean the col1 and col 2 to make hbplus compatibile to dssr i.e. B0018- A means B strand Argenine18" 
+    cleanednb=col2[i]+col1[i].strip()
+    strandnb=col1[i]
+    strandnb=strandnb[0]
+    cleanednb=hbplustodssrnbstringcleaner(cleanednb)
+    # cleanednb=cleanednb.strip()#strip out the spaces.
+    # cleanednb=cleanednb.strip("-")
+    # cleanednb=cleanednb.strip("0")
+    file.write("%s %s %s %s %s %s\n" %(cleanednb,strandnb,col3[i],col4[i],col5[i],col6[i]))
+
+
+#note to self stip only works at the beginning and end of the string
+def hbplustodssrnbstringcleaner(nbtobecleaned):
+  nbclean=nbtobecleaned
+  nbclean=nbclean.strip()
+  nbclean=nbclean.replace("B","")
+  nbclean=nbclean.strip('-')
+  print nbclean
+  return nbclean
+
+
+def hbplushbtodssrcomparer():
+  os.chdir('/Users/curtisma/bioresearch/hbplushbsortedfiles')
+  listofprocessedhbplusfiles = os.listdir('.')
+  listofprocessedhbplusfiles = ["pdb1mnb.hb2.hbsorted"]
+  for hbplusfile in listofprocessedhbplusfiles:
+    hbplusfilestore = open(hbplusfile)
+    for hbline in hbplusfilestore:
+      print hbline
+      dssrcomparer(hbline)
+
+def dssrcomparer(hbline):      
+  os.chdir('/Users/curtisma/bioresearch/DSSRparsedfiles')
+  listofprocesseddssrfiles = os.listdir('.')
+  listofprocesseddssrfiles = ["1mnb.dsr"]
+  for dssrfile in listofprocesseddssrfiles:
+    dssrfilestore = open(dssrfile)
+    for dssrline in dssrfilestore:
+      hblinecompare=hbline.split(' ')
+      dssrcompare=dssrline.split(' ')
+      print type(dssrcompare[0])
+      print dssrcompare[0]
+      print hblinecompare[0]
+      print dssrcompare[2] #something here is coming back weird where it's a whole line.
+      print dssrcompare[1]
+      print hblinecompare[1]
+      # if (dssrcompare[0] == "hairpins" and str(hblinecompare[0]) == str(dssrcompare[2])):
+      if (dssrcompare[0] == "hairpins" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
+        print "This is a HAIRPIN hydrogen bond! %s %s" %(hbline,dssrline)
+      print dssrline
+        
+
+
 def fileprocesser(value):
     info.append(value)
+
+# we need to add 0's back in... from dssr to hbplus comparison
+def dssrtohbplusstringcleaner(dssnbtobecleaned):
+  rhs = dssnbtobecleaned[3:]
+  lhs = dssnbtobecleaned[2]
+  if len(rhs) == 1:
+    rhs="000"+rhs
+  elif len(rhs) == 2:
+    rhs="00"+rhs
+  elif len(rhs) == 3:
+    rhs.join("0",rhs)
+    rhs="0"+rhs
+  # consider the cause where believe the residue name is 5 digits 99999  
+  dssncleaned=lhs+rhs
+  print dssncleaned
+  return dssncleaned
 
 def dssrprocessedreader():
     os.chdir('/Users/curtisma/bioresearch')
@@ -218,12 +310,20 @@ def dssrprocessedreader():
             try:
                 # print(data[j])
                 if j == "hairpins":
+                  # hairpindssrparser(data)
                   # print data[j][0]["nts_long"]
                   hairpinnt=data[j][0]["nts_long"]
                   print "%s %s" %(j,hairpinnt)
-                  # for y in hairpinnt:
-                  #   dssrstore.append("%s %s"%(j,y))
+                  for hairpinnb in hairpinnt.split(","):
+                    #we are stripping B. for now lets assume RNA is always the Bstrand
+                    dssrnbaddedzeros = dssrtohbplusstringcleaner(hairpinnb)
+                    # print testing
+                    chain = hairpinnb[0]
+                    hairpinnb=hairpinnb[2:]
+                    #we need to add the 0s back in for hbplus...
+                    dssrstore.append("%s %s %s"%(j,chain,dssrnbaddedzeros))
                 elif j == "stems":
+                  # stemdssrparser(data)
                   k=0 
                   while k < len(data[j]):
                     h=0
@@ -265,13 +365,17 @@ def dssrstorefilewriter(proteinname,dssrstore):
   os.chdir("/Users/curtisma/bioresearch/DSSRparsedfiles")
   # os.system('touch dssrparsed.dsr')
   filenamestring="%s.dsr" %proteinname
-  print filenamestring
   os.system("rm %s" %filenamestring )
   file = open(filenamestring,"a")
+  print "%s has been created" %filenamestring
   for line in dssrstore:
     file.write("%s\n" %line)
   os.chdir('/Users/curtisma/bioresearch')
 
+#I should start calling individual handlers here for DSSR and build them here
+# def hairpindssrparser(data):
+
+#def stemdssrparser(data):
 
 # we need to write this output into another file for now
 #lets call this file dssr_cleaned
@@ -293,7 +397,9 @@ def aminoacidrnamatcher(aminoacid,nucleotidebase):
             print nb
 
 def helpoutput():
-  print"\nWelcome to the compbio project help section\n \nThe following commands are available: \ndssrcli \nfileretriever \nhbplushbcli \nhbplusvdwcli \ndssrprocessedreader \nhbplusprocessedreader"
+  print "\nWelcome to the compbio project help section\n"
+  print "\nThe following commands are available:\n" 
+  print "\ndssrcli \nfileretriever \nhbplushbcli \nhbplusvdwcli \ndssrprocessedreader \nhbplusprocessedreader\n"
 # testprotein = structureRetriever('1mnb','pdbfiles/pdb1mnb.ent')
 # neighborSearcher(testprotein,3.0)
 # aminoacidmatcher()
@@ -313,5 +419,5 @@ elif proinput == "dssrparse":
   dssrprocessedreader()
 elif proinput == "hbplushbparse":
   hbplusprocessedhbreader()
-
-
+elif proinput == "hbcategorizedssr":
+  hbplushbtodssrcomparer()
