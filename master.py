@@ -106,36 +106,77 @@ def hbplusprocessedhbreader():
   os.chdir('/Users/curtisma/bioresearch/hbplusprocessedhbfiles')
   # listofprocessedfiles = os.listdir('.')
   listofprocessedfiles=["pdb1mnb.hb2"]
-  totalHH=0
-  totalMS=0
-  totalMH=0
-  totalSS=0
-  totalSM=0
-  totalaanb=0
-  totalCGHH=0
-  info1=[]
-  info2=[]
-  info3=[]
-  info4=[]
-  info5=[]
-  info6=[]
-  info7=[]
-  info8=[]
-  aminoacid_proteinstore=[]
-  for hbplusprocessedfile in listofprocessedfiles:
+  for hbplushbprocessedfile in listofprocessedfiles:
+    info1=[]
+    info2=[]
+    info3=[]
+    info4=[]
+    info5=[]
+    info6=[]
+    info7=[]
+    info8=[]
+    individualfileobject=open(hbplushbprocessedfile)
+    lines=individualfileobject.readlines()
+    i=8 #set the counter to skip the 8 lines of the header
+    totallinesinfile=len(lines) #sum up the total lines in each file
+    # totallinesinfile=20
+    while i < totallinesinfile: #iterate through the file for each line in it
+    #    print lines[i]
+    # if info8="HH" then sum up the HH
+       store=''.join(map(str,lines[i]))
+    #    print store
+    #    print len(store)
+       i +=1
+    #    info1.append(store[0:6])
+    #    info2.append(store[6:9])
+    #    info3.append(store[9:12])
+    #    info4.append(store[14:20])
+    #    info5.append(store[20:23])
+    #    info6.append(store[24:27])
+       info7.append(store[28:32])
+       info8.append(store[33:35])
+       aminoacidlist=["ARG","ALA","ASN","ASP","GLN","GLU","GLY","CYS","HIS","ILE","LEU","LYS","MET","PHE","PRO","SER","THR","TRP","TYR","VAL"]
+       nucleotidebase=["U","G","C","A"]
+       for aa in aminoacidlist:
+          for nb in nucleotidebase:
+            # print aa
+            # print nb
+            # if store[6:9].strip() == aa and store[20:23].strip() == nb:
+            if (store[6:9].strip() == aa and store[20:23].strip() == nb):
+              info4.append(store[0:6])
+              info5.append(store[6:9])
+              info6.append(store[9:12])
+              info1.append(store[14:20])
+              info2.append(store[20:23])
+              info3.append(store[24:27])
+            #appears that we need to account if the amino acid or the nucleotide base is either side. however we need to fix the files so hbplus sorted always have nucelotide base is always on first column.  
+            elif (store[6:9].strip() == nb and store[20:23].strip() == aa):
+              info1.append(store[0:6])
+              info2.append(store[6:9])
+              info3.append(store[9:12])
+              info4.append(store[14:20])
+              info5.append(store[20:23])
+              info6.append(store[24:27]) 
+    print hbplushbprocessedfile
+  hbplusstorefilewriter(hbplushbprocessedfile,info1,info2,info3,info4,info5,info6,"hb") 
+  for i in range(len(info1)):
+    print "%s %s %s %s %s %s" %(info1[i],info2[i],info3[i],info4[i],info5[i],info6[i])
+
+def hbplusprocessedvdwreader():
+  os.chdir('/Users/curtisma/bioresearch/hbplusprocessedvdwfiles')
+    # listofprocessedfiles = os.listdir('.')
+  listofprocessedfiles=["pdb1mnb.nb2"]
+  for hbplusvdwprocessedfile in listofprocessedfiles:
     #bring this inside to scale it across all files lets write this into a for loop
-    # for k in range(0:8):
-    #   info=info+k
-    #   info=[]
-    # info1=[]
-    # info2=[]
-    # info3=[]
-    # info4=[]
-    # info5=[]
-    # info6=[]
-    # info7=[]
-    # info8=[]
-    individualfileobject=open(hbplusprocessedfile)
+    info1=[]
+    info2=[]
+    info3=[]
+    info4=[]
+    info5=[]
+    info6=[]
+    info7=[]
+    info8=[]
+    individualfileobject=open(hbplusvdwprocessedfile)
     # print individualfileobject
     lines=individualfileobject.readlines()
     i=8 #set the counter to skip the 8 lines of the header
@@ -163,61 +204,33 @@ def hbplusprocessedhbreader():
             # print aa
             # print nb
             # if store[6:9].strip() == aa and store[20:23].strip() == nb:
-            if (store[6:9].strip() == aa and store[20:23].strip() == nb) or (store[6:9].strip() == nb and store[20:23].strip() == aa):
-              totalaanb += 1
+            if (store[6:9].strip() == aa and store[20:23].strip() == nb):
+              info4.append(store[0:6])
+              info5.append(store[6:9])
+              info6.append(store[9:12])
+              info1.append(store[14:20])
+              info2.append(store[20:23])
+              info3.append(store[24:27])
+            #appears that we need to account if the amino acid or the nucleotide base is either side. however we need to fix the files so hbplus sorted always have nucelotide base is always on first column.  
+            elif (store[6:9].strip() == nb and store[20:23].strip() == aa):
               info1.append(store[0:6])
               info2.append(store[6:9])
               info3.append(store[9:12])
               info4.append(store[14:20])
               info5.append(store[20:23])
-              info6.append(store[24:27])
-    print hbplusprocessedfile
-    print totalaanb
-  hbplushbstorefilewriter(hbplusprocessedfile,info1,info2,info3,info4,info5,info6) 
+              info6.append(store[24:27]) 
+    print hbplusvdwprocessedfile
+  hbplusstorefilewriter(hbplusvdwprocessedfile,info1,info2,info3,info4,info5,info6,"vdw") 
   for i in range(len(info1)):
     print "%s %s %s %s %s %s" %(info1[i],info2[i],info3[i],info4[i],info5[i],info6[i])
 
-    #    contactcategorizer(value)
-    #    if store[6:9].strip() == "A" and store[20:23].strip() == "U" and store[33:35] == "HH":
-    #      totalAUHH += 1
-    #    elif store[6:9].strip() == "C" and store[20:23].strip() == "G" and store[33:35] == "HH":
-    #      totalCGHH += 1
-    #    if store[33:35] == "HH":
-    #      totalHH += 1
-    #    elif store[33:35] == "MH":
-    #      totalMH += 1
-    #    elif store[33:35] == "MS":
-    #      totalMS += 1
-    #    elif store[33:35] == "SS":
-    #      totalSS += 1
-    #    elif store[33:35] == "SM":
-    #      totalSM += 1
-    #  fileprocesser(value)
-    #  hbondcontactmatcher(info1,info2)
-  # print info1
-  # print info2
-  # print info3
-  # print info4
-  # print info5
-  # print info6
-  # print info7
-  # print info8
-  # print "In these files %s the following was determined" %listofprocessedfiles
-  # print "Total of %s A-U HHbonds" %totalAUHH
-  # print "Total of %s C-G HHbonds" %totalCGHH
-  # print "Total of %s HH bonds" %totalHH
-  # print "Total of %s MH bonds" %totalMH
-  # print "Total of %s MS bonds" %totalMS
-  # print "Total of %s SS bonds" %totalSS
-  # print "Total of %s SM bonds" %totalSM
-# def hbondcontactmatcher(info1,info2):
-#     if infor1 == info2:
-
-def hbplushbstorefilewriter(proteinname,col1,col2,col3,col4,col5,col6):
+def hbplusstorefilewriter(proteinname,col1,col2,col3,col4,col5,col6,hborvdw):
+# def hbplushbstorefilewriter(proteinname,col1,col2,col3,col4,col5,col6):
   os.chdir("/Users/curtisma/bioresearch")
-  os.system('mkdir hbplushbsortedfiles')
-  os.chdir("/Users/curtisma/bioresearch/hbplushbsortedfiles")
-  filenamestring="%s.hbsorted" %proteinname
+  os.system('mkdir hbplus%ssortedfiles' %hborvdw)
+  # os.system('mkdir hbplushbsortedfiles')
+  os.chdir("/Users/curtisma/bioresearch/hbplus%ssortedfiles" %hborvdw)
+  filenamestring="%s.%ssorted" %(proteinname,hborvdw)
   os.system("rm %s" %filenamestring)
   file = open(filenamestring,"a")
   print "%s has been created" %filenamestring
@@ -225,33 +238,54 @@ def hbplushbstorefilewriter(proteinname,col1,col2,col3,col4,col5,col6):
   for i in range(len(col1)):
     #we need to clean the col1 and col 2 to make hbplus compatibile to dssr i.e. B0018- A means B strand Argenine18" 
     cleanednb=col2[i]+col1[i].strip()
+    # strandnb=col1[i[0]]
     strandnb=col1[i]
     strandnb=strandnb[0]
     cleanednb=hbplustodssrnbstringcleaner(cleanednb)
-    # cleanednb=cleanednb.strip()#strip out the spaces.
-    # cleanednb=cleanednb.strip("-")
-    # cleanednb=cleanednb.strip("0")
-    file.write("%s %s %s %s %s %s\n" %(cleanednb,strandnb,col3[i],col4[i],col5[i],col6[i]))
+    file.write("%s %s %s %s %s %s %s\n" %(cleanednb,strandnb,col3[i],col4[i],col5[i],col6[i],hborvdw))
 
-
+def hbplushbandvdwcombiner():
+  print "combining the hbplushb sorted and hbplusvdw sorted into one file"
+  os.chdir("/Users/curtisma/bioresearch")
+  os.system("mkdir hbplushbvdwcombined")
+  os.chdir("/Users/curtisma/bioresearch/hbplushbsortedfiles")
+  listofprocessedhbplusfiles = os.listdir('.')
+  for i in listofprocessedhbplusfiles:
+    individualfileobject=open(i)
+    lhs,rhs=i.split(".",1)
+    print lhs
+    filenamestring="%s.hbplushbvdwsorted" %(lhs)
+    os.chdir("/Users/curtisma/bioresearch/hbplushbvdwcombined")
+    os.system("rm %s" %filenamestring)
+    file = open(filenamestring,"a")
+    for line in individualfileobject:
+      file.write(line)
+    os.chdir("/Users/curtisma/bioresearch/hbplusvdwsortedfiles")
+    vdwfile="%s.nb2.vdwsorted" %(lhs)
+    individualfileobject=open(vdwfile)
+    filenamestring="%s.hbplushbvdwsorted" %(lhs)
+    os.chdir("/Users/curtisma/bioresearch/hbplushbvdwcombined")
+    file = open(filenamestring,"a")
+    for line in individualfileobject:
+      file.write(line)
 #note to self stip only works at the beginning and end of the string
+
 def hbplustodssrnbstringcleaner(nbtobecleaned):
   nbclean=nbtobecleaned
   nbclean=nbclean.strip()
   nbclean=nbclean.replace("B","")
   nbclean=nbclean.strip('-')
-  print nbclean
   return nbclean
 
-
 def hbplushbtodssrcomparer():
-  os.chdir('/Users/curtisma/bioresearch/hbplushbsortedfiles')
+  # os.chdir('/Users/curtisma/bioresearch/hbplushbsortedfiles')
+  os.chdir('/Users/curtisma/bioresearch/hbplushbvdwcombined')
   listofprocessedhbplusfiles = os.listdir('.')
   listofprocessedhbplusfiles = ["pdb1mnb.hb2.hbsorted"]
+  listofprocessedhbplusfiles = ["pdb1mnb.hbplushbvdwsorted"]
   for hbplusfile in listofprocessedhbplusfiles:
     hbplusfilestore = open(hbplusfile)
     for hbline in hbplusfilestore:
-      print hbline
       dssrcomparer(hbline)
 
 def dssrcomparer(hbline):      
@@ -263,18 +297,24 @@ def dssrcomparer(hbline):
     for dssrline in dssrfilestore:
       hblinecompare=hbline.split(' ')
       dssrcompare=dssrline.split(' ')
-      print type(dssrcompare[0])
-      print dssrcompare[0]
-      print hblinecompare[0]
-      print dssrcompare[2] #something here is coming back weird where it's a whole line.
-      print dssrcompare[1]
-      print hblinecompare[1]
+      # print type(dssrcompare[0])
+      # print dssrcompare[0]
+      # print hblinecompare[0]
+      # print dssrcompare[2] #something here is coming back weird where it's a whole line.
+      # print dssrcompare[1]
+      # print hblinecompare[1]
       # if (dssrcompare[0] == "hairpins" and str(hblinecompare[0]) == str(dssrcompare[2])):
+      # note match the 2d structure, check that it is the same chain, then check if it's the same residue name
       if (dssrcompare[0] == "hairpins" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
-        print "This is a HAIRPIN hydrogen bond! %s %s" %(hbline,dssrline)
-      print dssrline
+        print "This is a hydrogen bond on a HAIRPIN! %s %s" %(hbline,dssrcompare)
+      elif (dssrcompare[0] == "stems" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
+        print "This is a hydrogen bond on a STEM! %s %s" %(hbline,dssrcompare)  
+      # if (dssrcompare[0] == "hairpins" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
+      #   print "This is a vdw bond on a HAIRPIN! %s %s" %(hbline,dssrcompare)
+      # elif (dssrcompare[0] == "stems" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
+      #   print "This is a vdw bond on a STEM! %s %s" %(hbline,dssrcompare)  
+      # print dssrline
         
-
 
 def fileprocesser(value):
     info.append(value)
@@ -290,7 +330,10 @@ def dssrtohbplusstringcleaner(dssnbtobecleaned):
   elif len(rhs) == 3:
     rhs.join("0",rhs)
     rhs="0"+rhs
-  # consider the cause where believe the residue name is 5 digits 99999  
+  # elif len(rhs) ==4:
+  #   rhs.join("0",rhs)
+  #   rhs="0"+rhs
+  # consider the case where the residue name is 5 digits 99999  
   dssncleaned=lhs+rhs
   print dssncleaned
   return dssncleaned
@@ -333,10 +376,14 @@ def dssrprocessedreader():
                       snt1 = data[j][k]["pairs"][h]["nt1"]
                       snt2 = data[j][k]["pairs"][h]["nt2"]
                       print "%s %s %s %s %s" %(j,sindex, siindex, snt1,snt2)
-                      snt1=snt1[2:]
-                      snt2=snt2[2:]
-                      dssrstore.append("%s %s %s %s" %(j,snt1,sindex,siindex))
-                      dssrstore.append("%s %s %s %s" %(j,snt2,sindex,siindex))
+                      # snt1=snt1[2:]
+                      # snt2=snt2[2:]
+                      chain1=snt1[0]
+                      chain2=snt2[0]
+                      snt1cleaned = dssrtohbplusstringcleaner(snt1)
+                      snt2cleaned = dssrtohbplusstringcleaner(snt2)
+                      dssrstore.append("%s %s %s %s %s" %(j,chain1,snt1cleaned,sindex,siindex))
+                      dssrstore.append("%s %s %s %s %s" %(j,chain2,snt2cleaned,sindex,siindex))
                       # dssrstore.append("%s %s %s %s %s" %(j,sindex, siindex, snt1,snt2))
                       h+=1
                     k+=1
@@ -358,6 +405,16 @@ def dssrprocessedreader():
                 print "There was an exception likely null"
         print dssrstore
         dssrstorefilewriter(lhs,dssrstore)
+
+
+def dssrhelixParser():
+  print "This will take a dssr json output and parse out the helixes"
+  helixtoappend=[]
+  return helixtoappend
+def dssrstemParser():
+  print "This will take a dssr json output and parse out the stems"
+  stemtoappend=[]
+  returnstemtoappend
 
 def dssrstorefilewriter(proteinname,dssrstore):
   os.chdir("/Users/curtisma/bioresearch")
@@ -397,7 +454,7 @@ def aminoacidrnamatcher(aminoacid,nucleotidebase):
             print nb
 
 def helpoutput():
-  print "\nWelcome to the compbio project help section\n"
+  print "\nWelcome to the Computatinal Biology RNA-Protein Interaction help section\n"
   print "\nThe following commands are available:\n" 
   print "\ndssrcli \nfileretriever \nhbplushbcli \nhbplusvdwcli \ndssrprocessedreader \nhbplusprocessedreader\n"
 # testprotein = structureRetriever('1mnb','pdbfiles/pdb1mnb.ent')
@@ -419,5 +476,10 @@ elif proinput == "dssrparse":
   dssrprocessedreader()
 elif proinput == "hbplushbparse":
   hbplusprocessedhbreader()
+elif proinput == "hbplusvdwparse":
+  hbplusprocessedvdwreader()
 elif proinput == "hbcategorizedssr":
   hbplushbtodssrcomparer()
+elif proinput == "hbplushbvdwcombine":
+  hbplushbandvdwcombiner()
+
