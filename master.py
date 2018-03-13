@@ -1,13 +1,13 @@
-import os as os #import the python os library
-import csv as csv #import the python csv library
-import sys # import the sys to retrieve command line arguments
-import re #provides regular expression matching
-import json #import the biopython json library
-from pprint import pprint #pprint for json
-from Bio import *      #use the BioPython Python library
-from Bio.PDB import *  #more specifically import the BioPython PDB library
-from helper.biopythonpdbretriever import FileRetriever
-from helper.PDBRestService import PDBRestServicehelper
+import os as os                                             #import the python os library
+import csv as csv                                           #import the python csv library
+import sys                                                  #import the sys to retrieve command line arguments
+import re                                                   #provides regular expression matching
+import json                                                 #import the biopython json library
+from pprint import pprint                                   #pprint for json
+from Bio import *                                           #use the BioPython Python library
+from Bio.PDB import *                                       #more specifically import the BioPython PDB library
+from helper.biopythonpdbretriever import FileRetriever      #from the helper folder biopythonpdbretriever.py import FileRetriever class 
+from helper.PDBRestService import PDBRestServicehelper        
 from library.hbplusclilib.hbpluscli import hbplusclihelper
 from library.dssrclilib.dssrcli import dssrclihelper
 
@@ -335,7 +335,7 @@ def dssrtohbplusstringcleaner(dssnbtobecleaned):
   #   rhs="0"+rhs
   # consider the case where the residue name is 5 digits 99999  
   dssncleaned=lhs+rhs
-  print dssncleaned
+  # print dssncleaned
   return dssncleaned
 
 def dssrprocessedreader():
@@ -353,20 +353,11 @@ def dssrprocessedreader():
             try:
                 # print(data[j])
                 if j == "hairpins":
-                  # hairpindssrparser(data)
-                  # print data[j][0]["nts_long"]
-                  hairpinnt=data[j][0]["nts_long"]
-                  print "%s %s" %(j,hairpinnt)
-                  for hairpinnb in hairpinnt.split(","):
-                    #we are stripping B. for now lets assume RNA is always the Bstrand
-                    dssrnbaddedzeros = dssrtohbplusstringcleaner(hairpinnb)
-                    # print testing
-                    chain = hairpinnb[0]
-                    hairpinnb=hairpinnb[2:]
-                    #we need to add the 0s back in for hbplus...
-                    dssrstore.append("%s %s %s"%(j,chain,dssrnbaddedzeros))
+                  hairpinresult=hairpindssrparser(data,j)
+                  for line in hairpinresult:
+                    dssrstore.append(line)
                 elif j == "stems":
-                  # stemdssrparser(data)
+                  # stemresult=dssrstemParser(data,j)
                   k=0 
                   while k < len(data[j]):
                     h=0
@@ -388,33 +379,83 @@ def dssrprocessedreader():
                       h+=1
                     k+=1
                 elif j == "helices":
+                  helixresult=dssrhelixParser(data,j)
+                  for line in helixresult:
+                    dssrstore.append(line)
                   # reminder when parsing helix structures must take into the account strand 1 and strand 2 these residue structures are the helices
-                  k=0
-                  while k < len(data[j]):
-                    h=0
-                    while h < len(data[j][k]["pairs"][0]):
-                    # while h might need to loop depending upon number of helices
-                      hindex=data[j][k]["index"]
-                      hiindex = data[j][k]["pairs"][h]["index"]
-                      hnt1 = data[j][k]["pairs"][h]["nt1"]
-                      hnt2 = data[j][k]["pairs"][h]["nt2"]
-                      print "%s %s %s %s %s" %(j,hindex, hiindex,hnt1,hnt2)
-                      h+=1
-                    k+=1
             except:
                 print "There was an exception likely null"
         print dssrstore
         dssrstorefilewriter(lhs,dssrstore)
 
 
-def dssrhelixParser():
+def dssrhelixParser(data,j):
   print "This will take a dssr json output and parse out the helixes"
   helixtoappend=[]
+  k=0
+  while k < len(data[j]):
+    h=0
+    while h < len(data[j][k]["pairs"][0]):
+       # while h might need to loop depending upon number of helices
+      hindex=data[j][k]["index"]
+      hiindex = data[j][k]["pairs"][h]["index"]
+      hnt1 = data[j][k]["pairs"][h]["nt1"]
+      hnt2 = data[j][k]["pairs"][h]["nt2"]
+      # print "%s %s %s %s %s" %(j,hindex, hiindex,hnt1,hnt2)
+      helixtoappend.append("%s %s %s %s %s" %(j,hindex, hiindex,hnt1,hnt2))
+      # helixtoapp="%s %s %s %s %s" %(j,hindex, hiindex,hnt1,hnt2)
+      # print helixtoappend
+      h+=1
+    k+=1
   return helixtoappend
-def dssrstemParser():
+
+
+def dssrstemParser(data,j):
   print "This will take a dssr json output and parse out the stems"
   stemtoappend=[]
-  returnstemtoappend
+  k=0 
+  while k < len(data[j]):
+    h=0
+    while h < len(data[j][k]["pairs"][0]):
+      sindex=data[j][0]["index"]
+      siindex = data[j][k]["pairs"][h]["index"]
+      snt1 = data[j][k]["pairs"][h]["nt1"]
+      snt2 = data[j][k]["pairs"][h]["nt2"]
+      # print "%s %s %s %s %s" %(j,sindex, siindex, snt1,snt2)
+      # snt1=snt1[2:]
+      # snt2=snt2[2:]
+      chain1=snt1[0]
+      chain2=snt2[0]
+      snt1cleaned = dssrtohbplusstringcleaner(snt1)
+      snt2cleaned = dssrtohbplusstringcleaner(snt2)
+      print "%s %s %s %s %s" %(j,chain1,snt1cleaned,sindex,siindex)
+      stemtoappend.append("%s %s %s %s %s" %(j,chain1,snt1cleaned,sindex,siindex))
+      stemtoappend.append("%s %s %s %s %s" %(j,chain2,snt2cleaned,sindex,siindex))
+      print "Lets %s break out of this h loop %s" %(h,len(data[j][k]["pairs"][0]))
+      h+=1
+    k+=1
+    print "Lets %s break out of this k loop %s" %(k,len(data[j]))
+  return stemtoappend
+
+
+#I should start calling individual handlers here for DSSR and build them here
+def hairpindssrparser(data,j):
+  # print data[j][0]["nts_long"]
+  hairpintoappend=[]
+  hairpinnt=data[j][0]["nts_long"]
+  print "%s %s" %(j,hairpinnt)
+  #hairpinnt is a comma separated string #"B.U13,B.C14,B.A15,B.U16,B.U17,B.A18"
+  for hairpinnb in hairpinnt.split(","):
+    #we are stripping B. for now lets assume RNA is always the Bstrand
+    dssrnbaddedzeros = dssrtohbplusstringcleaner(hairpinnb)
+    # print testing
+    chain = hairpinnb[0]
+    hairpinnb=hairpinnb[2:]
+    hairpintoappend.append("%s %s %s"%(j,chain,dssrnbaddedzeros))
+  return hairpintoappend
+    #we need to add the 0s back in for hbplus...
+
+#def stemdssrparser(data):
 
 def dssrstorefilewriter(proteinname,dssrstore):
   os.chdir("/Users/curtisma/bioresearch")
@@ -429,14 +470,10 @@ def dssrstorefilewriter(proteinname,dssrstore):
     file.write("%s\n" %line)
   os.chdir('/Users/curtisma/bioresearch')
 
-#I should start calling individual handlers here for DSSR and build them here
-# def hairpindssrparser(data):
-
-#def stemdssrparser(data):
-
 # we need to write this output into another file for now
 #lets call this file dssr_cleaned
 #secondarystructuretype residue
+
 
 
 #compare the hbplus hydrogen bond residues against this file 
