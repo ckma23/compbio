@@ -10,6 +10,7 @@ from helper.biopythonpdbretriever import FileRetriever      #from the helper fol
 from helper.PDBRestService import PDBRestServicehelper
 from library.hbplusclilib.hbpluscli import hbplusclihelper
 from library.dssrclilib.dssrcli import dssrclihelper
+from optparse import OptionParser # will need a option parsing library
 
 def structureRetriever(structure_id,filename):
     # this function returns to the caller a structure object from the pdb file name by parsing the pdb file and returns a structure object
@@ -225,27 +226,62 @@ def hbplushbtodssrcomparer():
     for hbline in hbplusfilestore:
       dssrcomparer(hbline)
 
+# this is getting called everytime, which is doesn't make sense in regards to making directories. Proof of concept this is okay though.
 def dssrcomparer(hbline):
+  os.chdir('/Users/curtisma/bioresearch')
+  os.system('mkdir bondcategorized')
   os.chdir('/Users/curtisma/bioresearch/DSSRparsedfiles')
   listofprocesseddssrfiles = os.listdir('.')
   listofprocesseddssrfiles = ["1mnb.dsr"]
   for dssrfile in listofprocesseddssrfiles:
+    # print dssrfile
+    os.chdir('/Users/curtisma/bioresearch/DSSRparsedfiles')
     dssrfilestore = open(dssrfile)
+    lhs,rhs=dssrfile.split(".",1)
+    filenamestring="%s.bondcategorized" %(lhs)
+    # categorizedbond=[]
+    os.chdir('/Users/curtisma/bioresearch/bondcategorized')
+    # os.system("rm %s" %filenamestring)
     for dssrline in dssrfilestore:
       hblinecompare=hbline.split(' ')
       dssrcompare=dssrline.split(' ')
       # print type(dssrcompare[0])
-      # print dssrcompare[0]
-      # print hblinecompare[0]
-      # print dssrcompare[2] #something here is coming back weird where it's a whole line.
-      # print dssrcompare[1]
-      # print hblinecompare[1]
+    #   print dssrline
+    #   print dssrcompare
+    #   print hblinecompare[0]
+    #   print dssrcompare[2] #something here is coming back weird where it's a whole line.
+    #   print dssrcompare[1]
+    #   print hblinecompare[1]
       # if (dssrcompare[0] == "hairpins" and str(hblinecompare[0]) == str(dssrcompare[2])):
       # note match the 2d structure, check that it is the same chain, then check if it's the same residue name
       if (dssrcompare[0] == "hairpins" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
-        print "This is a hydrogen bond on a HAIRPIN! %s %s" %(hbline,dssrcompare)
+        # print "This is a bond on a HAIRPIN! %s %s" %(hbline,dssrcompare)
+        # hbline=hbline.strip('\n')
+        # dssrcompare=' '.join(dssrcompare).strip('\n').strip()
+        # file.write("Cat_1_hairpin %s %s\n" %(hbline,dssrcompare))
+        bondcategorizedwriter(filenamestring,"CAT_1_HAIRPIN",hbline,dssrcompare)
       elif (dssrcompare[0] == "stems" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
-        print "This is a hydrogen bond on a STEM! %s %s" %(hbline,dssrcompare)
+        # print "This is a bond on a STEM! %s %s" %(hbline,dssrcompare)
+        # hbline=hbline.strip('\n')
+        # dssrcompare=' '.join(dssrcompare).strip('\n').strip()
+        # file.write("Cat_2_stem %s %s\n" %(hbline,dssrcompare))
+        bondcategorizedwriter(filenamestring,"CAT_2_STEM",hbline,dssrcompare)
+      elif (dssrcompare[0] == "helice" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
+        # hbline=hbline.strip('\n')
+        # dssrcompare=' '.join(dssrcompare).strip('\n').strip()
+        # file.write("Cat_3_helix %s %s\n" %(hbline,dssrcompare))
+        bondcategorizedwriter(filenamestring,"CAT_3_HELIX",hbline,dssrcompare)
+
+def bondcategorizedwriter(filenamestring,category,hbline,dssrcompare):
+    file = open(filenamestring,"a")
+    hbline=hbline.strip('\n')
+    dssrcompare=' '.join(dssrcompare).strip('\n').strip()
+    file.write("%s %s %s\n" %(category,hbline,dssrcompare))
+
+#     for line in categorizedbond:
+#       file.write("%s\n" %line)
+#       os.chdir('/Users/curtisma/bioresearch/bondcategorized')
+#       file = open(filenamestring,"a")
       # if (dssrcompare[0] == "hairpins" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
       #   print "This is a vdw bond on a HAIRPIN! %s %s" %(hbline,dssrcompare)
       # elif (dssrcompare[0] == "stems" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
@@ -326,17 +362,10 @@ def dssrhelixParser(data,j):
 
 
 def dssrstemParser(data,j):
-  print "This will take a dssr json output and parse out the stems"
-  print "HIT!"
-  print len(data[j])
-  print len(data[j][0]["pairs"])
-  print "HIT!"
   stemtoappend=[]
   # this is stepping out to the loop, may want to try switching it over to for loop instead
   for k in range(0,len(data[j])):
-    print k
     for h in range(0,len(data[j][k]["pairs"])):
-      print h
       sindex=data[j][k]["index"]
       siindex = data[j][k]["pairs"][h]["index"]
       snt1 = data[j][k]["pairs"][h]["nt1"]
@@ -351,8 +380,6 @@ def dssrstemParser(data,j):
       print "%s %s %s %s %s" %(j,chain1,snt1cleaned,sindex,siindex)
       stemtoappend.append("%s %s %s %s %s" %(j,chain1,snt1cleaned,sindex,siindex))
       stemtoappend.append("%s %s %s %s %s" %(j,chain2,snt2cleaned,sindex,siindex))
-    #   print "Lets %s break out of this h loop %s" %(h,len(data[j][k]["pairs"][0]))
-  print stemtoappend
   return stemtoappend
 
 
@@ -392,8 +419,6 @@ def dssrstorefilewriter(proteinname,dssrstore):
 #lets call this file dssr_cleaned
 #secondarystructuretype residue
 
-
-
 #compare the hbplus hydrogen bond residues against this file
 # if residue = residue in dssr_cleaned file, bin this as Category
 #Category 1 = Helix
@@ -412,6 +437,7 @@ def helpoutput():
   print "\nWelcome to the Computatinal Biology RNA-Protein Interaction help section\n"
   print "\nThe following commands are available:\n"
   print "\ndssrcli \nfileretriever \nhbplushbcli \nhbplusvdwcli \ndssrprocessedreader \nhbplusprocessedreader\n"
+
 # testprotein = structureRetriever('1mnb','pdbfiles/pdb1mnb.ent')
 # neighborSearcher(testprotein,3.0)
 # aminoacidmatcher()

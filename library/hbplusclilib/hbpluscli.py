@@ -5,21 +5,16 @@ import re #provides regular expression matching
 class hbplusclihelper(object):
     def __init__(self):
         self.listoffiles = []
-    # run hbplus in hydrogen bond mode
+
     def foldersetup(self,folder):
         os.chdir('/Users/curtisma/bioresearch/compbio/pdbfiles')
         self.listoffiles = os.listdir('.')
         os.chdir('/Users/curtisma/bioresearch/')
-        os.system('mkdir %s'%folder) 
+        os.system('mkdir %s'%folder)
         os.chdir('/Users/curtisma/bioresearch/hbplus')
-
+    # run hbplus in hydrogen bond mode
     def hbplushbcli(self):
         self.foldersetup("hbplusprocessedhbfiles")
-        # os.chdir('/Users/curtisma/bioresearch/compbio/pdbfiles')
-        # listoffiles = os.listdir('.')
-        # os.chdir('/Users/curtisma/bioresearch/')
-        # os.system('mkdir hbplusprocessedhbfiles')
-        # os.chdir('/Users/curtisma/bioresearch/hbplus')
         print self.listoffiles
         for f in self.listoffiles:
             stringprep=('~/bioresearch/compbio/pdbfiles/%s' %f)
@@ -33,11 +28,6 @@ class hbplusclihelper(object):
     # run hbplus in van der Waal mode
     def hbplusvdwcli(self):
         self.foldersetup("hbplusprocessedvdwfiles")
-        # os.chdir('/Users/curtisma/bioresearch/compbio/pdbfiles')
-        # listoffiles = os.listdir('.')
-        # os.chdir('/Users/curtisma/bioresearch/')
-        # os.system('mkdir hbplusprocessedvdwfiles')
-        # os.chdir('/Users/curtisma/bioresearch/hbplus')
         for f in self.listoffiles:
             stringprep=('~/bioresearch/compbio/pdbfiles/%s' %f)
             os.system('./hbplus %s -N' %stringprep)
@@ -46,5 +36,3 @@ class hbplusclihelper(object):
             #output file is an .nb2
             os.system('mv %s.nb2 ~/bioresearch/hbplusprocessedvdwfiles' %lhs)
             print f
-
-# hbpluscli().hbplushbcli()
