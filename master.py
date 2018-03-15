@@ -226,7 +226,7 @@ def hbplushbtodssrcomparer():
     for hbline in hbplusfilestore:
       dssrcomparer(hbline)
 
-# this is getting called everytime, which is doesn't make sense in regards to making directories. Proof of concept this is okay though.
+# this is getting called everytime, which is doesn't make sense in regards to making directories. Proof of concept this is okay though. need to figure out how to reset this file
 def dssrcomparer(hbline):
   os.chdir('/Users/curtisma/bioresearch')
   os.system('mkdir bondcategorized')
@@ -234,42 +234,21 @@ def dssrcomparer(hbline):
   listofprocesseddssrfiles = os.listdir('.')
   listofprocesseddssrfiles = ["1mnb.dsr"]
   for dssrfile in listofprocesseddssrfiles:
-    # print dssrfile
     os.chdir('/Users/curtisma/bioresearch/DSSRparsedfiles')
     dssrfilestore = open(dssrfile)
     lhs,rhs=dssrfile.split(".",1)
     filenamestring="%s.bondcategorized" %(lhs)
-    # categorizedbond=[]
     os.chdir('/Users/curtisma/bioresearch/bondcategorized')
     # os.system("rm %s" %filenamestring)
     for dssrline in dssrfilestore:
       hblinecompare=hbline.split(' ')
       dssrcompare=dssrline.split(' ')
-      # print type(dssrcompare[0])
-    #   print dssrline
-    #   print dssrcompare
-    #   print hblinecompare[0]
-    #   print dssrcompare[2] #something here is coming back weird where it's a whole line.
-    #   print dssrcompare[1]
-    #   print hblinecompare[1]
-      # if (dssrcompare[0] == "hairpins" and str(hblinecompare[0]) == str(dssrcompare[2])):
-      # note match the 2d structure, check that it is the same chain, then check if it's the same residue name
+      # note match the 2d structure, check that it is the same chain, then check if it's the same residue name from hbPlus and DSSR
       if (dssrcompare[0] == "hairpins" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
-        # print "This is a bond on a HAIRPIN! %s %s" %(hbline,dssrcompare)
-        # hbline=hbline.strip('\n')
-        # dssrcompare=' '.join(dssrcompare).strip('\n').strip()
-        # file.write("Cat_1_hairpin %s %s\n" %(hbline,dssrcompare))
         bondcategorizedwriter(filenamestring,"CAT_1_HAIRPIN",hbline,dssrcompare)
       elif (dssrcompare[0] == "stems" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
-        # print "This is a bond on a STEM! %s %s" %(hbline,dssrcompare)
-        # hbline=hbline.strip('\n')
-        # dssrcompare=' '.join(dssrcompare).strip('\n').strip()
-        # file.write("Cat_2_stem %s %s\n" %(hbline,dssrcompare))
         bondcategorizedwriter(filenamestring,"CAT_2_STEM",hbline,dssrcompare)
-      elif (dssrcompare[0] == "helice" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
-        # hbline=hbline.strip('\n')
-        # dssrcompare=' '.join(dssrcompare).strip('\n').strip()
-        # file.write("Cat_3_helix %s %s\n" %(hbline,dssrcompare))
+      elif (dssrcompare[0] == "helices" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
         bondcategorizedwriter(filenamestring,"CAT_3_HELIX",hbline,dssrcompare)
 
 def bondcategorizedwriter(filenamestring,category,hbline,dssrcompare):
@@ -277,16 +256,6 @@ def bondcategorizedwriter(filenamestring,category,hbline,dssrcompare):
     hbline=hbline.strip('\n')
     dssrcompare=' '.join(dssrcompare).strip('\n').strip()
     file.write("%s %s %s\n" %(category,hbline,dssrcompare))
-
-#     for line in categorizedbond:
-#       file.write("%s\n" %line)
-#       os.chdir('/Users/curtisma/bioresearch/bondcategorized')
-#       file = open(filenamestring,"a")
-      # if (dssrcompare[0] == "hairpins" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
-      #   print "This is a vdw bond on a HAIRPIN! %s %s" %(hbline,dssrcompare)
-      # elif (dssrcompare[0] == "stems" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
-      #   print "This is a vdw bond on a STEM! %s %s" %(hbline,dssrcompare)
-      # print dssrline
 
 # we need to add 0's back in... from dssr to hbplus comparison
 def dssrtohbplusstringcleaner(dssnbtobecleaned):
@@ -332,6 +301,7 @@ def dssrprocessedreader():
                 elif j == "helices":
                   helixresult=dssrhelixParser(data,j)
                   for line in helixresult:
+                    print line
                     dssrstore.append(line)
                   # reminder when parsing helix structures must take into the account strand 1 and strand 2 these residue structures are the helices
             except:
@@ -341,6 +311,7 @@ def dssrprocessedreader():
 
 
 def dssrhelixParser(data,j):
+    # need to fix some of this parsing
   print "This will take a dssr json output and parse out the helixes"
   helixtoappend=[]
   k=0
@@ -352,8 +323,13 @@ def dssrhelixParser(data,j):
       hiindex = data[j][k]["pairs"][h]["index"]
       hnt1 = data[j][k]["pairs"][h]["nt1"]
       hnt2 = data[j][k]["pairs"][h]["nt2"]
+      strand1=hnt1[0]
+      strand2=hnt2[0]
+      hnt1cleaned = dssrtohbplusstringcleaner(hnt1)
+      hnt2cleaned = dssrtohbplusstringcleaner(hnt2)
       # print "%s %s %s %s %s" %(j,hindex, hiindex,hnt1,hnt2)
-      helixtoappend.append("%s %s %s %s %s" %(j,hindex, hiindex,hnt1,hnt2))
+      helixtoappend.append("%s %s %s %s %s" %(j,strand1,hnt1cleaned,hindex,hiindex,))
+      helixtoappend.append("%s %s %s %s %s" %(j,strand2,hnt2cleaned,hindex,hiindex,))
       # helixtoapp="%s %s %s %s %s" %(j,hindex, hiindex,hnt1,hnt2)
       # print helixtoappend
       h+=1
