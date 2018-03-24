@@ -3,6 +3,7 @@ import csv as csv                                           #import the python c
 import sys                                                  #import the sys to retrieve command line arguments
 import re                                                   #provides regular expression matching
 import json                                                 #import the biopython json library
+import ConfigParser
 from pprint import pprint                                   #pprint for json
 from Bio import *                                           #use the BioPython Python library
 from Bio.PDB import *                                       #more specifically import the BioPython PDB library
@@ -10,89 +11,10 @@ from helper.biopythonpdbretriever import FileRetriever      #from the helper fol
 from helper.PDBRestService import PDBRestServicehelper
 from library.hbplusclilib.hbpluscli import hbplusclihelper
 from library.dssrclilib.dssrcli import dssrclihelper
+from library.dssrparser.dssrparser import DssrParser
 from optparse import OptionParser # will need a option parsing library
 
-def structureRetriever(structure_id,filename):
-    # this function returns to the caller a structure object from the pdb file name by parsing the pdb file and returns a structure object
-    parser = PDBParser()
-    structure = parser.get_structure(structure_id,filename)
-    return structure
-
-def structureParser(structure_id,filename):
-    # this function returns to the caller a structure object from the pdb file name by parsing the pdb file
-    parser = PDBParser()
-    structure = parser.get_structure(structure_id,filename)
-    # The Structure object follows the so-called SMCRA (Structure/Model/Chain/Residue/Atom)
-    for model in structure:
-        print model
-        for chain in model:
-            print chain
-            for residue in chain:
-                print residue
-                for atom in residue:
-                    print atom
-
-def neighborsingleSearcher(structure,distance):
-    atom_list = Selection.unfold_entities(structure, 'A')
-    ns = NeighborSearch(atom_list)
-    # print dir(atom_list[0]) #print all possible attributes or methods of the object
-    # print atom_list[0].__dict__ #print all info of this object
-    print len(atom_list)
-    center = atom_list[0].get_coord()
-    neighbors = ns.search(center,distance)
-    residue_list = Selection.unfold_entities(neighbors, 'R')
-    print residue_list
-    print "There are %s of nearest residues", len(residue_list)
-    for i in residue_list:
-        print dir(i)
-        print i.get_resname()
-        print i.child_list
-        # the next thing we can do is get the individual atoms in the residue, if it's a hydrogen atom then it's hydrogen bonding
-        # we can start classifyign the contacts here if this is then incrementer counter to. If this is then increment the counter here.
-
-def neighborSearcher(structure,distance):
-    atom_list = Selection.unfold_entities(structure, 'A')
-    ns = NeighborSearch(atom_list)
-    # print dir(atom_list[0]) #print all possible attributes or methods of the object
-    # print atom_list[0].__dict__ #print all info of this object
-    indexing = [0,0,0,0]
-    # for atom in atom_list:
-    for atom in atom_list[0:100]:
-        center = atom.get_coord()
-        neighbors = ns.search(center,distance)
-        residue_list = Selection.unfold_entities(neighbors, 'R')
-        print atom
-        print residue_list
-        print "There are %s nearest residues." % len(residue_list)
-        for residue in residue_list:
-            # index = 0
-            # indexing = [0,0,0,0]
-            print residue.get_resname()
-            # if residue.get_resname().strip() == "  G":
-            # we have to clean this string up using .strip
-            for atom in residue:
-                print atom.get_name()
-                if residue.get_resname().strip() == "G" and atom.get_name() == "H1":
-                #print atom
-                  print "matching G"
-                #   index += 1
-                  indexing[0] +=1
-                elif residue.get_resname() == "C" and atom.get_name() == "H1":
-                  print "matching C"
-                  indexing[1] +=1
-                elif residue.get_resname() == "A" and atom.get_name() == "H1":
-                  print "matching A"
-                  indexing[2] +=1
-                elif residue.get_resname() == "U" and atom.get_name() == "H1":
-                  print "matching U"
-                  indexing[3] +=1
-            # print "There are %s G to H1, %s C to H1, %s A to H1, and %s U to H1 interactions." %(indexing[0],indexing[1],indexing[2],indexing[3])
-    print "There are %s G to H1, %s C to H1, %s A to H1, and %s U to H1 interactions." %(indexing[0],indexing[1],indexing[2],indexing[3])
-            # print residue.child_list
-        # the next thing we can do is get the individual atoms in the residue, if it's a hydrogen atom then it's hydrogen bonding
-        # we can start classifyign the contacts here if this is then incrementer counter to. If this is then increment the counter here.
-# run hbplus in hydrogenbond mode
-
+#os.chdir(os.path.expanduser("~/bioresearch"))
 
 def pdbfileretriever():
     with open('structures_of_interest.csv','rb') as csvfile:
@@ -103,7 +25,7 @@ def pdbfileretriever():
             FileRetriever().fileretrieving(''.join(i))
 
 def hbplusprocessedreader(hborvdw):
-  os.chdir('/Users/curtisma/bioresearch/hbplusprocessed%sfiles' %hborvdw)
+  os.chdir(os.path.expanduser('~/bioresearch/hbplusprocessed%sfiles' %hborvdw))
   # listofprocessedfiles = os.listdir('.')
   listofprocessedfiles=["pdb1mnb.hb2"]
   for hbplusprocessedfile in listofprocessedfiles:
@@ -172,13 +94,17 @@ def hbplusstorefilewriter(proteinname,col1,col2,col3,col4,col5,col6,hborvdw):
   os.system("rm %s" %filenamestring)
   file = open(filenamestring,"a")
   print "%s has been created" %filenamestring
-  # WE HAVE TO ASSUME FOR NOW THAT RNA IS THE B STRAND!
   for i in range(len(col1)):
-    #we need to clean the col1 and col 2 to make hbplus compatibile to dssr i.e. B0018- A means B strand Argenine18"
-    cleanednb=col2[i]+col1[i].strip()
-    # strandnb=col1[i[0]]
+    #we need to clean the col1 and col 2 to make hbplus compatibile to dssr i.e. B0018- A..... means B strand Argenine18"
+    # thus we need to clean it to be A0018 on the B strand"
+    # remove the first letter from col because that is the strand information and we need the residue type information
+    removedstrandstring=col1[i][1:]
+    cleanednb=col2[i]+removedstrandstring.strip()
+    # combine this into one and it'l be A00018-
     strandnb=col1[i]
+    # still keep the strand information!
     strandnb=strandnb[0]
+    #strip the space and the -
     cleanednb=hbplustodssrnbstringcleaner(cleanednb)
     file.write("%s %s %s %s %s %s %s\n" %(cleanednb,strandnb,col3[i],col4[i],col5[i],col6[i],hborvdw))
 
@@ -211,203 +137,117 @@ def hbplushbandvdwcombiner():
 def hbplustodssrnbstringcleaner(nbtobecleaned):
   nbclean=nbtobecleaned
   nbclean=nbclean.strip()
-  nbclean=nbclean.replace("B","")
+  # nbclean=nbclean.replace("B","")
   nbclean=nbclean.strip('-')
   return nbclean
 
-def hbplushbtodssrcomparer():
-  # os.chdir('/Users/curtisma/bioresearch/hbplushbsortedfiles')
+def hbplushbvdwtodssrcomparer():
   os.chdir('/Users/curtisma/bioresearch/hbplushbvdwcombined')
   listofprocessedhbplusfiles = os.listdir('.')
-  listofprocessedhbplusfiles = ["pdb1mnb.hb2.hbsorted"]
-  listofprocessedhbplusfiles = ["pdb1mnb.hbplushbvdwsorted"]
+  # listofprocessedhbplusfiles = ["pdb1mnb.hbplushbvdwsorted"]
   for hbplusfile in listofprocessedhbplusfiles:
     hbplusfilestore = open(hbplusfile)
+    os.chdir('/Users/curtisma/bioresearch')
+    os.system('mkdir bondcategorized') #look into os.makedirs
+    os.chdir(os.path.expanduser('~/bioresearch/bondcategorized'))
+    hbplusfile = hbplusfile.replace("pdb","")
+    hbplusfile = hbplusfile.replace("hbplushbvdwsorted","")
+    hbplusfile+="bondcategorized"
+    os.system('rm %s' %hbplusfile)
     for hbline in hbplusfilestore:
-      dssrcomparer(hbline)
+        os.chdir('/Users/curtisma/bioresearch/DSSRparsedfiles')
+        listofprocesseddssrfiles = os.listdir('.')
+        listofprocesseddssrfiles = ["1mnb.dsr"]
+        for dssrfile in listofprocesseddssrfiles:
+          os.chdir('/Users/curtisma/bioresearch/DSSRparsedfiles')
+          dssrfilestore = open(dssrfile)
+          lhs,rhs=dssrfile.split(".",1)
+          filenamestring="%s.bondcategorized" %(lhs)
+          os.chdir('/Users/curtisma/bioresearch/bondcategorized')
+          for dssrline in dssrfilestore:
+            dssrcomparer(hbline,dssrline,filenamestring)
 
-# this is getting called everytime, which is doesn't make sense in regards to making directories. Proof of concept this is okay though. need to figure out how to reset this file
-def dssrcomparer(hbline):
-  os.chdir('/Users/curtisma/bioresearch')
-  os.system('mkdir bondcategorized')
-  os.chdir('/Users/curtisma/bioresearch/DSSRparsedfiles')
-  listofprocesseddssrfiles = os.listdir('.')
-  listofprocesseddssrfiles = ["1mnb.dsr"]
-  for dssrfile in listofprocesseddssrfiles:
-    os.chdir('/Users/curtisma/bioresearch/DSSRparsedfiles')
-    dssrfilestore = open(dssrfile)
-    lhs,rhs=dssrfile.split(".",1)
-    filenamestring="%s.bondcategorized" %(lhs)
-    os.chdir('/Users/curtisma/bioresearch/bondcategorized')
-    # os.system("rm %s" %filenamestring)
-    for dssrline in dssrfilestore:
-      hblinecompare=hbline.split(' ')
-      dssrcompare=dssrline.split(' ')
-      # note match the 2d structure, check that it is the same chain, then check if it's the same residue name from hbPlus and DSSR
-      if (dssrcompare[0] == "hairpins" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
-        bondcategorizedwriter(filenamestring,"CAT_1_HAIRPIN",hbline,dssrcompare)
-      elif (dssrcompare[0] == "stems" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
-        bondcategorizedwriter(filenamestring,"CAT_2_STEM",hbline,dssrcompare)
-      elif (dssrcompare[0] == "helices" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
-        bondcategorizedwriter(filenamestring,"CAT_3_HELIX",hbline,dssrcompare)
+
+# def dssr_parsed_file_opener(pdbfile):
+#     os.chdir(os.path.expanduser('~/bioresearch/DSSRparsedfiles'))
+#     pdbfile.replace("pdb","")
+#     pdbfile.replace("hbplushbvdwsorted","")
+#     pdbfile+=".dsr"
+#     dssrfilestore=open(pdbfile)
+
+
+def dssrcomparer(hbline,dssrline,filenamestring):
+  hblinecompare=hbline.split(' ')
+  dssrcompare=dssrline.strip().split(' ')
+  # this dssrline is returning a really long black space after it
+  # print "%s hi" %dssrline
+
+  #determine if first it is a helix
+  # then determine if it it's a helix check if it's A form
+  # then check if it's a back backbone
+  #since it was not a helix then go to check
+  # if this was a backbone or not.
+  # if dssrcompare[0] in ["hairpins","bulges","loops"]:
+  #     non_helix_form_comparer():
+  # elif dssrcompare[0] == "helices" :
+  #     a_form_checker():
+
+  # note match the 2d structure, check that it is the same chain, then check if it's the same residue name from hbPlus and DSSR
+  if (dssrcompare[0] in ["hairpins","bulges","loops"] and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
+    result = non_helix_form_comparer(hblinecompare[2].strip())
+    bondcategorizedwriter(filenamestring,result,hbline,dssrcompare)
+  elif (dssrcompare[0] == "stems" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
+    print dssrcompare[0]
+  elif (dssrcompare[0] == "helices" and hblinecompare[1].strip() == dssrcompare[1].strip() and hblinecompare[0].strip() == dssrcompare[2].strip()):
+    try:
+        result = helix_comparer(dssrcompare[5].strip(),hblinecompare[2].strip())
+    except error as e:
+        result = "error: %s" %e
+    bondcategorizedwriter(filenamestring,result,hbline,dssrcompare)
+
+def helix_comparer(aformmarker,nbatom):
+    if aformmarker == "A":
+        hbplacer = backbonechecker(nbatom)
+        if hbplacer == "backbone":
+            return "CAT_3"
+        elif hbplacer == "base":
+            return "N/A"
+    elif aformmarker in ["B","Z",".","x"]:
+        # not_a_form_checker():
+            return "CAT_4"
+    elif aformmarker in ["end"]:
+            return "SHEAR"
+
+def non_helix_form_comparer(backboneatom):
+    nhfplaceholder = backbonechecker(backboneatom)
+    if nhfplaceholder == "backbone":
+        return "CAT_9"
+    elif nhfplaceholder == "base":
+        return "CAT_8"
+
+def backbonechecker(backboneatom):
+    if backboneatom in ["C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3"]:
+        nb_placeholder = "backbone"
+    else:
+        nb_placeholder = "base"
+    return nb_placeholder
+
+### DECSION TREE FOR CATEGORIES ###
+#CAT 1 : Helix => A Form ("A") => major grove
+#CAT 2 : Helix => A Form ("A") => not major grove
+#Cat 3 : Helix => A Form ("A") => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
+#Cat 4 : Helix => Not A Form ("B","Z",".","x") => major groove like => canonical basepair (U to A; C to G)
+#Cat 5 : Helix => Not A Form ("B","Z",".","x") => major groove like => not a canonical base pair (U to G)
+#Cat 6 : Helix => Not A Form ("B","Z",".","x") => not major groove like
+#Cat 7 : Helix => Not A Form ("B","Z",".","x") => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
+#Cat 8 : Not Helix (Hairpin, Bulge, Loops) => base
+#Cat 8 : Not Helix (Hairpin, Bulge, Loops) => backbone
 
 def bondcategorizedwriter(filenamestring,category,hbline,dssrcompare):
     file = open(filenamestring,"a")
     hbline=hbline.strip('\n')
     dssrcompare=' '.join(dssrcompare).strip('\n').strip()
     file.write("%s %s %s\n" %(category,hbline,dssrcompare))
-
-# we need to add 0's back in... from dssr to hbplus comparison
-def dssrtohbplusstringcleaner(dssnbtobecleaned):
-  rhs = dssnbtobecleaned[3:]
-  lhs = dssnbtobecleaned[2]
-  if len(rhs) == 1:
-    rhs="000"+rhs
-  elif len(rhs) == 2:
-    rhs="00"+rhs
-  elif len(rhs) == 3:
-    rhs.join("0",rhs)
-    rhs="0"+rhs
-  # elif len(rhs) ==4:
-  #   rhs.join("0",rhs)
-  #   rhs="0"+rhs
-  # consider the case where the residue name is 5 digits 99999
-  dssncleaned=lhs+rhs
-  # print dssncleaned
-  return dssncleaned
-
-def dssrprocessedreader():
-    os.chdir('/Users/curtisma/bioresearch')
-    listofdssrprocessedfiles = os.listdir('.')
-    listofdssrprocessedfiles = ["1mnb.json"]
-    for i in listofdssrprocessedfiles:
-        dssrstore=[]
-        lhs,rhs=i.split(".",1)
-        print lhs
-        data = json.load(open(i))
-        dssroutputcategories = ["stems","junction","hairpins","torsions","stacks","splays","pairs","multiplets","helices","bulges","atom2bases"]
-        for j in dssroutputcategories:
-            print j
-            try:
-                # print(data[j])
-                if j == "hairpins":
-                  hairpinresult=hairpindssrparser(data,j)
-                  for line in hairpinresult:
-                    dssrstore.append(line)
-                elif j == "stems":
-                  stemresult=dssrstemParser(data,j)
-                  for line in stemresult:
-                    dssrstore.append(line)
-                elif j == "helices":
-                  helixresult=dssrhelixParser(data,j)
-                  for line in helixresult:
-                    print line
-                    dssrstore.append(line)
-                  # reminder when parsing helix structures must take into the account strand 1 and strand 2 these residue structures are the helices
-            except:
-                print "There was an exception likely null"
-        # print dssrstore
-        dssrstorefilewriter(lhs,dssrstore)
-
-
-def dssrhelixParser(data,j):
-    # need to fix some of this parsing
-  print "This will take a dssr json output and parse out the helixes"
-  helixtoappend=[]
-  k=0
-  while k < len(data[j]):
-    h=0
-    while h < len(data[j][k]["pairs"][0]):
-       # while h might need to loop depending upon number of helices
-      hindex=data[j][k]["index"]
-      hiindex = data[j][k]["pairs"][h]["index"]
-      hnt1 = data[j][k]["pairs"][h]["nt1"]
-      hnt2 = data[j][k]["pairs"][h]["nt2"]
-      strand1=hnt1[0]
-      strand2=hnt2[0]
-      hnt1cleaned = dssrtohbplusstringcleaner(hnt1)
-      hnt2cleaned = dssrtohbplusstringcleaner(hnt2)
-      # print "%s %s %s %s %s" %(j,hindex, hiindex,hnt1,hnt2)
-      helixtoappend.append("%s %s %s %s %s" %(j,strand1,hnt1cleaned,hindex,hiindex,))
-      helixtoappend.append("%s %s %s %s %s" %(j,strand2,hnt2cleaned,hindex,hiindex,))
-      # helixtoapp="%s %s %s %s %s" %(j,hindex, hiindex,hnt1,hnt2)
-      # print helixtoappend
-      h+=1
-    k+=1
-  return helixtoappend
-
-
-def dssrstemParser(data,j):
-  stemtoappend=[]
-  # this is stepping out to the loop, may want to try switching it over to for loop instead
-  for k in range(0,len(data[j])):
-    for h in range(0,len(data[j][k]["pairs"])):
-      sindex=data[j][k]["index"]
-      siindex = data[j][k]["pairs"][h]["index"]
-      snt1 = data[j][k]["pairs"][h]["nt1"]
-      snt2 = data[j][k]["pairs"][h]["nt2"]
-      # print "%s %s %s %s %s" %(j,sindex, siindex, snt1,snt2)
-      # snt1=snt1[2:]
-      # snt2=snt2[2:]
-      chain1=snt1[0]
-      chain2=snt2[0]
-      snt1cleaned = dssrtohbplusstringcleaner(snt1)
-      snt2cleaned = dssrtohbplusstringcleaner(snt2)
-      print "%s %s %s %s %s" %(j,chain1,snt1cleaned,sindex,siindex)
-      stemtoappend.append("%s %s %s %s %s" %(j,chain1,snt1cleaned,sindex,siindex))
-      stemtoappend.append("%s %s %s %s %s" %(j,chain2,snt2cleaned,sindex,siindex))
-  return stemtoappend
-
-
-#I should start calling individual handlers here for DSSR and build them here
-def hairpindssrparser(data,j):
-  # print data[j][0]["nts_long"]
-  hairpintoappend=[]
-  hairpinnt=data[j][0]["nts_long"]
-  print "%s %s" %(j,hairpinnt)
-  #hairpinnt is a comma separated string #"B.U13,B.C14,B.A15,B.U16,B.U17,B.A18"
-  for hairpinnb in hairpinnt.split(","):
-    #we are stripping B. for now lets assume RNA is always the Bstrand
-    dssrnbaddedzeros = dssrtohbplusstringcleaner(hairpinnb)
-    # print testing
-    chain = hairpinnb[0]
-    hairpinnb=hairpinnb[2:]
-    hairpintoappend.append("%s %s %s"%(j,chain,dssrnbaddedzeros))
-  return hairpintoappend
-    #we need to add the 0s back in for hbplus...
-
-#def stemdssrparser(data):
-
-def dssrstorefilewriter(proteinname,dssrstore):
-  os.chdir("/Users/curtisma/bioresearch")
-  os.system('mkdir DSSRprocessedfiles')
-  os.chdir("/Users/curtisma/bioresearch/DSSRparsedfiles")
-  # os.system('touch dssrparsed.dsr')
-  filenamestring="%s.dsr" %proteinname
-  os.system("rm %s" %filenamestring )
-  file = open(filenamestring,"a")
-  print "%s has been created" %filenamestring
-  for line in dssrstore:
-    file.write("%s\n" %line)
-  os.chdir('/Users/curtisma/bioresearch')
-
-# we need to write this output into another file for now
-#lets call this file dssr_cleaned
-#secondarystructuretype residue
-
-#compare the hbplus hydrogen bond residues against this file
-# if residue = residue in dssr_cleaned file, bin this as Category
-#Category 1 = Helix
-#Category 2 = Stem
-#Category 3 = Junction
-
-def aminoacidrnamatcher(aminoacid,nucleotidebase):
-    aminoacidlist=["ARG","ALA","ARG","GLY","CYS,""ILE","LYS","MET","PHE,""PRO","SER","THR","TYR","VAL"]
-    nucleotidebase=["U","G","C","A"]
-    for aa in aminoacidlist:
-        for nb in nucleotidebase:
-            print aa
-            print nb
 
 def helpoutput():
   print "\nWelcome to the Computatinal Biology RNA-Protein Interaction help section\n"
@@ -430,12 +270,12 @@ elif proinput == "hbplusvdwcli":
 elif proinput == "dssrcli":
   dssrclihelper().dssrcli()
 elif proinput == "dssrparse":
-  dssrprocessedreader()
+  DssrParser().dssrprocessedreader()
 elif proinput == "hbplushbparse":
   hbplusprocessedreader("hb")
 elif proinput == "hbplusvdwparse":
   hbplusprocessedreader("vdw")
 elif proinput == "hbcategorizedssr":
-  hbplushbtodssrcomparer()
+  hbplushbvdwtodssrcomparer()
 elif proinput == "hbplushbvdwcombine":
   hbplushbandvdwcombiner()

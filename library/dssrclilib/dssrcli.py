@@ -1,6 +1,7 @@
 import os as os #import the python os library
 import csv as csv #import the python csv library
 import re #provides regular expression matching
+import json
 
 class dssrclihelper(object):
     def dssrcli(self):

@@ -10,7 +10,7 @@ RNA and Proteins depend upon hydrogen bonding and secondary forces.
 
 ## Code Architecture design
 
-This code base utilizes PDB files and hydogen and second force calculations are determined through HBplus to calculate physical/chemical bonding. 
+This code base utilizes PDB files and hydogen and second force calculations are determined through HBplus to calculate physical/chemical bonding.
 The secondary structure of RNA is constructed utilizing DSSR.
 
 ### Computational Biology and Code Design
@@ -66,3 +66,8 @@ hbplus.exe [options] [cleaned filename] [uncleaned filename]
 ```
 x3dna -dssr --input=1msy.pdb --output=1msy.out
 ```
+
+
+###Python styling guide
+
+#### module_name, package_name, ClassName, method_name, ExceptionName, function_name, GLOBAL_CONSTANT_NAME, global_var_name, instance_var_name, function_parameter_name, local_var_name
