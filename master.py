@@ -4,6 +4,8 @@ import sys                                                  #import the sys to r
 import re                                                   #provides regular expression matching
 import json                                                 #import the biopython json library
 import ConfigParser
+import glob
+import fnmatch
 from pprint import pprint                                   #pprint for json
 from Bio import *                                           #use the BioPython Python library
 from Bio.PDB import *                                       #more specifically import the BioPython PDB library
@@ -26,9 +28,11 @@ def pdbfileretriever():
 
 def hbplusprocessedreader(hborvdw):
   os.chdir(os.path.expanduser('~/bioresearch/hbplusprocessed%sfiles' %hborvdw))
-  # listofprocessedfiles = os.listdir('.')
-  listofprocessedfiles=["pdb1mnb.hb2"]
+  listofprocessedfiles = os.listdir('.')
+  # listofprocessedfiles=["pdb1mnb.hb2","pdb1b2m.hb2"]
+  # listofprocessedfiles=["pdb1mnb.nb2","pdb1b2m.nb2"]
   for hbplusprocessedfile in listofprocessedfiles:
+    # os.chdir(os.path.expanduser('~/bioresearch/hbplusprocessed%sfiles' %hborvdw))
     info1=[]
     info2=[]
     info3=[]
@@ -79,7 +83,7 @@ def hbplusprocessedreader(hborvdw):
               info4.append(store[14:20])
               info5.append(store[20:23])
               info6.append(store[24:27])
-    print hbplusprocessedfile
+    # print hbplusprocessedfile
   hbplusstorefilewriter(hbplusprocessedfile,info1,info2,info3,info4,info5,info6,hborvdw)
   for i in range(len(info1)):
     print "%s %s %s %s %s %s" %(info1[i],info2[i],info3[i],info4[i],info5[i],info6[i])
@@ -114,7 +118,10 @@ def hbplushbandvdwcombiner():
   os.system("mkdir hbplushbvdwcombined")
   os.chdir("/Users/curtisma/bioresearch/hbplushbsortedfiles")
   listofprocessedhbplusfiles = os.listdir('.')
+  print listofprocessedhbplusfiles
   for i in listofprocessedhbplusfiles:
+    os.chdir("/Users/curtisma/bioresearch/hbplushbsortedfiles")
+    print os.getcwd()
     individualfileobject=open(i)
     lhs,rhs=i.split(".",1)
     print lhs
@@ -142,10 +149,12 @@ def hbplustodssrnbstringcleaner(nbtobecleaned):
   return nbclean
 
 def hbplushbvdwtodssrcomparer():
+  i=0
   os.chdir('/Users/curtisma/bioresearch/hbplushbvdwcombined')
   listofprocessedhbplusfiles = os.listdir('.')
   # listofprocessedhbplusfiles = ["pdb1mnb.hbplushbvdwsorted"]
   for hbplusfile in listofprocessedhbplusfiles:
+    os.chdir('/Users/curtisma/bioresearch/hbplushbvdwcombined')
     hbplusfilestore = open(hbplusfile)
     os.chdir('/Users/curtisma/bioresearch')
     os.system('mkdir bondcategorized') #look into os.makedirs
@@ -154,19 +163,53 @@ def hbplushbvdwtodssrcomparer():
     hbplusfile = hbplusfile.replace("hbplushbvdwsorted","")
     hbplusfile+="bondcategorized"
     os.system('rm %s' %hbplusfile)
+    # for hbline in hbplusfilestore:
+    #     os.chdir('/Users/curtisma/bioresearch/DSSRparsedfiles')
+    #     listofprocesseddssrfiles = os.listdir('.')
+    #     print listofprocesseddssrfiles
+    #     listofprocesseddssrfiles = ["pdb1mnb.dsr"]
+    #     # listofprocesseddssrfiles = ""
+    #     alhs,arhs=hbplusfile.split(".",1)
+    #     print alhs
+    #     for filematch in os.listdir('.'):
+    #         print filematch
+    #         alhs = "*" + alhs + "*"
+    #         if fnmatch.fnmatch(filematch,alhs):
+    #             "HIT"
+    #             print listofprocesseddssrfiles
+    #             listofprocesseddssrfiles = filematch
+    #     #         print listofprocesseddssrfiles
+    #     for dssrfile in listofprocesseddssrfiles:
+    #       os.chdir('/Users/curtisma/bioresearch/DSSRparsedfiles')
+    #       dssrfilestore = open(dssrfile)
+    #       dssrfile=dssrfile.strip("pdb")
+    #       lhs,rhs=dssrfile.split(".",1)
+    #       filenamestring="%s.bondcategorized" %(lhs)
+    #       os.chdir('/Users/curtisma/bioresearch/bondcategorized')
+    #       for dssrline in dssrfilestore:
+    #         dssrcomparer(hbline,dssrline,filenamestring)
     for hbline in hbplusfilestore:
         os.chdir('/Users/curtisma/bioresearch/DSSRparsedfiles')
-        listofprocesseddssrfiles = os.listdir('.')
-        listofprocesseddssrfiles = ["1mnb.dsr"]
-        for dssrfile in listofprocesseddssrfiles:
-          os.chdir('/Users/curtisma/bioresearch/DSSRparsedfiles')
-          dssrfilestore = open(dssrfile)
-          lhs,rhs=dssrfile.split(".",1)
-          filenamestring="%s.bondcategorized" %(lhs)
-          os.chdir('/Users/curtisma/bioresearch/bondcategorized')
-          for dssrline in dssrfilestore:
-            dssrcomparer(hbline,dssrline,filenamestring)
-
+        # listofprocesseddssrfiles = os.listdir('.')
+        # listofprocesseddssrfiles = ""
+        alhs,arhs=hbplusfile.split(".",1)
+        for filematch in os.listdir('.'):
+            alhs = "*" + alhs + "*"
+            if fnmatch.fnmatch(filematch,alhs):
+                dssrfile = filematch
+        # for dssrfile in listofprocesseddssrfiles:
+        os.chdir('/Users/curtisma/bioresearch/DSSRparsedfiles')
+        dssrfilestore = open(dssrfile)
+        storing=dssrfile.strip("pdb")
+        lhs,rhs=storing.split(".",1)
+        filenamestring="%s.bondcategorized" %(lhs)
+        os.chdir('/Users/curtisma/bioresearch/bondcategorized')
+        print dssrfile
+        print "still running"
+        i+=1
+        print i
+        for dssrline in dssrfilestore:
+          dssrcomparer(hbline,dssrline,filenamestring)
 
 # def dssr_parsed_file_opener(pdbfile):
 #     os.chdir(os.path.expanduser('~/bioresearch/DSSRparsedfiles'))
@@ -196,8 +239,9 @@ def dssrcomparer(hbline,dssrline,filenamestring):
   if (dssrcompare[0] in ["hairpins","bulges","loops"] and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
     result = non_helix_form_comparer(hblinecompare[2].strip())
     bondcategorizedwriter(filenamestring,result,hbline,dssrcompare)
-  elif (dssrcompare[0] == "stems" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
-    print dssrcompare[0]
+  # deprecating stems 
+  # elif (dssrcompare[0] == "stems" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
+  #   print dssrcompare[0]
   elif (dssrcompare[0] == "helices" and hblinecompare[1].strip() == dssrcompare[1].strip() and hblinecompare[0].strip() == dssrcompare[2].strip()):
     try:
         result = helix_comparer(dssrcompare[5].strip(),hblinecompare[2].strip())
@@ -218,6 +262,9 @@ def helix_comparer(aformmarker,nbatom):
     elif aformmarker in ["end"]:
             return "SHEAR"
 
+def not_a_form_checker():
+    print "placeholder"
+
 def non_helix_form_comparer(backboneatom):
     nhfplaceholder = backbonechecker(backboneatom)
     if nhfplaceholder == "backbone":
@@ -232,7 +279,7 @@ def backbonechecker(backboneatom):
         nb_placeholder = "base"
     return nb_placeholder
 
-### DECSION TREE FOR CATEGORIES ###
+### DECISION TREE FOR CATEGORIES ###
 #CAT 1 : Helix => A Form ("A") => major grove
 #CAT 2 : Helix => A Form ("A") => not major grove
 #Cat 3 : Helix => A Form ("A") => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
@@ -241,7 +288,7 @@ def backbonechecker(backboneatom):
 #Cat 6 : Helix => Not A Form ("B","Z",".","x") => not major groove like
 #Cat 7 : Helix => Not A Form ("B","Z",".","x") => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
 #Cat 8 : Not Helix (Hairpin, Bulge, Loops) => base
-#Cat 8 : Not Helix (Hairpin, Bulge, Loops) => backbone
+#Cat 9 : Not Helix (Hairpin, Bulge, Loops) => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
 
 def bondcategorizedwriter(filenamestring,category,hbline,dssrcompare):
     file = open(filenamestring,"a")
@@ -267,15 +314,15 @@ elif proinput == "hbplushbcli":
   hbplusclihelper().hbplushbcli()
 elif proinput == "hbplusvdwcli":
   hbplusclihelper().hbplusvdwcli()
-elif proinput == "dssrcli":
-  dssrclihelper().dssrcli()
-elif proinput == "dssrparse":
-  DssrParser().dssrprocessedreader()
 elif proinput == "hbplushbparse":
   hbplusprocessedreader("hb")
 elif proinput == "hbplusvdwparse":
   hbplusprocessedreader("vdw")
-elif proinput == "hbcategorizedssr":
-  hbplushbvdwtodssrcomparer()
 elif proinput == "hbplushbvdwcombine":
   hbplushbandvdwcombiner()
+elif proinput == "dssrcli":
+  dssrclihelper().dssrcli()
+elif proinput == "dssrparse":
+  DssrParser().dssrprocessedreader()
+elif proinput == "hbcategorizedssr":
+  hbplushbvdwtodssrcomparer()

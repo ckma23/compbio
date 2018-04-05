@@ -11,8 +11,12 @@ class DssrParser(object):
         os.chdir('/Users/curtisma/bioresearch/DSSRprocessedfiles')
         listofdssrprocessedfiles = glob.glob('*.json')
         print listofdssrprocessedfiles
-        listofdssrprocessedfiles = ["1mnb.json","1coa.json"]
+        # listofdssrprocessedfiles = ["pdb1mnb.json","pdb1b2m.json"]
+        listofdssrprocessedfiles = ["pdb1mnb.json","pdb1b2m.json"]
+        listofdssrprocessedfiles = ["pdb2vqe.json"]
         for i in listofdssrprocessedfiles:
+            os.chdir('/Users/curtisma/bioresearch/DSSRprocessedfiles')
+            print os.getcwd()
             dssrstore=[]
             lhs,rhs=i.split(".",1)
             print lhs
@@ -35,6 +39,14 @@ class DssrParser(object):
                         helixresult=DssrParserjson().dssrhelixParser(data,j)
                         for line in helixresult:
                             dssrstore.append(line)
+                    # elif j == "bulges":
+                    #     bulgesresult=DssrParserjson().dssrhelixParser(data,j)
+                    #     for line in helixresult:
+                    #         dssrstore.append(line)
+                    # elif j == "iloops":
+                    #     helixresult=DssrParserjson().dssrhelixParser(data,j)
+                    #     for line in helixresult:
+                    #         dssrstore.append(line)
                   # reminder when parsing helix structures must take into the account strand 1 and strand 2 these residue structures are the helices
                 except:
                     print "There was an exception likely null"

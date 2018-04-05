@@ -6,20 +6,25 @@ import json
 class DssrParserjson(object):
     # we need to add 0's back in... from dssr to hbplus comparison
     def dssrtohbplusstringcleaner(self,dssnbtobecleaned):
+      print dssnbtobecleaned
       rhs = dssnbtobecleaned[3:]
+      print rhs
+      print len(rhs)
       lhs = dssnbtobecleaned[2]
       if len(rhs) == 1:
         rhs="000"+rhs
       elif len(rhs) == 2:
         rhs="00"+rhs
       elif len(rhs) == 3:
-        rhs.join("0",rhs)
+        # rhs.join("0",rhs)
         rhs="0"+rhs
+        print rhs
       # elif len(rhs) ==4:
       #   rhs.join("0",rhs)
       #   rhs="0"+rhs
       # consider the case where the residue name is 5 digits 99999
       dssncleaned=lhs+rhs
+      print dssncleaned
       # print dssncleaned
       return dssncleaned
 
@@ -29,6 +34,7 @@ class DssrParserjson(object):
       k=0
       while k < len(data[j]):
         h=0
+        print len(data[j])
         # hf=0
         while h < len(data[j][k]["pairs"]):
         #   print len(data[j][k]["pairs"][1])
@@ -39,21 +45,37 @@ class DssrParserjson(object):
           hiindex = data[j][k]["pairs"][h]["index"]
           hnt1 = data[j][k]["pairs"][h]["nt1"]
           hnt2 = data[j][k]["pairs"][h]["nt2"]
+          print "HIT"
+          print hnt1
+          print hnt2
           strand1=hnt1[0]
           strand2=hnt2[0]
+          print strand1
+          print strand2
+          print "HIT"
           hnt1cleaned = self.dssrtohbplusstringcleaner(hnt1)
+          print hnt1cleaned
           hnt2cleaned = self.dssrtohbplusstringcleaner(hnt2)
+          print hnt2cleaned
+          print "HIt!"
+          print j
+          print k
+          print h
+          print "HIT!"
           dssr = data[j][k]["pairs"][h]["DSSR"]
+          print dssr
           try:
               helixf=helixform[h]
           except:
               helixf="end"
+          print helixtoappend
           helixtoappend.append("%s %s %s %s %s %s %s %s" %(j,strand1,hnt1cleaned,hindex,hiindex,helixf, "nt1", dssr))
           helixtoappend.append("%s %s %s %s %s %s %s %s" %(j,strand2,hnt2cleaned,hindex,hiindex,helixf, "nt2", dssr))
 
         #   hf=hf+0.5
           h+=1
         k+=1
+      print helixtoappend
       return helixtoappend
 
     # this can be deprecated, will only work with the helices output. Stem is a subset of Helices
@@ -94,3 +116,4 @@ class DssrParserjson(object):
         hairpintoappend.append("%s %s %s"%(j,chain,dssrnbaddedzeros))
       return hairpintoappend
         #we need to add the 0s back in for hbplus...
+    # def bulgesdssrparse(self,data,j):
