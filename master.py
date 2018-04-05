@@ -3,9 +3,9 @@ import csv as csv                                           #import the python c
 import sys                                                  #import the sys to retrieve command line arguments
 import re                                                   #provides regular expression matching
 import json                                                 #import the biopython json library
-import ConfigParser
-import glob
-import fnmatch
+import ConfigParser                                         #import the configParser library
+import glob                                                 #import the glob library used for regression grabbing
+import fnmatch                                              #import the fnmatch library
 from pprint import pprint                                   #pprint for json
 from Bio import *                                           #use the BioPython Python library
 from Bio.PDB import *                                       #more specifically import the BioPython PDB library
@@ -29,10 +29,12 @@ def pdbfileretriever():
 def hbplusprocessedreader(hborvdw):
   os.chdir(os.path.expanduser('~/bioresearch/hbplusprocessed%sfiles' %hborvdw))
   listofprocessedfiles = os.listdir('.')
+  print listofprocessedfiles
   # listofprocessedfiles=["pdb1mnb.hb2","pdb1b2m.hb2"]
   # listofprocessedfiles=["pdb1mnb.nb2","pdb1b2m.nb2"]
   for hbplusprocessedfile in listofprocessedfiles:
-    # os.chdir(os.path.expanduser('~/bioresearch/hbplusprocessed%sfiles' %hborvdw))
+    print hbplusprocessedfile
+    os.chdir(os.path.expanduser('~/bioresearch/hbplusprocessed%sfiles' %hborvdw))
     info1=[]
     info2=[]
     info3=[]
@@ -45,6 +47,7 @@ def hbplusprocessedreader(hborvdw):
     lines=individualfileobject.readlines()
     i=8 #set the counter to skip the 8 lines of the header
     totallinesinfile=len(lines) #sum up the total lines in each file
+    print len(lines)
     # totallinesinfile=20
     while i < totallinesinfile: #iterate through the file for each line in it
     #    print lines[i]
@@ -84,9 +87,9 @@ def hbplusprocessedreader(hborvdw):
               info5.append(store[20:23])
               info6.append(store[24:27])
     # print hbplusprocessedfile
-  hbplusstorefilewriter(hbplusprocessedfile,info1,info2,info3,info4,info5,info6,hborvdw)
-  for i in range(len(info1)):
-    print "%s %s %s %s %s %s" %(info1[i],info2[i],info3[i],info4[i],info5[i],info6[i])
+    hbplusstorefilewriter(hbplusprocessedfile,info1,info2,info3,info4,info5,info6,hborvdw)
+  # for i in range(len(info1)):
+  #   print "%s %s %s %s %s %s" %(info1[i],info2[i],info3[i],info4[i],info5[i],info6[i])
 
 def hbplusstorefilewriter(proteinname,col1,col2,col3,col4,col5,col6,hborvdw):
 # def hbplushbstorefilewriter(proteinname,col1,col2,col3,col4,col5,col6):
@@ -239,7 +242,7 @@ def dssrcomparer(hbline,dssrline,filenamestring):
   if (dssrcompare[0] in ["hairpins","bulges","loops"] and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
     result = non_helix_form_comparer(hblinecompare[2].strip())
     bondcategorizedwriter(filenamestring,result,hbline,dssrcompare)
-  # deprecating stems 
+  # deprecating stems
   # elif (dssrcompare[0] == "stems" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
   #   print dssrcompare[0]
   elif (dssrcompare[0] == "helices" and hblinecompare[1].strip() == dssrcompare[1].strip() and hblinecompare[0].strip() == dssrcompare[2].strip()):
@@ -280,15 +283,15 @@ def backbonechecker(backboneatom):
     return nb_placeholder
 
 ### DECISION TREE FOR CATEGORIES ###
-#CAT 1 : Helix => A Form ("A") => major grove
-#CAT 2 : Helix => A Form ("A") => not major grove
-#Cat 3 : Helix => A Form ("A") => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
-#Cat 4 : Helix => Not A Form ("B","Z",".","x") => major groove like => canonical basepair (U to A; C to G)
-#Cat 5 : Helix => Not A Form ("B","Z",".","x") => major groove like => not a canonical base pair (U to G)
-#Cat 6 : Helix => Not A Form ("B","Z",".","x") => not major groove like
-#Cat 7 : Helix => Not A Form ("B","Z",".","x") => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
-#Cat 8 : Not Helix (Hairpin, Bulge, Loops) => base
-#Cat 9 : Not Helix (Hairpin, Bulge, Loops) => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
+#CAT 1 : Helix => A Form ("A") => major grove => major groove like => canonical basepair (U to A; C to G)
+#CAT 2 : Helix => A Form ("A") => not major grove => not a canonical base pair (U to G)
+#CAT 3 : Helix => A Form ("A") => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
+#CAT 4 : Helix => Not A Form ("B","Z",".","x") => major groove like => canonical basepair (U to A; C to G)
+#CAT 5 : Helix => Not A Form ("B","Z",".","x") => major groove like => not a canonical base pair (U to G)
+#CAT 6 : Helix => Not A Form ("B","Z",".","x") => not major groove like
+#CAT 7 : Helix => Not A Form ("B","Z",".","x") => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
+#CAT 8 : Not Helix (Hairpin, Bulge, Loops) => base
+#CAT 9 : Not Helix (Hairpin, Bulge, Loops) => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
 
 def bondcategorizedwriter(filenamestring,category,hbline,dssrcompare):
     file = open(filenamestring,"a")
@@ -325,4 +328,10 @@ elif proinput == "dssrcli":
 elif proinput == "dssrparse":
   DssrParser().dssrprocessedreader()
 elif proinput == "hbcategorizedssr":
+  hbplushbvdwtodssrcomparer()
+elif proinput == "completerun":
+  hbplusprocessedreader("hb")
+  hbplusprocessedreader("vdw")
+  hbplushbandvdwcombiner()
+  DssrParser().dssrprocessedreader()
   hbplushbvdwtodssrcomparer()
