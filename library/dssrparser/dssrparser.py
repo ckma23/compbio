@@ -12,8 +12,8 @@ class DssrParser(object):
         listofdssrprocessedfiles = glob.glob('*.json')
         print listofdssrprocessedfiles
         # listofdssrprocessedfiles = ["pdb1mnb.json","pdb1b2m.json"]
-        listofdssrprocessedfiles = ["pdb1mnb.json","pdb1b2m.json"]
-        listofdssrprocessedfiles = ["pdb2vqe.json"]
+        # listofdssrprocessedfiles = ["pdb1mnb.json","pdb1b2m.json"]
+        # listofdssrprocessedfiles = ["pdb2vqe.json"]
         for i in listofdssrprocessedfiles:
             os.chdir('/Users/curtisma/bioresearch/DSSRprocessedfiles')
             print os.getcwd()
@@ -21,7 +21,8 @@ class DssrParser(object):
             lhs,rhs=i.split(".",1)
             print lhs
             data = json.load(open(i))
-            dssroutputcategories = ["stems","junction","hairpins","torsions","stacks","splays","pairs","multiplets","helices","bulges","atom2bases"]
+            # dssroutputcategories = ["stems","junction","hairpins","torsions","stacks","splays","pairs","multiplets","helices","bulges","atom2bases"]
+            dssroutputcategories = ["helices","iloops","hairpins","bulges"]
             for j in dssroutputcategories:
                 print j
                 try:

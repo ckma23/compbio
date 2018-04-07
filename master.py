@@ -74,7 +74,7 @@ def hbplusprocessedreader(hborvdw):
             if (store[6:9].strip() == aa and store[20:23].strip() == nb):
               info4.append(store[0:6])
               info5.append(store[6:9])
-              info6.append(store[9:12])
+              info6.append(store[9:13])
               info1.append(store[14:20])
               info2.append(store[20:23])
               info3.append(store[24:27])
@@ -82,11 +82,21 @@ def hbplusprocessedreader(hborvdw):
             elif (store[6:9].strip() == nb and store[20:23].strip() == aa):
               info1.append(store[0:6])
               info2.append(store[6:9])
-              info3.append(store[9:12])
+              info3.append(store[9:13])
               info4.append(store[14:20])
               info5.append(store[20:23])
               info6.append(store[24:27])
     # print hbplusprocessedfile
+    # this is messing up and when it goes fomr hb to vdw the line shrinks hence ti gets cut of
+    # it's screwing up when writing the vdw sorted
+    # Curtiss-MacBook-Pro:hbplushbvdwcombined curtisma$ cat pdb1h4s.hbplushbvdwsorted | grep U0029
+    #U0029 T OP1 A0127- TRP  NE hb
+    #U0029 T OP2 A0128- ARG  NH hb
+    #U0029 T  P  A0127- TRP NE1 vdw
+    #U0029 T  OP A0127- TRP NE1 vdw
+    #U0029 T  OP A0127- TRP CE2 vdw
+    # the spacing is messed up...
+    print
     hbplusstorefilewriter(hbplusprocessedfile,info1,info2,info3,info4,info5,info6,hborvdw)
   # for i in range(len(info1)):
   #   print "%s %s %s %s %s %s" %(info1[i],info2[i],info3[i],info4[i],info5[i],info6[i])
@@ -158,6 +168,7 @@ def hbplushbvdwtodssrcomparer():
   # listofprocessedhbplusfiles = ["pdb1mnb.hbplushbvdwsorted"]
   for hbplusfile in listofprocessedhbplusfiles:
     os.chdir('/Users/curtisma/bioresearch/hbplushbvdwcombined')
+    print hbplusfile
     hbplusfilestore = open(hbplusfile)
     os.chdir('/Users/curtisma/bioresearch')
     os.system('mkdir bondcategorized') #look into os.makedirs
@@ -207,10 +218,21 @@ def hbplushbvdwtodssrcomparer():
         lhs,rhs=storing.split(".",1)
         filenamestring="%s.bondcategorized" %(lhs)
         os.chdir('/Users/curtisma/bioresearch/bondcategorized')
-        print dssrfile
-        print "still running"
-        i+=1
-        print i
+        # print dssrfile
+        # print dssrfilestore
+        # i+=1
+        # print i
+        # print hbline
+        # print filenamestring
+        # try:
+        #     lines=dssrfilestore.readlines()
+        #     for line in lines:
+        #     # it's not going through here
+        #         print "HIT"
+        #         print line
+        # except error as e:
+        #     print "%s" %e
+        # # print "is it skipping this"
         for dssrline in dssrfilestore:
           dssrcomparer(hbline,dssrline,filenamestring)
 
@@ -247,26 +269,189 @@ def dssrcomparer(hbline,dssrline,filenamestring):
   #   print dssrcompare[0]
   elif (dssrcompare[0] == "helices" and hblinecompare[1].strip() == dssrcompare[1].strip() and hblinecompare[0].strip() == dssrcompare[2].strip()):
     try:
-        result = helix_comparer(dssrcompare[5].strip(),hblinecompare[2].strip())
-    except error as e:
+        # send the cW-W which is dssrcompare[7].strip()
+        # send the residue type which is hblinecompare[0][0]
+        residue_type = hblinecompare[0]
+        residue_type = residue_type[0]
+        # print residue_type
+        result = helix_comparer(dssrcompare[5].strip(),hblinecompare[2].strip(),dssrcompare[7].strip(),residue_type)
+    except Exception as e:
         result = "error: %s" %e
     bondcategorizedwriter(filenamestring,result,hbline,dssrcompare)
 
-def helix_comparer(aformmarker,nbatom):
+def helix_comparer(aformmarker,nbatom,dssr_canonical_pair_determinant,nucleotide_residue_type):
+    # will need to build a separate one for hydrogen bond and one for vanderwaals
+    # category_store=[0,0,0,0,0,0,0,0,0]
     if aformmarker == "A":
         hbplacer = backbonechecker(nbatom)
+
         if hbplacer == "backbone":
+            # category_store[2]+=1
             return "CAT_3"
         elif hbplacer == "base":
-            return "N/A"
+            # should implement a check for if it was a canonical_base_pair CAT 1 and CAT 2 can not be as simple as if it's cW-W... then CAT 1 or CAT 2
+            # a_form_mg_placeholder = a_form_major_or_minor_groove_checker(nbatom,nucleotide_residue_type)
+            # if a_form_mg_placeholder == "major_groove":
+            #     # category_store[0]+=1
+            #     return "CAT_1"
+            # elif a_form_mg_placeholder == "not_major_groove":
+            #     # category_store[1]+=1
+            #     return "CAT_2"
+            if dssr_canonical_pair_determinant == "cW-W":
+                a_form_mg_placeholder = a_form_major_or_minor_groove_checker(nbatom,nucleotide_residue_type)
+                if a_form_mg_placeholder == "major_groove":
+                    # category_store[0]+=1
+                    return "CAT_1"
+                elif a_form_mg_placeholder == "not_major_groove":
+                    return "CAT_2"
+            else:
+                # category_store[1]+=1
+                return "CAT_2"
+            # return "N/A"
     elif aformmarker in ["B","Z",".","x"]:
-        # not_a_form_checker():
-            return "CAT_4"
+        not_a_form_placeholder = backbonechecker(nbatom)
+        # return "CAT_4"
+        if not_a_form_placeholder == "backbone":
+            # category_store[6]+=1
+            return "CAT_7"
+        elif not_a_form_placeholder == "base":
+            not_a_form_base_placeholder = not_a_form_checker(dssr_canonical_pair_determinant)
+
+            if not_a_form_base_placeholder == "canonical_base_pair":
+                not_a_form_base_mg_placeholder = not_a_form_major_or_minor_groove_checker(nbatom,nucleotide_residue_type)
+
+                if not_a_form_base_mg_placeholder == "major_groove":
+                    return "CAT_4"
+                elif not_a_form_base_mg_placeholder == "not_major_groove":
+                    return "CAT_6"
+            elif not_a_form_base_placeholder == "not_canonical_base_pair":
+                not_a_form_base_mg_placeholder = not_a_form_major_or_minor_groove_checker(nbatom,nucleotide_residue_type)
+
+                if not_a_form_base_mg_placeholder == "major_groove":
+                    return "CAT_5"
+                elif not_a_form_base_mg_placeholder == "not_major_groove":
+                    return "CAT_6"
+            # not_a_form_base_placeholder = not_a_form_checker(dssr_canonical_pair_determinant)
+            #
+            # if not_a_form_base_placeholder == "canonical_base_pair":
+            #     # category_store[1]+=1
+            #     return "CAT_4"
+            # elif not_a_form_base_placeholder == "not_canonical_base_pair":
+            #     not_a_form_base_mg_placeholder = not_a_form_major_or_minor_groove_checker(nbatom,nucleotide_residue_type)
+            #
+            #     if not_a_form_base_mg_placeholder == "major_groove":
+            #         return "CAT_5"
+            #     elif not_a_form_base_mg_placeholder == "not_major_groove":
+            #         return "CAT_6"
+            # not_a_form_base_placeholder = not_a_form_checker(dssr_canonical_pair_determinant)
+            #
+            # if not_a_form_base_placeholder == "canonical_base_pair":
+            #     # category_store[1]+=1
+            #     return "CAT_4"
+            # elif not_a_form_base_placeholder == "not_canonical_base_pair":
+            #     not_a_form_base_mg_placeholder = not_a_form_major_or_minor_groove_checker(nbatom,nucleotide_residue_type)
+            #
+            #     if not_a_form_base_mg_placeholder == "major_groove":
+            #         return "CAT_5"
+            #     elif not_a_form_base_mg_placeholder == "not_major_groove":
+            #         return "CAT_6"
     elif aformmarker in ["end"]:
             return "SHEAR"
 
-def not_a_form_checker():
-    print "placeholder"
+def not_a_form_checker (dssr_canonical_pair_determinant):
+    if dssr_canonical_pair_determinant == "cW-W":
+        base_pair_placeholder = "canonical_base_pair"
+    else:
+        base_pair_placeholder = "not_canonical_base_pair"
+    return base_pair_placeholder
+
+def a_form_major_or_minor_groove_checker (nbatom,nucleotide_residue_type):
+    # this is assuming it was a canonical_base_pair
+    if nucleotide_residue_type == "A":
+        # major groove atoms in A are:
+        # H61,H62,N6,C6,C5,N7,C8,H8
+        # minor groove atoms in A are:
+        # N2,C2,C5,C4
+        if nbatom in ["H61","H62","N6","C6","C5","N7","C8","H8"]:
+            nb_mg_placeholder = "major_groove"
+        else:
+            nb_mg_placeholder = "not_major_groove"
+    elif nucleotide_residue_type == "U":
+        # major groove atoms in U are:
+        # O4,C4,C5,H5,C6,H6
+        # minor groove atoms in U are:
+        # H3,N3,C2,O2,N1
+        if nbatom in ["O4","C4","C5","H5","C6","H6"]:
+            nb_mg_placeholder = "major_groove"
+        else:
+            nb_mg_placeholder = "not_major_groove"
+    elif nucleotide_residue_type == "C":
+        # major groove atoms in C are:
+        # H6,C6,C5,H5,C4,N4,H42,H41,N3
+        # minor groove atoms in C are:
+        # N1,C2,O2
+        if nbatom in ["H6","C6","C5","H5","C4","N4","H42","H41","N3"]:
+            nb_mg_placeholder = "major_groove"
+        else:
+            nb_mg_placeholder = "not_major_groove"
+    elif nucleotide_residue_type == "G":
+        # major groove atoms in G are:
+        # H1,N2,C6,O6,C5,N7,C8,H8
+        # minor groove atoms in G are:
+        # N2,C2,C5,C4
+        if nbatom in ["H1", "N2", "C6", "O6", "C5", "N7", "C8", "H8"]:
+            nb_mg_placeholder = "major_groove"
+        else:
+            nb_mg_placeholder = "not_major_groove"
+    # need to return this inside each one instead.
+    # else:
+    #     nb_mg_placeholder = "not_major_groove"
+    return nb_mg_placeholder
+    print "checking if the atom is in the major groove or minor groove"
+
+def not_a_form_major_or_minor_groove_checker (nbatom,nucleotide_residue_type):
+    # we need to check the residue type.... If it's in A or C then it'll be these atoms
+    if nucleotide_residue_type == "A":
+        # major groove atoms in A are:
+        # H61,H62,N6,C6,C5,N7,C8,H8
+        # minor groove atoms in A are:
+        # N2,C2,C5,C4
+        if nbatom in ["H61","H62","N6","C6","C5","N7","C8","H8"]:
+            nb_mg_placeholder = "major_groove"
+        else:
+            nb_mg_placeholder = "not_major_groove"
+    elif nucleotide_residue_type == "U":
+        # major groove atoms in U are:
+        # O4,C4,C5,H5,C6,H6
+        # minor groove atoms in U are:
+        # H3,N3,C2,O2,N1
+        if nbatom in ["O4","C4","C5","H5","C6","H6"]:
+            nb_mg_placeholder = "major_groove"
+        else:
+            nb_mg_placeholder = "not_major_groove"
+    elif nucleotide_residue_type == "C":
+        # major groove atoms in C are:
+        # H6,C6,C5,H5,C4,N4,H42,H41,N3
+        # minor groove atoms in C are:
+        # N1,C2,O2
+        if nbatom in ["H6","C6","C5","H5","C4","N4","H42","H41","N3"]:
+            nb_mg_placeholder = "major_groove"
+        else:
+            nb_mg_placeholder = "not_major_groove"
+    elif nucleotide_residue_type == "G":
+        # major groove atoms in G are:
+        # H1,N2,C6,O6,C5,N7,C8,H8
+        # minor groove atoms in G are:
+        # N2,C2,C5,C4
+        if nbatom in ["H1","N2","C6","O6","C5","N7","C8","H8"]:
+            nb_mg_placeholder = "major_groove"
+        else:
+            nb_mg_placeholder = "not_major_groove"
+    # need to return this inside each one instead.
+    # else:
+    #     nb_mg_placeholder = "not_major_groove"
+    return nb_mg_placeholder
+    print "checking if the atom is in the major groove or minor groove"
 
 def non_helix_form_comparer(backboneatom):
     nhfplaceholder = backbonechecker(backboneatom)
@@ -283,8 +468,8 @@ def backbonechecker(backboneatom):
     return nb_placeholder
 
 ### DECISION TREE FOR CATEGORIES ###
-#CAT 1 : Helix => A Form ("A") => major grove => major groove like => canonical basepair (U to A; C to G)
-#CAT 2 : Helix => A Form ("A") => not major grove => not a canonical base pair (U to G)
+#CAT 1 : Helix => A Form ("A") => major grove => major groove like => canonical basepair (U to A; C to G) => check atom type
+#CAT 2 : Helix => A Form ("A") => not major grove => not a canonical base pair (U to G) => check atom type
 #CAT 3 : Helix => A Form ("A") => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
 #CAT 4 : Helix => Not A Form ("B","Z",".","x") => major groove like => canonical basepair (U to A; C to G)
 #CAT 5 : Helix => Not A Form ("B","Z",".","x") => major groove like => not a canonical base pair (U to G)
@@ -292,6 +477,36 @@ def backbonechecker(backboneatom):
 #CAT 7 : Helix => Not A Form ("B","Z",".","x") => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
 #CAT 8 : Not Helix (Hairpin, Bulge, Loops) => base
 #CAT 9 : Not Helix (Hairpin, Bulge, Loops) => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
+
+# assumptions is that A Form Helix must likely only be a canonical base pair or wobble pair.
+# thus if it's not a canonical basepair then check
+# CAT 1 or CAT 2
+# check atom type in A-form and which atom types are major groove in A-form and which ones are not; thus CAT 1 or CAT 2
+# CAT 4 or CAT 5 or CAT 6
+# CAT 4: canonical base pair is CAT 4 by cW-w
+# CAT 5: non cW-w and check the atom if it's in the major groove or minor groove
+# CAT 6: non cW-w and atom is not in major groove
+
+
+### DECISION TREE TWO FOR CATEGORIES ###
+#CAT 1 : Helix => A Form ("A") => canonical basepair ("cW-W" where U to A; C to G; wobble) => check atom type for major groove or minor groove
+#CAT 2 : Helix => A Form ("A") => not a canonical base pair or  canonical basepair atom type is on minor groove
+#CAT 3 : Helix => A Form ("A") => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
+#CAT 4 : Helix => Not A Form ("B","Z",".","x") => canonical basepair ("cW-W" where U to A; C to G; wobble) => check atom type for major groove or minor groove
+#CAT 5 : Helix => Not A Form ("B","Z",".","x") => not a canonical base pair => check atom type for major groove or minor groove
+#CAT 6 : Helix => Not A Form ("B","Z",".","x") => not major groove like
+#CAT 7 : Helix => Not A Form ("B","Z",".","x") => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
+#CAT 8 : Not Helix (Hairpin, Bulge, Loops) => base
+#CAT 9 : Not Helix (Hairpin, Bulge, Loops) => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
+
+## major groove atoms in A are: H61,H62,N6,C6,C5,N7,C8,H8
+## minor groove atoms in A are: N2,C2,C5,C4
+## major groove atoms in U are: O4,C4,C5,H5,C6,H6
+## minor groove atoms in U are: H3,N3,C2,O2,N1
+## major groove atoms in C are: H6,C6,C5,H5,C4,N4,H42,H41,N3
+## minor groove atoms in C are: N1,C2,O2
+## major groove atoms in G are: H1,N2,C6,O6,C5,N7,C8,H8
+## minor groove atoms in G are: N2,C2,C5,C4
 
 def bondcategorizedwriter(filenamestring,category,hbline,dssrcompare):
     file = open(filenamestring,"a")

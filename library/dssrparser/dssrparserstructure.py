@@ -6,10 +6,10 @@ import json
 class DssrParserjson(object):
     # we need to add 0's back in... from dssr to hbplus comparison
     def dssrtohbplusstringcleaner(self,dssnbtobecleaned):
-      print dssnbtobecleaned
+    #   print dssnbtobecleaned
       rhs = dssnbtobecleaned[3:]
-      print rhs
-      print len(rhs)
+    #   print rhs
+    #   print len(rhs)
       lhs = dssnbtobecleaned[2]
       if len(rhs) == 1:
         rhs="000"+rhs
@@ -18,7 +18,7 @@ class DssrParserjson(object):
       elif len(rhs) == 3:
         # rhs.join("0",rhs)
         rhs="0"+rhs
-        print rhs
+        # print rhs
       # elif len(rhs) ==4:
       #   rhs.join("0",rhs)
       #   rhs="0"+rhs
@@ -45,37 +45,23 @@ class DssrParserjson(object):
           hiindex = data[j][k]["pairs"][h]["index"]
           hnt1 = data[j][k]["pairs"][h]["nt1"]
           hnt2 = data[j][k]["pairs"][h]["nt2"]
-          print "HIT"
-          print hnt1
-          print hnt2
           strand1=hnt1[0]
           strand2=hnt2[0]
-          print strand1
-          print strand2
-          print "HIT"
           hnt1cleaned = self.dssrtohbplusstringcleaner(hnt1)
-          print hnt1cleaned
           hnt2cleaned = self.dssrtohbplusstringcleaner(hnt2)
-          print hnt2cleaned
-          print "HIt!"
-          print j
-          print k
-          print h
-          print "HIT!"
-          dssr = data[j][k]["pairs"][h]["DSSR"]
-          print dssr
+          dssr_base_pair_type = data[j][k]["pairs"][h]["DSSR"]
+          dssr_base_pair_name = data[j][k]["pairs"][h]["name"]
+          # NEED TO ADD THE NAME for wobble, ETC!
           try:
               helixf=helixform[h]
           except:
               helixf="end"
-          print helixtoappend
-          helixtoappend.append("%s %s %s %s %s %s %s %s" %(j,strand1,hnt1cleaned,hindex,hiindex,helixf, "nt1", dssr))
-          helixtoappend.append("%s %s %s %s %s %s %s %s" %(j,strand2,hnt2cleaned,hindex,hiindex,helixf, "nt2", dssr))
+          helixtoappend.append("%s %s %s %s %s %s %s %s %s" %(j,strand1,hnt1cleaned,hindex,hiindex,helixf, "nt1", dssr_base_pair_type, dssr_base_pair_name))
+          helixtoappend.append("%s %s %s %s %s %s %s %s %s" %(j,strand2,hnt2cleaned,hindex,hiindex,helixf, "nt2", dssr_base_pair_type, dssr_base_pair_name))
 
         #   hf=hf+0.5
           h+=1
         k+=1
-      print helixtoappend
       return helixtoappend
 
     # this can be deprecated, will only work with the helices output. Stem is a subset of Helices
