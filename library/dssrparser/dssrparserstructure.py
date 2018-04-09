@@ -24,7 +24,6 @@ class DssrParserjson(object):
       #   rhs="0"+rhs
       # consider the case where the residue name is 5 digits 99999
       dssncleaned=lhs+rhs
-      print dssncleaned
       # print dssncleaned
       return dssncleaned
 
@@ -34,7 +33,6 @@ class DssrParserjson(object):
       k=0
       while k < len(data[j]):
         h=0
-        print len(data[j])
         # hf=0
         while h < len(data[j][k]["pairs"]):
         #   print len(data[j][k]["pairs"][1])
@@ -64,42 +62,50 @@ class DssrParserjson(object):
         k+=1
       return helixtoappend
 
-    # this can be deprecated, will only work with the helices output. Stem is a subset of Helices
-    # def dssrstemParser(self,data,j):
-    #   stemtoappend=[]
-    #   # this is stepping out to the loop, may want to try switching it over to for loop instead
-    #   for k in range(0,len(data[j])):
-    #     for h in range(0,len(data[j][k]["pairs"])):
-    #       sindex=data[j][k]["index"]
-    #       siindex = data[j][k]["pairs"][h]["index"]
-    #       snt1 = data[j][k]["pairs"][h]["nt1"]
-    #       snt2 = data[j][k]["pairs"][h]["nt2"]
-    #       # print "%s %s %s %s %s" %(j,sindex, siindex, snt1,snt2)
-    #       # snt1=snt1[2:]
-    #       # snt2=snt2[2:]
-    #       chain1=snt1[0]
-    #       chain2=snt2[0]
-    #       snt1cleaned = self.dssrtohbplusstringcleaner(snt1)
-    #       snt2cleaned = self.dssrtohbplusstringcleaner(snt2)
-    #       print "%s %s %s %s %s" %(j,chain1,snt1cleaned,sindex,siindex)
-    #       stemtoappend.append("%s %s %s %s %s" %(j,chain1,snt1cleaned,sindex,siindex))
-    #       stemtoappend.append("%s %s %s %s %s" %(j,chain2,snt2cleaned,sindex,siindex))
-    #   return stemtoappend
+    def dssrbulgeParser(self,data,j):
+        bulgetoappend=[]
+        k=0
+        while k < len(data[j]):
+            bulges_data=data[j][k]["nts_long"]
+            for bulges_residue in bulges_data.split(","):
+                bulge_nb_cleaned = self.dssrtohbplusstringcleaner(bulges_residue)
+                chain = bulges_residue[0]
+                bulges_residue=bulges_residue[2:]
+                bulgetoappend.append("%s %s %s" %(j,chain,bulge_nb_cleaned))
+            k+=1
+        return bulgetoappend
 
-    #I should start calling individual handlers here for DSSR and build them here
+
     def hairpindssrparser(self,data,j):
+      # need to check how many hairpins there are... it's only going through one right now..
       # print data[j][0]["nts_long"]
-      hairpintoappend=[]
-      hairpinnt=data[j][0]["nts_long"]
-      print "%s %s" %(j,hairpinnt)
+        hairpintoappend=[]
+        k = 0
+        while k <len(data[j]):
+            hairpinnt=data[j][k]["nts_long"]
       #hairpinnt is a comma separated string #"B.U13,B.C14,B.A15,B.U16,B.U17,B.A18"
-      for hairpinnb in hairpinnt.split(","):
+            for hairpinnb in hairpinnt.split(","):
         #we are stripping B. for now lets assume RNA is always the Bstrand
-        dssrnbaddedzeros = self.dssrtohbplusstringcleaner(hairpinnb)
+                dssrnbaddedzeros = self.dssrtohbplusstringcleaner(hairpinnb)
         # print testing
-        chain = hairpinnb[0]
-        hairpinnb=hairpinnb[2:]
-        hairpintoappend.append("%s %s %s"%(j,chain,dssrnbaddedzeros))
-      return hairpintoappend
+                chain = hairpinnb[0]
+                hairpinnb=hairpinnb[2:]
+                hairpintoappend.append("%s %s %s"%(j,chain,dssrnbaddedzeros))
+            k+=1
+        return hairpintoappend
         #we need to add the 0s back in for hbplus...
-    # def bulgesdssrparse(self,data,j):
+    def dssriloopsParser(self,data,j):
+        ilooptoappend=[]
+        k=0
+        while k <len(data[j]):
+            iloopnt=data[j][k]["nts_long"]
+      #hairpinnt is a comma separated string #"B.U13,B.C14,B.A15,B.U16,B.U17,B.A18"
+            for iloopnb in iloopnt.split(","):
+        #we are stripping B. for now lets assume RNA is always the Bstrand
+                dssrnbaddedzeros = self.dssrtohbplusstringcleaner(iloopnb)
+        # print testing
+                chain = iloopnb[0]
+                iloopnb=iloopnb[2:]
+                ilooptoappend.append("%s %s %s"%(j,chain,dssrnbaddedzeros))
+            k+=1
+        return ilooptoappend

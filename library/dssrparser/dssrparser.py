@@ -11,7 +11,7 @@ class DssrParser(object):
         os.chdir('/Users/curtisma/bioresearch/DSSRprocessedfiles')
         listofdssrprocessedfiles = glob.glob('*.json')
         print listofdssrprocessedfiles
-        # listofdssrprocessedfiles = ["pdb1mnb.json","pdb1b2m.json"]
+        listofdssrprocessedfiles = ["pdb2vqe.json"]
         # listofdssrprocessedfiles = ["pdb1mnb.json","pdb1b2m.json"]
         # listofdssrprocessedfiles = ["pdb2vqe.json"]
         for i in listofdssrprocessedfiles:
@@ -40,17 +40,17 @@ class DssrParser(object):
                         helixresult=DssrParserjson().dssrhelixParser(data,j)
                         for line in helixresult:
                             dssrstore.append(line)
-                    # elif j == "bulges":
-                    #     bulgesresult=DssrParserjson().dssrhelixParser(data,j)
-                    #     for line in helixresult:
-                    #         dssrstore.append(line)
-                    # elif j == "iloops":
-                    #     helixresult=DssrParserjson().dssrhelixParser(data,j)
-                    #     for line in helixresult:
-                    #         dssrstore.append(line)
+                    elif j == "bulges":
+                        bulgesresult=DssrParserjson().dssrbulgeParser(data,j)
+                        for line in bulgesresult:
+                            dssrstore.append(line)
+                    elif j == "iloops":
+                        iloopsresult=DssrParserjson().dssriloopsParser(data,j)
+                        for line in iloopsresult:
+                            dssrstore.append(line)
                   # reminder when parsing helix structures must take into the account strand 1 and strand 2 these residue structures are the helices
-                except:
-                    print "There was an exception likely null"
+                except Exception as e:
+                    print "There was an exception likely null %s" %e
             # print dssrstore
             self.dssrstorefilewriter(lhs,dssrstore)
 

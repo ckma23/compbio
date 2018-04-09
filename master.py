@@ -14,6 +14,7 @@ from helper.PDBRestService import PDBRestServicehelper
 from library.hbplusclilib.hbpluscli import hbplusclihelper
 from library.dssrclilib.dssrcli import dssrclihelper
 from library.dssrparser.dssrparser import DssrParser
+from library.bondfinalcount.bondcounter import Bondcounter
 from optparse import OptionParser # will need a option parsing library
 
 #os.chdir(os.path.expanduser("~/bioresearch"))
@@ -64,8 +65,9 @@ def hbplusprocessedreader(hborvdw):
     #    info6.append(store[24:27])
        info7.append(store[28:32])
        info8.append(store[33:35])
-       aminoacidlist=["ARG","ALA","ASN","ASP","GLN","GLU","GLY","CYS","HIS","ILE","LEU","LYS","MET","PHE","PRO","SER","THR","TRP","TYR","VAL"]
-       nucleotidebase=["U","G","C","A"]
+       aminoacidlist=set(["ARG","ALA","ASN","ASP","GLN","GLU","GLY","CYS","HIS","ILE","LEU","LYS","MET","PHE","PRO","SER","THR","TRP","TYR","VAL"])
+       nucleotidebase=set(["U","G","C","A"])
+       # want to switch it up here to if store is in the set and store is in the set. This will speed this up by alot
        for aa in aminoacidlist:
           for nb in nucleotidebase:
             # print aa
@@ -87,15 +89,6 @@ def hbplusprocessedreader(hborvdw):
               info5.append(store[20:23])
               info6.append(store[24:27])
     # print hbplusprocessedfile
-    # this is messing up and when it goes fomr hb to vdw the line shrinks hence ti gets cut of
-    # it's screwing up when writing the vdw sorted
-    # Curtiss-MacBook-Pro:hbplushbvdwcombined curtisma$ cat pdb1h4s.hbplushbvdwsorted | grep U0029
-    #U0029 T OP1 A0127- TRP  NE hb
-    #U0029 T OP2 A0128- ARG  NH hb
-    #U0029 T  P  A0127- TRP NE1 vdw
-    #U0029 T  OP A0127- TRP NE1 vdw
-    #U0029 T  OP A0127- TRP CE2 vdw
-    # the spacing is messed up...
     print
     hbplusstorefilewriter(hbplusprocessedfile,info1,info2,info3,info4,info5,info6,hborvdw)
   # for i in range(len(info1)):
@@ -170,6 +163,7 @@ def hbplushbvdwtodssrcomparer():
     os.chdir('/Users/curtisma/bioresearch/hbplushbvdwcombined')
     print hbplusfile
     hbplusfilestore = open(hbplusfile)
+    hbplusfilestore.close
     os.chdir('/Users/curtisma/bioresearch')
     os.system('mkdir bondcategorized') #look into os.makedirs
     os.chdir(os.path.expanduser('~/bioresearch/bondcategorized'))
@@ -214,6 +208,7 @@ def hbplushbvdwtodssrcomparer():
         # for dssrfile in listofprocesseddssrfiles:
         os.chdir('/Users/curtisma/bioresearch/DSSRparsedfiles')
         dssrfilestore = open(dssrfile)
+        dssrfilestore.close
         storing=dssrfile.strip("pdb")
         lhs,rhs=storing.split(".",1)
         filenamestring="%s.bondcategorized" %(lhs)
@@ -233,6 +228,7 @@ def hbplushbvdwtodssrcomparer():
         # except error as e:
         #     print "%s" %e
         # # print "is it skipping this"
+        # WE HAVE TO KEEP THIS A FOR LOOP in case an HB line matches more than once in dsr i.e. can be a hairpin or a helices
         for dssrline in dssrfilestore:
           dssrcomparer(hbline,dssrline,filenamestring)
 
@@ -249,17 +245,6 @@ def dssrcomparer(hbline,dssrline,filenamestring):
   dssrcompare=dssrline.strip().split(' ')
   # this dssrline is returning a really long black space after it
   # print "%s hi" %dssrline
-
-  #determine if first it is a helix
-  # then determine if it it's a helix check if it's A form
-  # then check if it's a back backbone
-  #since it was not a helix then go to check
-  # if this was a backbone or not.
-  # if dssrcompare[0] in ["hairpins","bulges","loops"]:
-  #     non_helix_form_comparer():
-  # elif dssrcompare[0] == "helices" :
-  #     a_form_checker():
-
   # note match the 2d structure, check that it is the same chain, then check if it's the same residue name from hbPlus and DSSR
   if (dssrcompare[0] in ["hairpins","bulges","loops"] and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
     result = non_helix_form_comparer(hblinecompare[2].strip())
@@ -372,7 +357,7 @@ def a_form_major_or_minor_groove_checker (nbatom,nucleotide_residue_type):
         # H61,H62,N6,C6,C5,N7,C8,H8
         # minor groove atoms in A are:
         # N2,C2,C5,C4
-        if nbatom in ["H61","H62","N6","C6","C5","N7","C8","H8"]:
+        if nbatom in set(["H61","H62","N6","C6","C5","N7","C8","H8"]):
             nb_mg_placeholder = "major_groove"
         else:
             nb_mg_placeholder = "not_major_groove"
@@ -381,7 +366,7 @@ def a_form_major_or_minor_groove_checker (nbatom,nucleotide_residue_type):
         # O4,C4,C5,H5,C6,H6
         # minor groove atoms in U are:
         # H3,N3,C2,O2,N1
-        if nbatom in ["O4","C4","C5","H5","C6","H6"]:
+        if nbatom in set(["O4","C4","C5","H5","C6","H6"]):
             nb_mg_placeholder = "major_groove"
         else:
             nb_mg_placeholder = "not_major_groove"
@@ -390,7 +375,7 @@ def a_form_major_or_minor_groove_checker (nbatom,nucleotide_residue_type):
         # H6,C6,C5,H5,C4,N4,H42,H41,N3
         # minor groove atoms in C are:
         # N1,C2,O2
-        if nbatom in ["H6","C6","C5","H5","C4","N4","H42","H41","N3"]:
+        if nbatom in set(["H6","C6","C5","H5","C4","N4","H42","H41","N3"]):
             nb_mg_placeholder = "major_groove"
         else:
             nb_mg_placeholder = "not_major_groove"
@@ -399,7 +384,7 @@ def a_form_major_or_minor_groove_checker (nbatom,nucleotide_residue_type):
         # H1,N2,C6,O6,C5,N7,C8,H8
         # minor groove atoms in G are:
         # N2,C2,C5,C4
-        if nbatom in ["H1", "N2", "C6", "O6", "C5", "N7", "C8", "H8"]:
+        if nbatom in set(["H1", "N2", "C6", "O6", "C5", "N7", "C8", "H8"]):
             nb_mg_placeholder = "major_groove"
         else:
             nb_mg_placeholder = "not_major_groove"
@@ -416,7 +401,7 @@ def not_a_form_major_or_minor_groove_checker (nbatom,nucleotide_residue_type):
         # H61,H62,N6,C6,C5,N7,C8,H8
         # minor groove atoms in A are:
         # N2,C2,C5,C4
-        if nbatom in ["H61","H62","N6","C6","C5","N7","C8","H8"]:
+        if nbatom in set(["H61","H62","N6","C6","C5","N7","C8","H8"]):
             nb_mg_placeholder = "major_groove"
         else:
             nb_mg_placeholder = "not_major_groove"
@@ -425,7 +410,7 @@ def not_a_form_major_or_minor_groove_checker (nbatom,nucleotide_residue_type):
         # O4,C4,C5,H5,C6,H6
         # minor groove atoms in U are:
         # H3,N3,C2,O2,N1
-        if nbatom in ["O4","C4","C5","H5","C6","H6"]:
+        if nbatom in set(["O4","C4","C5","H5","C6","H6"]):
             nb_mg_placeholder = "major_groove"
         else:
             nb_mg_placeholder = "not_major_groove"
@@ -434,7 +419,7 @@ def not_a_form_major_or_minor_groove_checker (nbatom,nucleotide_residue_type):
         # H6,C6,C5,H5,C4,N4,H42,H41,N3
         # minor groove atoms in C are:
         # N1,C2,O2
-        if nbatom in ["H6","C6","C5","H5","C4","N4","H42","H41","N3"]:
+        if nbatom in set(["H6","C6","C5","H5","C4","N4","H42","H41","N3"]):
             nb_mg_placeholder = "major_groove"
         else:
             nb_mg_placeholder = "not_major_groove"
@@ -443,7 +428,7 @@ def not_a_form_major_or_minor_groove_checker (nbatom,nucleotide_residue_type):
         # H1,N2,C6,O6,C5,N7,C8,H8
         # minor groove atoms in G are:
         # N2,C2,C5,C4
-        if nbatom in ["H1","N2","C6","O6","C5","N7","C8","H8"]:
+        if nbatom in set(["H1","N2","C6","O6","C5","N7","C8","H8"]):
             nb_mg_placeholder = "major_groove"
         else:
             nb_mg_placeholder = "not_major_groove"
@@ -461,7 +446,7 @@ def non_helix_form_comparer(backboneatom):
         return "CAT_8"
 
 def backbonechecker(backboneatom):
-    if backboneatom in ["C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3"]:
+    if backboneatom in set(["C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3"]):
         nb_placeholder = "backbone"
     else:
         nb_placeholder = "base"
@@ -509,10 +494,11 @@ def backbonechecker(backboneatom):
 ## minor groove atoms in G are: N2,C2,C5,C4
 
 def bondcategorizedwriter(filenamestring,category,hbline,dssrcompare):
-    file = open(filenamestring,"a")
+    final_file = open(filenamestring,"a")
     hbline=hbline.strip('\n')
     dssrcompare=' '.join(dssrcompare).strip('\n').strip()
-    file.write("%s %s %s\n" %(category,hbline,dssrcompare))
+    final_file.write("%s %s %s\n" %(category,hbline,dssrcompare))
+    final_file.close
 
 def helpoutput():
   print "\nWelcome to the Computatinal Biology RNA-Protein Interaction help section\n"
@@ -544,6 +530,8 @@ elif proinput == "dssrparse":
   DssrParser().dssrprocessedreader()
 elif proinput == "hbcategorizedssr":
   hbplushbvdwtodssrcomparer()
+elif proinput == "countbonds":
+  Bondcounter().bondcounter()
 elif proinput == "completerun":
   hbplusprocessedreader("hb")
   hbplusprocessedreader("vdw")
