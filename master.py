@@ -15,17 +15,64 @@ from library.hbplusclilib.hbpluscli import hbplusclihelper
 from library.dssrclilib.dssrcli import dssrclihelper
 from library.dssrparser.dssrparser import DssrParser
 from library.bondfinalcount.bondcounter import Bondcounter
+from library.ftdockprepper.chain_stripping import FTDockChainStripping
 from optparse import OptionParser # will need a option parsing library
 
 #os.chdir(os.path.expanduser("~/bioresearch"))
 
-def pdbfileretriever():
-    with open('structures_of_interest.csv','rb') as csvfile:
+# def pdbfile_splitter_rna_protein():
+#     os.chdir(os.path.expanduser('~/bioresearch'))
+#     os.system("mkdir protein_seperated_pdbfiles")
+#     os.system("mkdir rna_seperated_pdbfiles")
+#     os.chdir(os.path.expanduser('~/bioresearch/protein_seperated_pdbfiles'))
+#     os.system("rm *.pdb")
+#     os.chdir(os.path.expanduser('~/bioresearch/rna_seperated_pdbfiles'))
+#     os.system("rm *.pdb")
+#     os.chdir(os.path.expanduser('~/bioresearch/compbio/pdbfiles'))
+#
+#     list_of_pdb_files = os.listdir('.')
+#     for pdbfile in list_of_pdb_files:
+#         lhs,rhs=pdbfile.split(".",1)
+#         lhs=lhs[3:]
+#         print lhs
+#         os.chdir(os.path.expanduser('~/bioresearch/compbio/pdbfiles'))
+#         with open(pdbfile) as pdblines:
+#             for line in pdblines:
+#                 if line[0:4] == "ATOM" and line[17:20] in ["ARG","ALA","ASN","ASP","GLN","GLU","GLY","CYS","HIS","ILE","LEU","LYS","MET","PHE","PRO","SER","THR","TRP","TYR","VAL"]:
+#                     os.chdir(os.path.expanduser('~/bioresearch/protein_seperated_pdbfiles'))
+#                     filenamestring="%s.pdb" %(lhs)
+#                     file = open(filenamestring,"a")
+#                     file.write(line)
+#                 elif line[0:4] == "ATOM":
+#                     os.chdir(os.path.expanduser('~/bioresearch/rna_seperated_pdbfiles'))
+#                     filenamestring="%s.pdb" %(lhs)
+#                     file = open(filenamestring,"a")
+#                     file.write(line)
+#
+#                     ### KEEP THE TER???
+# def preprocess_ftdock(rna_or_protein):
+#     os.chdir(os.path.expanduser('~/bioresearch/%s_seperated_pdbfiles' %rna_or_protein))
+#     list_of_pdb_files = os.listdir('.')
+#     os.chdir(os.path.expanduser('~/bioresearch/ftdock-2-dev2/scripts-2.0.3'))
+#     for pdbfile in list_of_pdb_files:
+#         os.system("/usr/bin/perl preprocess-pdb.perl -pdb /Users/curtisma/bioresearch/%s_seperated_pdbfiles/%s" %(rna_or_protein,pdbfile))
+
+def ftdock_runner ():
+    os.sytem("[blustig@spartan02 progs-2.0.3]$ ./ftdock  -static ~/curtisma/bioresearch/rna_seperated_pdbfiles/1mnb.parsed -mobile ~/curtisma/bioresearch/protein_seperated_pdbfiles/1mnb.parsed -out ~/curtisma/bioresearch/ftdockresults/1mnbftdock.out > ~/curtisma/bioresearch/output &")
+
+    # os.chdir(os.path.expanduser('~/bioresearch/rna_seperated_pdbfiles'))
+    # list_of_pdb_files = os.listdir('.')
+    # os.chdir(os.path.expanduser('~/bioresearch/ftdock-2-dev2/scripts-2.0.3'))
+    # for pdbfile in list_of_pdb_files:
+    #     os.system("/usr/bin/perl preprocess-pdb.perl -pdb /Users/curtisma/bioresearch/rna_seperated_pdbfiles/%s" %pdbfile)
+
+def pdbfileretriever(configuration_file,folder_path_name):
+    with open(configuration_file,'rb') as csvfile:
         csvstore = csv.reader(csvfile,delimiter = ',')
-        for i in csvstore:
-            print (i)
+        for structure in csvstore:
+            print (structure)
             # note: had to strip the string as it was returning ['<string>'] for []
-            FileRetriever().fileretrieving(''.join(i))
+            FileRetriever().fileretrieving(''.join(structure),folder_path_name)
 
 def hbplusprocessedreader(hborvdw):
   os.chdir(os.path.expanduser('~/bioresearch/hbplusprocessed%sfiles' %hborvdw))
@@ -65,9 +112,10 @@ def hbplusprocessedreader(hborvdw):
     #    info6.append(store[24:27])
        info7.append(store[28:32])
        info8.append(store[33:35])
+
+       # want to switch it up here to if store is in the set and store is in the set. This will speed this up by alot
        aminoacidlist=set(["ARG","ALA","ASN","ASP","GLN","GLU","GLY","CYS","HIS","ILE","LEU","LYS","MET","PHE","PRO","SER","THR","TRP","TYR","VAL"])
        nucleotidebase=set(["U","G","C","A"])
-       # want to switch it up here to if store is in the set and store is in the set. This will speed this up by alot
        for aa in aminoacidlist:
           for nb in nucleotidebase:
             # print aa
@@ -88,6 +136,7 @@ def hbplusprocessedreader(hborvdw):
               info4.append(store[14:20])
               info5.append(store[20:23])
               info6.append(store[24:27])
+            print store[9:13]
     # print hbplusprocessedfile
     print
     hbplusstorefilewriter(hbplusprocessedfile,info1,info2,info3,info4,info5,info6,hborvdw)
@@ -109,6 +158,7 @@ def hbplusstorefilewriter(proteinname,col1,col2,col3,col4,col5,col6,hborvdw):
     # thus we need to clean it to be A0018 on the B strand"
     # remove the first letter from col because that is the strand information and we need the residue type information
     removedstrandstring=col1[i][1:]
+
     cleanednb=col2[i]+removedstrandstring.strip()
     # combine this into one and it'l be A00018-
     strandnb=col1[i]
@@ -509,11 +559,21 @@ def helpoutput():
 # neighborSearcher(testprotein,3.0)
 # aminoacidmatcher()
 
+#from the system take the second argument
 proinput=str(sys.argv[1])
+#default help menu
 if proinput == "help":
   helpoutput()
+#function to split the pdb files into rna only and protein only
+elif proinput == "pdbsplit":
+  # pdbfile_splitter_rna_protein()
+  FTDockChainStripping().pdbfile_splitter_rna_protein("protein_seperated_pdbfiles_baseset","rna_seperated_pdbfiles_baseset","base_complexes_pdb")
+  FTDockChainStripping().pdbfile_splitter_rna_protein("protein_seperated_pdbfiles_testset","rna_seperated_pdbfiles_testset","test_complexes_pdb")
+
+
 elif proinput == "pdbfileretriever":
-  pdbfileretriever()
+  pdbfileretriever("structures_of_interest.csv","files_wip/base_complexes_pdb")
+  pdbfileretriever("test_complexes_pdb.csv","files_wip/test_complexes_pdb")
 elif proinput == "hbplushbcli":
   hbplusclihelper().hbplushbcli()
 elif proinput == "hbplusvdwcli":
@@ -532,9 +592,17 @@ elif proinput == "hbcategorizedssr":
   hbplushbvdwtodssrcomparer()
 elif proinput == "countbonds":
   Bondcounter().bondcounter()
+  Bondcounter().total_atom_counter()
+elif proinput == "preprocessftdock":
+  FTDockChainStripping().preprocess_ftdock("rna")
+  FTDockChainStripping().preprocess_ftdock("protein")
 elif proinput == "completerun":
   hbplusprocessedreader("hb")
   hbplusprocessedreader("vdw")
   hbplushbandvdwcombiner()
   DssrParser().dssrprocessedreader()
   hbplushbvdwtodssrcomparer()
+  Bondcounter().bondcounter()
+  Bondcounter().total_atom_counter()
+  preprocess_ftdock("rna")
+  preprocess_ftdock("protein")

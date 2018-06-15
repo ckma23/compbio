@@ -94,6 +94,7 @@ class DssrParserjson(object):
             k+=1
         return hairpintoappend
         #we need to add the 0s back in for hbplus...
+
     def dssriloopsParser(self,data,j):
         ilooptoappend=[]
         k=0

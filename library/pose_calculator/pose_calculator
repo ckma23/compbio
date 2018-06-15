@@ -1,0 +1,11 @@
+
+
+# determine from the files which poses had the lowest RPscore or energy.
+
+def rp_scorefinder():
+
+
+
+#now from those poses that had the lowest RPscore which ones were native?
+
+def rmsdfinder():

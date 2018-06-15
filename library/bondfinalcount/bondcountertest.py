@@ -2,14 +2,13 @@ from Bio import *                                           #use the BioPython P
 from Bio.PDB import *                                       #more specifically import the BioPython PDB library
 import os
 import numpy as np
-import math
 
 class Bondcounter(object):
+    #I should probably make this into a hashtable instead....
     # pro bably want to assign a class variable and let all methods access this.
     def bondcounter(self):
         os.chdir(os.path.expanduser('~/bioresearch/bondcategorized'))
         listofcategorizedfiles = os.listdir('.')
-        listofcategorizedfiles = []
         category_storehb=[0,0,0,0,0,0,0,0,0]
         category_storevdw=[0,0,0,0,0,0,0,0,0]
     ###NUCLEOTIDE BASE # in order of A C U G
@@ -149,8 +148,7 @@ class Bondcounter(object):
         categorized_9_vdw_nbC_aa=np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
         categorized_9_vdw_nbG_aa=np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
         categorized_9_vdw_nbU_aa=np.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
-        category_storehb=[0,0,0,0,0,0,0,0,0]
-        category_storevdw=[0,0,0,0,0,0,0,0,0]
+
         for categorized_file in listofcategorizedfiles:
             # with open(categorized_file) as csvfile:
                 # csvstore = csv.reader(csvfile, delimiter = '')
@@ -163,97 +161,126 @@ class Bondcounter(object):
                 cat = line[0:5]
                 # this is returning "hb " the space is not matching up
                 hborvdw = line[34:37].strip(' ')
-
-                if hborvdw == "hb":
-                    if cat == "CAT_1":
-                        category_storehb[0]+=1
-                    elif cat == "CAT_2":
-                        category_storehb[1]+=1
-                    elif cat == "CAT_3":
-                        category_storehb[2]+=1
-                    elif cat == "CAT_4":
-                        category_storehb[3]+=1
-                    elif cat == "CAT_5":
-                        category_storehb[4]+=1
-                    elif cat == "CAT_6":
-                        category_storehb[5]+=1
-                    elif cat == "CAT_7":
-                        category_storehb[6]+=1
-                    elif cat == "CAT_8":
-                        category_storehb[7]+=1
-                    elif cat == "CAT_9":
-                        category_storehb[8]+=1
-                elif hborvdw  == "vdw":
-                    if cat == "CAT_1":
-                        category_storevdw[0]+=1
-                    elif cat == "CAT_2":
-                        category_storevdw[1]+=1
-                    elif cat == "CAT_3":
-                        category_storevdw[2]+=1
-                    elif cat == "CAT_4":
-                        category_storevdw[3]+=1
-                    elif cat == "CAT_5":
-                        category_storevdw[4]+=1
-                    elif cat == "CAT_6":
-                        category_storevdw[5]+=1
-                    elif cat == "CAT_7":
-                        category_storevdw[6]+=1
-                    elif cat == "CAT_8":
-                        category_storevdw[7]+=1
-                    elif cat == "CAT_9":
-                        category_storevdw[8]+=1
                 nucleotide_base = line[6]
                 amino_acid = line[25:28]
 
                 if hborvdw == "hb":
                     if cat == "CAT_1":
+                        # category_storehb[0]+=1
+                        #
+                        # categorized_1_hb_nb[0]+=1 if nucleotide_base == "A" else categorized_1_hb_nb[0]
+                        # categorized_1_hb_nb[1]+=1 if nucleotide_base == "C" else categorized_1_hb_nb[1]
+                        # categorized_1_hb_nb[2]+=1 if nucleotide_base == "G" else categorized_1_hb_nb[2]
+                        # categorized_1_hb_nb[3]+=1 if nucleotide_base == "U" else categorized_1_hb_nb[3]
+
+                        # categorized_1_hb_nb = categorized_1_hb_nb + self.nucleotide_basecounter(nucleotide_base)
+
                         categorized_1_hb_nbA_aa = categorized_1_hb_nbA_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "A" else categorized_1_hb_nbA_aa
                         categorized_1_hb_nbC_aa = categorized_1_hb_nbC_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "C" else categorized_1_hb_nbC_aa
                         categorized_1_hb_nbG_aa = categorized_1_hb_nbG_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "G" else categorized_1_hb_nbG_aa
                         categorized_1_hb_nbU_aa = categorized_1_hb_nbU_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "U" else categorized_1_hb_nbU_aa
                     elif cat == "CAT_2":
+                        # category_storehb[1]+=1
+                        #
+                        # categorized_2_hb_nb[0]+=1 if nucleotide_base == "A" else categorized_2_hb_nb[0]
+                        # categorized_2_hb_nb[1]+=1 if nucleotide_base == "C" else categorized_2_hb_nb[1]
+                        # categorized_2_hb_nb[2]+=1 if nucleotide_base == "G" else categorized_2_hb_nb[2]
+                        # categorized_2_hb_nb[3]+=1 if nucleotide_base == "U" else categorized_2_hb_nb[3]
+
+                        # categorized_2_hb_nb = categorized_2_hb_nb + self.nucleotide_basecounter(nucleotide_base)
 
                         categorized_2_hb_nbA_aa = categorized_2_hb_nbA_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "A" else categorized_2_hb_nbA_aa
                         categorized_2_hb_nbC_aa = categorized_2_hb_nbC_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "C" else categorized_2_hb_nbC_aa
                         categorized_2_hb_nbG_aa = categorized_2_hb_nbG_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "G" else categorized_2_hb_nbG_aa
                         categorized_2_hb_nbU_aa = categorized_2_hb_nbU_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "U" else categorized_2_hb_nbU_aa
                     elif cat == "CAT_3":
+                        # category_storehb[2]+=1
+                        #
+                        # categorized_3_hb_nb[0]+=1 if nucleotide_base == "A" else categorized_3_hb_nb[0]
+                        # categorized_3_hb_nb[1]+=1 if nucleotide_base == "C" else categorized_3_hb_nb[1]
+                        # categorized_3_hb_nb[2]+=1 if nucleotide_base == "G" else categorized_3_hb_nb[2]
+                        # categorized_3_hb_nb[3]+=1 if nucleotide_base == "U" else categorized_3_hb_nb[3]
+
+                        # categorized_3_hb_nb = categorized_3_hb_nb + self.nucleotide_basecounter(nucleotide_base)
 
                         categorized_3_hb_nbA_aa = categorized_3_hb_nbA_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "A" else categorized_3_hb_nbA_aa
                         categorized_3_hb_nbC_aa = categorized_3_hb_nbC_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "C" else categorized_3_hb_nbC_aa
                         categorized_3_hb_nbG_aa = categorized_3_hb_nbG_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "G" else categorized_3_hb_nbG_aa
                         categorized_3_hb_nbU_aa = categorized_3_hb_nbU_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "U" else categorized_3_hb_nbU_aa
                     elif cat == "CAT_4":
+                        # category_storehb[3]+=1
+                        #
+                        # categorized_4_hb_nb[0]+=1 if nucleotide_base == "A" else categorized_4_hb_nb[0]
+                        # categorized_4_hb_nb[1]+=1 if nucleotide_base == "C" else categorized_4_hb_nb[1]
+                        # categorized_4_hb_nb[2]+=1 if nucleotide_base == "G" else categorized_4_hb_nb[2]
+                        # categorized_4_hb_nb[3]+=1 if nucleotide_base == "U" else categorized_4_hb_nb[3]
 
                         categorized_4_hb_nbA_aa = categorized_4_hb_nbA_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "A" else categorized_4_hb_nbA_aa
                         categorized_4_hb_nbC_aa = categorized_4_hb_nbC_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "C" else categorized_4_hb_nbC_aa
                         categorized_4_hb_nbG_aa = categorized_4_hb_nbG_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "G" else categorized_4_hb_nbG_aa
                         categorized_4_hb_nbU_aa = categorized_4_hb_nbU_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "U" else categorized_4_hb_nbU_aa
                     elif cat == "CAT_5":
+                        # category_storehb[4]+=1
+                        #
+                        # categorized_5_hb_nb[0]+=1 if nucleotide_base == "A" else categorized_5_hb_nb[0]
+                        # categorized_5_hb_nb[1]+=1 if nucleotide_base == "C" else categorized_5_hb_nb[1]
+                        # categorized_5_hb_nb[2]+=1 if nucleotide_base == "G" else categorized_5_hb_nb[2]
+                        # categorized_5_hb_nb[3]+=1 if nucleotide_base == "U" else categorized_5_hb_nb[3]
+
+                        # categorized_5_hb_nb = categorized_5_hb_nb + self.nucleotide_basecounter(nucleotide_base)
 
                         categorized_5_hb_nbA_aa = categorized_5_hb_nbA_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "A" else categorized_5_hb_nbA_aa
                         categorized_5_hb_nbC_aa = categorized_5_hb_nbC_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "C" else categorized_5_hb_nbC_aa
                         categorized_5_hb_nbG_aa = categorized_5_hb_nbG_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "G" else categorized_5_hb_nbG_aa
                         categorized_5_hb_nbU_aa = categorized_5_hb_nbU_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "U" else categorized_5_hb_nbU_aa
                     elif cat == "CAT_6":
+                        # category_storehb[5]+=1
+                        # categorized_6_hb_nb[0]+=1 if nucleotide_base == "A" else categorized_6_hb_nb[0]
+                        # categorized_6_hb_nb[1]+=1 if nucleotide_base == "C" else categorized_6_hb_nb[1]
+                        # categorized_6_hb_nb[2]+=1 if nucleotide_base == "G" else categorized_6_hb_nb[2]
+                        # categorized_6_hb_nb[3]+=1 if nucleotide_base == "U" else categorized_6_hb_nb[3]
+
+                        # categorized_6_hb_nb = categorized_6_hb_nb + self.nucleotide_basecounter(nucleotide_base)
 
                         categorized_6_hb_nbA_aa = categorized_6_hb_nbA_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "A" else categorized_6_hb_nbA_aa
                         categorized_6_hb_nbC_aa = categorized_6_hb_nbC_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "C" else categorized_6_hb_nbC_aa
                         categorized_6_hb_nbG_aa = categorized_6_hb_nbG_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "G" else categorized_6_hb_nbG_aa
                         categorized_6_hb_nbU_aa = categorized_6_hb_nbU_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "U" else categorized_6_hb_nbU_aa
                     elif cat == "CAT_7":
+                        # category_storehb[6]+=1
+                        # categorized_7_hb_nb[0]+=1 if nucleotide_base == "A" else categorized_7_hb_nb[0]
+                        # categorized_7_hb_nb[1]+=1 if nucleotide_base == "C" else categorized_7_hb_nb[1]
+                        # categorized_7_hb_nb[2]+=1 if nucleotide_base == "G" else categorized_7_hb_nb[2]
+                        # categorized_7_hb_nb[3]+=1 if nucleotide_base == "U" else categorized_7_hb_nb[3]
+
+                        # categorized_7_hb_nb = categorized_7_hb_nb + self.nucleotide_basecounter(nucleotide_base)
 
                         categorized_7_hb_nbA_aa = categorized_7_hb_nbA_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "A" else categorized_7_hb_nbA_aa
                         categorized_7_hb_nbC_aa = categorized_7_hb_nbC_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "C" else categorized_7_hb_nbC_aa
                         categorized_7_hb_nbG_aa = categorized_7_hb_nbG_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "G" else categorized_7_hb_nbG_aa
                         categorized_7_hb_nbU_aa = categorized_7_hb_nbU_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "U" else categorized_7_hb_nbU_aa
                     elif cat == "CAT_8":
+                        # category_storehb[7]+=1
+                        #
+                        # categorized_8_hb_nb[0]+=1 if nucleotide_base == "A" else categorized_8_hb_nb[0]
+                        # categorized_8_hb_nb[1]+=1 if nucleotide_base == "C" else categorized_8_hb_nb[1]
+                        # categorized_8_hb_nb[2]+=1 if nucleotide_base == "G" else categorized_8_hb_nb[2]
+                        # categorized_8_hb_nb[3]+=1 if nucleotide_base == "U" else categorized_8_hb_nb[3]
+
+                        # categorized_8_hb_nb = categorized_8_hb_nb + self.nucleotide_basecounter(nucleotide_base)
 
                         categorized_8_hb_nbA_aa = categorized_8_hb_nbA_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "A" else categorized_8_hb_nbA_aa
                         categorized_8_hb_nbC_aa = categorized_8_hb_nbC_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "C" else categorized_8_hb_nbC_aa
                         categorized_8_hb_nbG_aa = categorized_8_hb_nbG_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "G" else categorized_8_hb_nbG_aa
                         categorized_8_hb_nbU_aa = categorized_8_hb_nbU_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "U" else categorized_8_hb_nbU_aa
                     elif cat == "CAT_9":
+                        # category_storehb[8]+=1
+                        # categorized_9_hb_nb[0]+=1 if nucleotide_base == "A" else categorized_9_hb_nb[0]
+                        # categorized_9_hb_nb[1]+=1 if nucleotide_base == "C" else categorized_9_hb_nb[1]
+                        # categorized_9_hb_nb[2]+=1 if nucleotide_base == "G" else categorized_9_hb_nb[2]
+                        # categorized_9_hb_nb[3]+=1 if nucleotide_base == "U" else categorized_9_hb_nb[3]
+
+                        # categorized_9_hb_nb = categorized_9_hb_nb + self.nucleotide_basecounter(nucleotide_base)
 
                         categorized_9_hb_nbA_aa = categorized_9_hb_nbA_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "A" else categorized_9_hb_nbA_aa
                         categorized_9_hb_nbC_aa = categorized_9_hb_nbC_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "C" else categorized_9_hb_nbC_aa
@@ -261,54 +288,123 @@ class Bondcounter(object):
                         categorized_9_hb_nbU_aa = categorized_9_hb_nbU_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "U" else categorized_9_hb_nbU_aa
                 elif hborvdw  == "vdw":
                     if cat == "CAT_1":
+                        # category_storevdw[0]+=1
+
+                        # categorized_1_vdw_nb = categorized_1_vdw_nb + self.nucleotide_basecounter(nucleotide_base)
+
+                        # categorized_1_vdw_nb[0]+=1 if nucleotide_base == "A" else categorized_1_vdw_nb[0]
+                        # categorized_1_vdw_nb[1]+=1 if nucleotide_base == "C" else categorized_1_vdw_nb[1]
+                        # categorized_1_vdw_nb[2]+=1 if nucleotide_base == "G" else categorized_1_vdw_nb[2]
+                        # categorized_1_vdw_nb[3]+=1 if nucleotide_base == "U" else categorized_1_vdw_nb[3]
 
                         categorized_1_vdw_nbA_aa = categorized_1_vdw_nbA_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "A" else categorized_1_vdw_nbA_aa
                         categorized_1_vdw_nbC_aa = categorized_1_vdw_nbC_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "C" else categorized_1_vdw_nbC_aa
                         categorized_1_vdw_nbG_aa = categorized_1_vdw_nbG_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "G" else categorized_1_vdw_nbG_aa
                         categorized_1_vdw_nbU_aa = categorized_1_vdw_nbU_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "U" else categorized_1_vdw_nbU_aa
                     elif cat == "CAT_2":
+                        # category_storevdw[1]+=1
+
+                        # categorized_2_vdw_nb = categorized_2_vdw_nb + self.nucleotide_basecounter(nucleotide_base)
+
+                        # categorized_2_vdw_nb[0]+=1 if nucleotide_base == "A" else categorized_2_vdw_nb[0]
+                        # categorized_2_vdw_nb[1]+=1 if nucleotide_base == "C" else categorized_2_vdw_nb[1]
+                        # categorized_2_vdw_nb[2]+=1 if nucleotide_base == "G" else categorized_2_vdw_nb[2]
+                        # categorized_2_vdw_nb[3]+=1 if nucleotide_base == "U" else categorized_2_vdw_nb[3]
 
                         categorized_2_vdw_nbA_aa = categorized_2_vdw_nbA_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "A" else categorized_2_vdw_nbA_aa
                         categorized_2_vdw_nbC_aa = categorized_2_vdw_nbC_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "C" else categorized_2_vdw_nbC_aa
                         categorized_2_vdw_nbG_aa = categorized_2_vdw_nbG_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "G" else categorized_2_vdw_nbG_aa
                         categorized_2_vdw_nbU_aa = categorized_2_vdw_nbU_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "U" else categorized_2_vdw_nbU_aa
                     elif cat == "CAT_3":
+                        # category_storevdw[2]+=1
+
+                        # categorized_3_vdw_nb = categorized_3_vdw_nb + self.nucleotide_basecounter(nucleotide_base)
+
+                        # categorized_3_vdw_nb[0]+=1 if nucleotide_base == "A" else categorized_3_vdw_nb[0]
+                        # categorized_3_vdw_nb[1]+=1 if nucleotide_base == "C" else categorized_3_vdw_nb[1]
+                        # categorized_3_vdw_nb[2]+=1 if nucleotide_base == "G" else categorized_3_vdw_nb[2]
+                        # categorized_3_vdw_nb[3]+=1 if nucleotide_base == "U" else categorized_3_vdw_nb[3]
 
                         categorized_3_vdw_nbA_aa = categorized_3_vdw_nbA_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "A" else categorized_3_vdw_nbA_aa
                         categorized_3_vdw_nbC_aa = categorized_3_vdw_nbC_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "C" else categorized_3_vdw_nbC_aa
                         categorized_3_vdw_nbG_aa = categorized_3_vdw_nbG_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "G" else categorized_3_vdw_nbG_aa
                         categorized_3_vdw_nbU_aa = categorized_3_vdw_nbU_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "U" else categorized_3_vdw_nbU_aa
                     elif cat == "CAT_4":
+                        # category_storevdw[3]+=1
+
+                        # categorized_4_vdw_nb = categorized_4_vdw_nb + self.nucleotide_basecounter(nucleotide_base)
+
+                        # categorized_4_vdw_nb[0]+=1 if nucleotide_base == "A" else categorized_4_vdw_nb[0]
+                        # categorized_4_vdw_nb[1]+=1 if nucleotide_base == "C" else categorized_4_vdw_nb[1]
+                        # categorized_4_vdw_nb[2]+=1 if nucleotide_base == "G" else categorized_4_vdw_nb[2]
+                        # categorized_4_vdw_nb[3]+=1 if nucleotide_base == "U" else categorized_4_vdw_nb[3]
 
                         categorized_4_vdw_nbA_aa = categorized_4_vdw_nbA_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "A" else categorized_4_vdw_nbA_aa
                         categorized_4_vdw_nbC_aa = categorized_4_vdw_nbC_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "C" else categorized_4_vdw_nbC_aa
                         categorized_4_vdw_nbG_aa = categorized_4_vdw_nbG_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "G" else categorized_4_vdw_nbG_aa
                         categorized_4_vdw_nbU_aa = categorized_4_vdw_nbU_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "U" else categorized_4_vdw_nbU_aa
                     elif cat == "CAT_5":
+                        # category_storevdw[4]+=1
+
+                        # categorized_5_vdw_nb = categorized_5_vdw_nb + self.nucleotide_basecounter(nucleotide_base)
+
+                        # categorized_5_vdw_nb[0]+=1 if nucleotide_base == "A" else categorized_5_vdw_nb[0]
+                        # categorized_5_vdw_nb[1]+=1 if nucleotide_base == "C" else categorized_5_vdw_nb[1]
+                        # categorized_5_vdw_nb[2]+=1 if nucleotide_base == "G" else categorized_5_vdw_nb[2]
+                        # categorized_5_vdw_nb[3]+=1 if nucleotide_base == "U" else categorized_5_vdw_nb[3]
 
                         categorized_5_vdw_nbA_aa = categorized_5_vdw_nbA_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "A" else categorized_5_vdw_nbA_aa
                         categorized_5_vdw_nbC_aa = categorized_5_vdw_nbC_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "C" else categorized_5_vdw_nbC_aa
                         categorized_5_vdw_nbG_aa = categorized_5_vdw_nbG_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "G" else categorized_5_vdw_nbG_aa
                         categorized_5_vdw_nbU_aa = categorized_5_vdw_nbU_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "U" else categorized_5_vdw_nbU_aa
                     elif cat == "CAT_6":
+                        # category_storevdw[5]+=1
+
+                        # categorized_6_vdw_nb = categorized_6_vdw_nb + self.nucleotide_basecounter(nucleotide_base)
+
+                        # categorized_6_vdw_nb[0]+=1 if nucleotide_base == "A" else categorized_6_vdw_nb[0]
+                        # categorized_6_vdw_nb[1]+=1 if nucleotide_base == "C" else categorized_6_vdw_nb[1]
+                        # categorized_6_vdw_nb[2]+=1 if nucleotide_base == "G" else categorized_6_vdw_nb[2]
+                        # categorized_6_vdw_nb[3]+=1 if nucleotide_base == "U" else categorized_6_vdw_nb[3]
 
                         categorized_6_vdw_nbA_aa = categorized_6_vdw_nbA_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "A" else categorized_6_vdw_nbA_aa
                         categorized_6_vdw_nbC_aa = categorized_6_vdw_nbC_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "C" else categorized_6_vdw_nbC_aa
                         categorized_6_vdw_nbG_aa = categorized_6_vdw_nbG_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "G" else categorized_6_vdw_nbG_aa
                         categorized_6_vdw_nbU_aa = categorized_6_vdw_nbU_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "U" else categorized_6_vdw_nbU_aa
                     elif cat == "CAT_7":
+                        # category_storevdw[6]+=1
+
+                        # categorized_7_vdw_nb = categorized_7_vdw_nb + self.nucleotide_basecounter(nucleotide_base)
+
+                        # categorized_7_vdw_nb[0]+=1 if nucleotide_base == "A" else categorized_7_vdw_nb[0]
+                        # categorized_7_vdw_nb[1]+=1 if nucleotide_base == "C" else categorized_7_vdw_nb[1]
+                        # categorized_7_vdw_nb[2]+=1 if nucleotide_base == "G" else categorized_7_vdw_nb[2]
+                        # categorized_7_vdw_nb[3]+=1 if nucleotide_base == "U" else categorized_7_vdw_nb[3]
 
                         categorized_7_vdw_nbA_aa = categorized_7_vdw_nbA_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "A" else categorized_7_vdw_nbA_aa
                         categorized_7_vdw_nbC_aa = categorized_7_vdw_nbC_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "C" else categorized_7_vdw_nbC_aa
                         categorized_7_vdw_nbG_aa = categorized_7_vdw_nbG_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "G" else categorized_7_vdw_nbG_aa
                         categorized_7_vdw_nbU_aa = categorized_7_vdw_nbU_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "U" else categorized_7_vdw_nbU_aa
                     elif cat == "CAT_8":
+                        # category_storevdw[7]+=1
+                        # categorized_8_vdw_nb = categorized_8_vdw_nb + self.nucleotide_basecounter(nucleotide_base)
+                        # categorized_8_vdw_nb[0]+=1 if nucleotide_base == "A" else categorized_8_vdw_nb[0]
+                        # categorized_8_vdw_nb[1]+=1 if nucleotide_base == "C" else categorized_8_vdw_nb[1]
+                        # categorized_8_vdw_nb[2]+=1 if nucleotide_base == "G" else categorized_8_vdw_nb[2]
+                        # categorized_8_vdw_nb[3]+=1 if nucleotide_base == "U" else categorized_8_vdw_nb[3]
 
                         categorized_8_vdw_nbA_aa = categorized_8_vdw_nbA_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "A" else categorized_8_vdw_nbA_aa
                         categorized_8_vdw_nbC_aa = categorized_8_vdw_nbC_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "C" else categorized_8_vdw_nbC_aa
                         categorized_8_vdw_nbG_aa = categorized_8_vdw_nbG_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "G" else categorized_8_vdw_nbG_aa
                         categorized_8_vdw_nbU_aa = categorized_8_vdw_nbU_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "U" else categorized_8_vdw_nbU_aa
                     elif cat == "CAT_9":
+                        # category_storevdw[8]+=1
+                        # categorized_9_vdw_nb = categorized_9_vdw_nb + self.nucleotide_basecounter(nucleotide_base)
+
+                        # categorized_9_vdw_nb[0]+=1 if nucleotide_base == "A" else categorized_9_vdw_nb[0]
+                        # categorized_9_vdw_nb[1]+=1 if nucleotide_base == "C" else categorized_9_vdw_nb[1]
+                        # categorized_9_vdw_nb[2]+=1 if nucleotide_base == "G" else categorized_9_vdw_nb[2]
+                        # categorized_9_vdw_nb[3]+=1 if nucleotide_base == "U" else categorized_9_vdw_nb[3]
 
                         categorized_9_vdw_nbA_aa = categorized_9_vdw_nbA_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "A" else categorized_9_vdw_nbA_aa
                         categorized_9_vdw_nbC_aa = categorized_9_vdw_nbC_aa + self.amino_acid_counter(amino_acid) if nucleotide_base == "C" else categorized_9_vdw_nbC_aa
@@ -436,13 +532,8 @@ class Bondcounter(object):
 
         # print "HB  CAT_1:%s,CAT_2:%s,CAT_3:%s,CAT_4:%s,CAT_5:%s,CAT_6:%s,CAT_7:%s,CAT_8:%s,CAT_9:%s" %(category_storehb[0],category_storehb[1],category_storehb[2],category_storehb[3],category_storehb[4],category_storehb[5],category_storehb[6],category_storehb[7],category_storehb[8])
         # print "VDW CAT_1:%s,CAT_2:%s,CAT_3:%s,CAT_4:%s,CAT_5:%s,CAT_6:%s,CAT_7:%s,CAT_8:%s,CAT_9:%s" %(sum(categorized_1_vdw_nb),sum(categorized_2_vdw_nb),sum(categorized_3_vdw_nb),sum(categorized_4_vdw_nb),sum(categorized_5_vdw_nb),sum(categorized_6_vdw_nb),sum(categorized_7_vdw_nb),sum(categorized_8_vdw_nb),sum(categorized_9_vdw_nb))
-        print "HB  CAT_1:%s,CAT_2:%s,CAT_3:%s,CAT_4:%s,CAT_5:%s,CAT_6:%s,CAT_7:%s,CAT_8:%s,CAT_9:%s" %(category_storehb[0],category_storehb[1],category_storehb[2],category_storehb[3],category_storehb[4],category_storehb[5],category_storehb[6],category_storehb[7],category_storehb[8])
-        print "VDW CAT_1:%s,CAT_2:%s,CAT_3:%s,CAT_4:%s,CAT_5:%s,CAT_6:%s,CAT_7:%s,CAT_8:%s,CAT_9:%s" %(category_storevdw[0],category_storevdw[1],category_storevdw[2],category_storevdw[3],category_storevdw[4],category_storevdw[5],category_storevdw[6],category_storevdw[7],category_storevdw[8])
-
         print "HB  CAT_1:%s,CAT_2:%s,CAT_3:%s,CAT_4:%s,CAT_5:%s,CAT_6:%s,CAT_7:%s,CAT_8:%s,CAT_9:%s" %(category_1_store_hb,category_2_store_hb,category_3_store_hb,category_4_store_hb,category_5_store_hb,category_6_store_hb,category_7_store_hb,category_8_store_hb,category_9_store_hb)
         print "VDW CAT_1:%s,CAT_2:%s,CAT_3:%s,CAT_4:%s,CAT_5:%s,CAT_6:%s,CAT_7:%s,CAT_8:%s,CAT_9:%s" %(category_1_store_vdw,category_2_store_vdw,category_3_store_vdw,category_4_store_vdw,category_5_store_vdw,category_6_store_vdw,category_7_store_vdw,category_8_store_vdw,category_9_store_vdw)
-        print "Total HB %s" %(sum([category_1_store_hb,category_2_store_hb,category_3_store_hb,category_4_store_hb,category_5_store_hb,category_6_store_hb,category_7_store_hb,category_8_store_hb,category_9_store_hb]))
-        print "Total VDW %s" %(sum([category_1_store_vdw,category_2_store_vdw,category_3_store_vdw,category_4_store_vdw,category_5_store_vdw,category_6_store_vdw,category_7_store_vdw,category_8_store_vdw,category_9_store_vdw]))
 
     def structureParser(self,structure_id,filename):
         # this function returns to the caller a structure object from the pdb file name by parsing the pdb file
@@ -532,7 +623,7 @@ class Bondcounter(object):
 
     def develop_statistical_potential(self,categorized_1_hb_nbA_aa,category_1_store_hb,total_nb_aa_pairs_hb,total_nucleotide_base_count_in_protein,total_amino_acid_count_in_protein):
         # formula for statistical potential
-        RT=.59 #(kcal/mole from perez cano)
+        RT=8.31*273
         statistical_potential_cat = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
         # print statistical_potential_cat
         # print categorized_1_hb_nbA_aa
@@ -547,7 +638,7 @@ class Bondcounter(object):
             else:
                 first_denom=(float(sum(categorized_1_hb_nbA_aa))/sum(total_nucleotide_base_count_in_protein))
                 second_denom=(float(categorized_1_hb_nbA_aa[i])/sum(total_amino_acid_count_in_protein))
-                statistical_potential_cat[i] = round(-1*RT*math.log(round((float(categorized_1_hb_nbA_aa[i])/total_nb_aa_pairs_hb)/(first_denom+second_denom),3)),2)
+                statistical_potential_cat[i] = round((float(categorized_1_hb_nbA_aa[i])/total_nb_aa_pairs_hb)/(first_denom+second_denom),3)
             # statistical_potential_cat [i] = (float(categorized_1_hb_nbA_aa[i])/total_nb_aa_pairs_hb)/(sum(categorized_1_hb_nbA_aa)/sum(total_nucleotide_base_count_in_protein)) + (category_1_store_hb[i]/sum(total_amino_acid_count_count_in_protein))
         # for nb_aa in categorized_1_hb_nbA_aa:
         #     (float(nb_aa)/total_nb_aa_pairs_hb)/( /total_nucleotide_base_count_in_protein) + ( / total_amino_acid_count_count_in_protein)

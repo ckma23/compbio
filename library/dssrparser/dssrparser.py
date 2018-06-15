@@ -11,7 +11,7 @@ class DssrParser(object):
         os.chdir('/Users/curtisma/bioresearch/DSSRprocessedfiles')
         listofdssrprocessedfiles = glob.glob('*.json')
         print listofdssrprocessedfiles
-        listofdssrprocessedfiles = ["pdb2vqe.json"]
+        # listofdssrprocessedfiles = ["pdb2vqe.json"]
         # listofdssrprocessedfiles = ["pdb1mnb.json","pdb1b2m.json"]
         # listofdssrprocessedfiles = ["pdb2vqe.json"]
         for i in listofdssrprocessedfiles:
