@@ -1,0 +1,1 @@
+pymol -cqr pymolmiddleware.py
