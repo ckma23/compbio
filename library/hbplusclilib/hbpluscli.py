@@ -12,6 +12,7 @@ class hbplusclihelper(object):
         os.chdir('/Users/curtisma/bioresearch/')
         os.system('mkdir %s'%folder)
         os.chdir('/Users/curtisma/bioresearch/hbplus')
+
     # run hbplus in hydrogen bond mode
     def hbplushbcli(self):
         self.foldersetup("hbplusprocessedhbfiles")

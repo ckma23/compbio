@@ -87,3 +87,51 @@ def aminoacidrnamatcher(aminoacid,nucleotidebase):
         for nb in nucleotidebase:
             print aa
             print nb
+
+os.chdir(os.path.expanduser("~/bioresearch"))
+
+def pdbfile_splitter_rna_protein():
+    os.chdir(os.path.expanduser('~/bioresearch'))
+    os.system("mkdir protein_seperated_pdbfiles")
+    os.system("mkdir rna_seperated_pdbfiles")
+    os.chdir(os.path.expanduser('~/bioresearch/protein_seperated_pdbfiles'))
+    os.system("rm *.pdb")
+    os.chdir(os.path.expanduser('~/bioresearch/rna_seperated_pdbfiles'))
+    os.system("rm *.pdb")
+    os.chdir(os.path.expanduser('~/bioresearch/compbio/pdbfiles'))
+
+    list_of_pdb_files = os.listdir('.')
+    for pdbfile in list_of_pdb_files:
+        lhs,rhs=pdbfile.split(".",1)
+        lhs=lhs[3:]
+        print lhs
+        os.chdir(os.path.expanduser('~/bioresearch/compbio/pdbfiles'))
+        with open(pdbfile) as pdblines:
+            for line in pdblines:
+                if line[0:4] == "ATOM" and line[17:20] in ["ARG","ALA","ASN","ASP","GLN","GLU","GLY","CYS","HIS","ILE","LEU","LYS","MET","PHE","PRO","SER","THR","TRP","TYR","VAL"]:
+                    os.chdir(os.path.expanduser('~/bioresearch/protein_seperated_pdbfiles'))
+                    filenamestring="%s.pdb" %(lhs)
+                    file = open(filenamestring,"a")
+                    file.write(line)
+                elif line[0:4] == "ATOM":
+                    os.chdir(os.path.expanduser('~/bioresearch/rna_seperated_pdbfiles'))
+                    filenamestring="%s.pdb" %(lhs)
+                    file = open(filenamestring,"a")
+                    file.write(line)
+
+                    ### KEEP THE TER???
+def preprocess_ftdock(rna_or_protein):
+    os.chdir(os.path.expanduser('~/bioresearch/%s_seperated_pdbfiles' %rna_or_protein))
+    list_of_pdb_files = os.listdir('.')
+    os.chdir(os.path.expanduser('~/bioresearch/ftdock-2-dev2/scripts-2.0.3'))
+    for pdbfile in list_of_pdb_files:
+        os.system("/usr/bin/perl preprocess-pdb.perl -pdb /Users/curtisma/bioresearch/%s_seperated_pdbfiles/%s" %(rna_or_protein,pdbfile))
+
+def ftdock_runner ():
+    os.sytem("[blustig@spartan02 progs-2.0.3]$ ./ftdock  -static ~/curtisma/bioresearch/rna_seperated_pdbfiles/1mnb.parsed -mobile ~/curtisma/bioresearch/protein_seperated_pdbfiles/1mnb.parsed -out ~/curtisma/bioresearch/ftdockresults/1mnbftdock.out > ~/curtisma/bioresearch/output &")
+
+    # os.chdir(os.path.expanduser('~/bioresearch/rna_seperated_pdbfiles'))
+    # list_of_pdb_files = os.listdir('.')
+    # os.chdir(os.path.expanduser('~/bioresearch/ftdock-2-dev2/scripts-2.0.3'))
+    # for pdbfile in list_of_pdb_files:
+    #     os.system("/usr/bin/perl preprocess-pdb.perl -pdb /Users/curtisma/bioresearch/rna_seperated_pdbfiles/%s" %pdbfile)
