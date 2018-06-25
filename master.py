@@ -25,6 +25,7 @@ def directory_builder():
     os.chdir(os.path.expanduser('~/bioresearch/compbio'))
     #make the directory logs
     os.system("mkdir logs")
+    os.system("mkdir files_wip")
 
 def pdbfileretriever(configuration_file,folder_path_name):
     with open(configuration_file,'rb') as csvfile:
