@@ -5,18 +5,6 @@ import time
 
 class HbplusCliTestSet(object):
 
-    # run hbplus in van der Waal mode
-    def hbplusvdwcli_dep(self,folder_name):
-        self.foldersetup("hbplusprocessedvdwfiles")
-        for f in self.listoffiles:
-            stringprep=('~/bioresearch/compbio/pdbfiles/%s' %f)
-            os.system('./hbplus %s -N' %stringprep)
-            lhs,rhs=f.split(".",1)
-            print lhs
-            #output file is an .nb2
-            os.system('mv %s.nb2 ~/bioresearch/hbplusprocessedvdwfiles' %lhs)
-            print f
-
     def hbplushbcli(self,folder):
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip'))
         os.system('mkdir %s' %folder)
