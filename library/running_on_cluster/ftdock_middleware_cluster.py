@@ -6,9 +6,19 @@ class FtdockMiddleware(object):
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip'))
         os.system("mkdir ftdockresults")
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/ftdockresults'))
-        os.system("rm *.dat")
+        ftdocked_files = os.listdir('.')
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/test_complexes_pdb'))
-        testset_pdb_files = os.listdir('.')
+        testset_pdb_files = set(os.listdir('.'))
+        # essentially here is no need to re-run FTdock for files we've created already.
+        for ftdocked_file_already in ftdocked_files:
+            # copy the set because if not the stacktrace is RuntimeError: Set changed size during iteration
+            for test_complexes_pdb in testset_pdb_files.copy():
+                if ftdocked_file_already [0:3] == test_complexes_pdb[3:6]:
+                    # remove works for set.
+                    testset_pdb_files.remove(test_complexes_pdb)
+        print ftdocked_files
+        print testset_pdb_files
+        # test_pdb_files = ["",""]
         for pdbfile in testset_pdb_files:
             pdbfile = pdbfile.strip("pdb")
             pdbfile = pdbfile.strip(".ent")
