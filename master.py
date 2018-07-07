@@ -6,20 +6,23 @@ import json                                                 #import the biopytho
 import ConfigParser                                         #import the configParser library
 import glob                                                 #import the glob library used for regression grabbing
 import fnmatch                                              #import the fnmatch library
+
 from pprint import pprint                                   #pprint for json
 from Bio import *                                           #use the BioPython Python library
 from Bio.PDB import *                                       #more specifically import the BioPython PDB library
 from helper.biopythonpdbretriever import FileRetriever      #from the helper folder biopythonpdbretriever.py import FileRetriever class
 from helper.PDBRestService import PDBRestServicehelper
 from library.hbplusclilib.hbpluscli import hbplusclihelper
-from library.hbplusclilib.hbpluscli_testset import HbplusCliTestSet #This is just placeholder for now.
+from library.hbplusclilib.hbpluscli_testset import HbplusCliTestset as HbplusCliTestset  #This is just placeholder for now.
+from library.hbplusparser.hbplusparser_testset import HbPlusProcesserTestSet as HbPlusProcesserTestSet
 from library.dssrclilib.dssrcli import dssrclihelper
+from library.dssrclilib.dssrcli_testset import DssrCliHelperTestset as DssrCliHelperTestset
 from library.dssrparser.dssrparser import DssrParser
+from library.dssrparser.dssrparser_testset import DssrParserTestSet
 from library.bondfinalcount.bondcounter import Bondcounter
 from library.ftdockprepper.chain_stripping import FTDockChainStripping
 from library.ftdock_middleware.ftdock_middleware import FtdockMiddleware
-from optparse import OptionParser # will need a option parsing library
-
+from optparse import OptionParser as optionparser # will need a option parsing library
 
 def directory_builder():
     os.chdir(os.path.expanduser('~/bioresearch/compbio'))
@@ -39,7 +42,7 @@ def hbplusprocessedreader(hborvdw):
   os.chdir(os.path.expanduser('~/bioresearch/hbplusprocessed%sfiles' %hborvdw))
   listofprocessedfiles = os.listdir('.')
   print listofprocessedfiles
-  # listofprocessedfiles=["pdb1mnb.hb2","pdb1b2m.hb2"]
+  # listofprocessedfiles=["pd b1mnb.hb2","pdb1b2m.hb2"]
   # listofprocessedfiles=["pdb1mnb.nb2","pdb1b2m.nb2"]
   for hbplusprocessedfile in listofprocessedfiles:
     print hbplusprocessedfile
@@ -156,7 +159,7 @@ def hbplushbandvdwcombiner():
     file = open(filenamestring,"a")
     for line in individualfileobject:
       file.write(line)
-#note to self stip only works at the beginning and end of the string
+#note to self strip only works at the beginning and end of the string
 
 def hbplustodssrnbstringcleaner(nbtobecleaned):
   nbclean=nbtobecleaned
@@ -556,24 +559,42 @@ elif proinput == "pdbsplit":
     FTDockChainStripping().pdbfile_splitter_rna_protein("protein_seperated_pdbfiles_baseset","rna_seperated_pdbfiles_baseset","base_complexes_pdb")
     FTDockChainStripping().pdbfile_splitter_rna_protein("protein_seperated_pdbfiles_testset","rna_seperated_pdbfiles_testset","test_complexes_pdb")
 elif proinput == "preprocessftdock":
-  FTDockChainStripping().preprocess_ftdock("rna")
-  FTDockChainStripping().preprocess_ftdock("protein")
+    FTDockChainStripping().preprocess_ftdock("rna")
+    FTDockChainStripping().preprocess_ftdock("protein")
 elif proinput == "copyfilestosjsucluster":
-  FTDockChainStripping().file_copier_to_sjsu_cluster_testset("base")
-  FTDockChainStripping().file_copier_to_sjsu_cluster_testset("test")
-  FTDockChainStripping().file_copier_to_sjsu_cluster("rna")
-  FTDockChainStripping().file_copier_to_sjsu_cluster("protein")
+    FTDockChainStripping().file_copier_to_sjsu_cluster_testset("base")
+    FTDockChainStripping().file_copier_to_sjsu_cluster_testset("test")
+    FTDockChainStripping().file_copier_to_sjsu_cluster("rna")
+    FTDockChainStripping().file_copier_to_sjsu_cluster("protein")
 elif proinput == "ftdockgen":
-  FtdockMiddleware().ftdock_kicker()
+    FtdockMiddleware().ftdock_kicker()
 elif proinput == "ftdockbuild":
-  FtdockMiddleware().ftdock_builder()
+    FtdockMiddleware().ftdock_directory_cleaner("home","cma","Users","curtisma")
+    FtdockMiddleware().ftdock_builder(10)
+
+
+
+elif proinput == "hbplusclitestset":
+    HbplusCliTestset().hbpluscli("hbplus_processed_hb_files_testset","hb")
+    HbplusCliTestset().hbpluscli("hbplus_processed_vdw_files_testset","vdw")
+elif proinput == "hbplusprocesstestset":
+    HbPlusProcesserTestSet().hbplusprocessed_file_prepper_reader("hbplus_processed_hb_files_testset","hb")
+    HbPlusProcesserTestSet().hbplusprocessed_file_prepper_reader("hbplus_processed_vdw_files_testset","vdw")
+    HbPlusProcesserTestSet().hbplushbandvdwcombiner()
+elif proinput == "dssrclitestset":
+    DssrCliHelperTestset().dssrcli()
+elif proinput == "dssrparsetestset":
+    DssrParserTestSet().dssrprocessedreader()
+
+
+
 elif proinput == "completerun":
-  hbplusprocessedreader("hb")
-  hbplusprocessedreader("vdw")
-  hbplushbandvdwcombiner()
-  DssrParser().dssrprocessedreader()
-  hbplushbvdwtodssrcomparer()
-  Bondcounter().bondcounter()
-  Bondcounter().total_atom_counter()
-  preprocess_ftdock("rna")
-  preprocess_ftdock("protein")
+    hbplusprocessedreader("hb")
+    hbplusprocessedreader("vdw")
+    hbplushbandvdwcombiner()
+    DssrParser().dssrprocessedreader()
+    hbplushbvdwtodssrcomparer()
+    Bondcounter().bondcounter()
+    Bondcounter().total_atom_counter()
+    preprocess_ftdock("rna")
+    preprocess_ftdock("protein")

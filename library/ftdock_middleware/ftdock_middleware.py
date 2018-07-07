@@ -8,7 +8,7 @@ class FtdockMiddleware(object):
         # os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/protein_seperated_pdbfiles_preprocessperl_testset'))
         # protein_seperated_pdbfiles = os.listdir()
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/ftdockresults'))
-        os.system("rm *.dat")
+        # os.system("rm *.dat")
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/test_complexes_pdb'))
         testset_pdb_files = os.listdir('.')
         # check that if this file EXISTS then kick off next ftdock, if not hold!
@@ -31,34 +31,52 @@ class FtdockMiddleware(object):
                     print "Not in there yet! Sleeping!"
                     boolean = True
                     time.sleep(60)
+    #it turns out that the .out files have a callout where to find the static and mobile strings it came from.. for example...
+    # Curtiss-MacBook-Pro:ftdockresults curtisma$ cat 1ec6ftdock.out | head -8
+    # FTDOCK data file
+    #
+    # Global Scan
+    #
+    # Command line controllable values
+    # Static molecule                    :: /home/cma/bioresearch/compbio/files_wip/rna_seperated_pdbfiles_preprocessperl_testset/1ec6_C.parsed
+    # Mobile molecule                    :: /home/cma/bioresearch/compbio/files_wip/protein_seperated_pdbfiles_preprocessperl_testset/1ec6_A.parsed
+    #
+    # Curtiss-MacBook-Pro:ftdockresults curtisma$
+    def ftdock_directory_cleaner(self,root_path_cluster,user_path_cluster,root_path_local,user_path_local):
+        os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/ftdockresults'))
+        ftdock_file_cleans = os.listdir('.')
+        # ftdock_file_cleans = ["1e7kftdock.out"]
+        for ftdock_file in ftdock_file_cleans:
+            print ftdock_file
+            print os.getcwd()
+            print root_path_cluster
+            print user_path_cluster
+            print root_path_local
+            print user_path_local
+            os.system("sed -i.bak 's/%s/%s/g'  %s" %(root_path_cluster,root_path_local,ftdock_file))
+            os.system("sed -i.bak 's/%s/%s/g'  %s" %(user_path_cluster,user_path_local,ftdock_file))
+            os.system("rm *.bak")
 
-
-    def ftdock_builder (self):
+    #the build_number deteremines the amount of poses that will be built into pdbs
+    def ftdock_builder (self,build_number):
+        os.system("mkdir ~/bioresearch/compbio/files_wip/ftdockbuiltposes")
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/ftdockresults'))
         testset_ftdocked_pdbfiles = os.listdir('.')
-        os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip'))
-        os.system("mkdir ftdockbuiltposes")
-        for testset_ftdocked_pdbfile in testset_ftdocked_pdbfiles:
-            os.chdir(os.path.expanduser('~/bioresearch/ftdock-2-dev2/progs-2.0.3'))
-            # os.chdir(os.path.expanduser('~/bioresearch/compbio/bin/ftdock-2-dev2/progs-2.0.3'))
-            os.system("./build -in ~/bioresearch/compbio/files_wip/ftdockresults/%s -b1 1 -b2 50373 > ~/bioresearch/compbio/library/ftdock_middleware/cd ..output &" %testset_ftdocked_pdbfile)
-            os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/ftdockbuiltposes'))
-            os.system("mkdir %s" %testset_ftdocked_pdbfile[0:4])
-            os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/ftdockbuiltposes/%s' %testset_ftdocked_pdbfile[0:4]))
-            os.system("rm Complex*.pdb")
-            os.chdir(os.path.expanduser('~/bioresearch/ftdock-2-dev2/progs-2.0.3'))
-            # os.chdir(os.path.expanduser('~/bioresearch/compbio/bin/ftdock-2-dev2/progs-2.0.3'))
-            for numb in range(1,55):
-                os.system("mv Complex_%i* ~/bioresearch/compbio/files_wip/ftdockbuiltposes/%s" %(numb,testset_ftdocked_pdbfile[0:4]))
-            os.system("mv Complex*.pdb ~/bioresearch/compbio/files_wip/ftdockbuiltposes/%s" %testset_ftdocked_pdbfile[0:4])
-            # built_pose_filenames = os.listdir('.')
 
-            # for now, lets not rename the files
-            # for file_to_be_renamed in built_pose_filenames:
-            #     print file_to_be_renamed
-            #     print testset_ftdocked_pdbfile[0:4]
-            #     os.system("mkdir %s" %test_ftdocked_pdbfile)
-            #     os.system("mv Complex*.pdb ~/bioresearch/compbio/files_wip/ftdockbuiltposes/%s" %s)
-                # os.system("mv ~/bioresearch/compbio/files_wip/ftdockresults/ftdockbuiltposes")
+        for testset_ftdocked_pdbfile in testset_ftdocked_pdbfiles:
+            #make the directory for this to be built into
+            os.system("mkdir ~/bioresearch/compbio/files_wip/ftdockbuiltposes/%s" %testset_ftdocked_pdbfile[0:4])
+            os.chdir(os.path.expanduser('~/bioresearch/compbio/bin/ftdock-2-dev2/progs-2.0.3'))
+            os.system("./build -in ~/bioresearch/compbio/files_wip/ftdockresults/%s -b1 1 -b2 %s > ~/bioresearch/compbio/logs/ftdock_middleware.txt" %(testset_ftdocked_pdbfile,build_number))
+            os.system("mv Complex_* ~/bioresearch/compbio/files_wip/ftdockbuiltposes/%s" %testset_ftdocked_pdbfile[0:4])
+            # os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/ftdockbuiltposes'))
+            #
+            # os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/ftdockbuiltposes/%s' %testset_ftdocked_pdbfile[0:4]))
+            # # os.system("rm Complex*.pdb")
+            # os.chdir(os.path.expanduser('~/bioresearch/compbio/bin/ftdock-2-dev2/progs-2.0.3'))
+            # for numb in range(1,55):
+            #     os.system("mv Complex_%i* ~/bioresearch/compbio/files_wip/ftdockbuiltposes/%s" %(numb,testset_ftdocked_pdbfile[0:4]))
+            #
+            # os.system("mv Complex*.pdb ~/bioresearch/compbio/files_wip/ftdockbuiltposes/%s" %testset_ftdocked_pdbfile[0:4])
 
         time.sleep(5)

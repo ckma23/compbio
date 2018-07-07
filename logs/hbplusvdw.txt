@@ -1,0 +1,27 @@
+HBPLUS Hydrogen Bond Calculator v 3.2            Jul 06 23:47:27 PDT 2018
+(c) I McDonald, D Naylor, D Jones and J Thornton 1993 All Rights Reserved.
+
+Configured for 100000 atoms and 24000 residues.
+
+Criteria
+
+Neighbour interactions, max atom-atom separation 3.9
+Minimum covalent separation 3 Covalent bonds
+
+
+Processing file "/Users/curtisma/bioresearch/compbio/files_wip/ftdockbuiltposes/2qux/Complex_5g.pdb" . . .
+Opening "/Users/curtisma/bioresearch/compbio/files_wip/ftdockbuiltposes/2qux/Complex_5g.pdb" for protein co-ordinates. . .
+
+HEADER continuation line identified and ignored!
+1480 atoms selected from 148 residues.
+
+Found 1 elements of secondary structure and 2 chains.
+0 CONRECS used.
+Checking for disulphide bridges . . . 
+0 disulphide bonds found.
+
+
+Adding Polar Hydrogens.
+Opened output file "Complex_5g.nb2".
+Checking for hydrogen bonds . . . 
+4718 neighbour interactions found.
