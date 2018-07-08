@@ -14,7 +14,7 @@ class FtdockMiddleware(object):
         # check that if this file EXISTS then kick off next ftdock, if not hold!
         for pdbfile in testset_pdb_files:
             pdbfile = pdbfile.strip("pdb")
-            pdbfile = pdbfile.strip(".ent")
+            pdbfile = pdbfile[0:3]
             print pdbfile
             os.chdir(os.path.expanduser('~/bioresearch/compbio/bin/ftdock-2-dev2/progs-2.0.3'))
             os.system("./ftdock -noelec -static ~/bioresearch/compbio/files_wip/rna_seperated_pdbfiles_preprocessperl_testset/%s_*.parsed -mobile ~/bioresearch/compbio/files_wip/protein_seperated_pdbfiles_preprocessperl_testset/%s_*.parsed -out ~/bioresearch/compbio/files_wip/ftdockresults/%sftdock.out > ~/bioresearch/compbio/library/ftdock_middleware/output &" %(pdbfile,pdbfile,pdbfile))

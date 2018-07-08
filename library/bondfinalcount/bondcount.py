@@ -39,9 +39,12 @@ class Bondcounter(object):
                 amino_acid = line[25:28]
                 # we should switch this to spaces..
                 # final_bond_counted_store[hborvdw][category][nucleotide_base][amino_acid]["count"]+=1
+
+                # WE NEED TO CLEAN THIS PART UP MISSING ALOT OF CAT types here!!
                 try:
                     final_bond_counted_store[hborvdw][category][nucleotide_base][amino_acid]["count"]+=1
-                except:
+                except Exception as e:
                     print "Clean up string: %s" %line
+                    print e
         print final_bond_counted_store
         return final_bond_counted_store

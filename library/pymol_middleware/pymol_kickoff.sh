@@ -1,1 +1,1 @@
-pymol -cqr pymolmiddleware.py
+eval $("pymol -cqr pymolmiddleware.py")

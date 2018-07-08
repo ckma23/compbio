@@ -21,7 +21,7 @@ class FtdockMiddleware(object):
         # test_pdb_files = ["",""]
         for pdbfile in testset_pdb_files:
             pdbfile = pdbfile.strip("pdb")
-            pdbfile = pdbfile.strip(".ent")
+            pdbfile = pdbfile[0:4]
             # add a line to clean up the logs each time
             print pdbfile
             os.chdir(os.path.expanduser('~/bioresearch/compbio/bin/ftdock-2-dev2/progs-2.0.3'))

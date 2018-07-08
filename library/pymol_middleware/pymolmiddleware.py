@@ -29,11 +29,10 @@ pymol.finish_launching()
 # pymol_middleware()
 class PymolMiddleware(object):
     def pymol_middleware_test(self):
-        os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip'/))
-        os.system("mkdir native_poses")
+        os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip'))
+        os.system("mkdir native_poses_testset")
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/protein_seperated_pdbfiles_testset'))
-        protein_files=os.listdir('.')
-        protein_files=["1e7k_A.pdb"]
+        protein_files = os.listdir('.')
         #expect some string cleaning
         for protein_file in protein_files:
             protein_file_name_directory = protein_file[0:4]
@@ -41,34 +40,44 @@ class PymolMiddleware(object):
             pose_directory = os.path.expanduser('~/bioresearch/compbio/files_wip/ftdockbuiltposes/%s' %protein_file_name_directory)
             os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/ftdockbuiltposes/%s' %protein_file_name_directory))
             #sort the pose files after the move.. since they are out of order
-            pose_files =sorted(os.listdir('.'))
+            pose_files = sorted(os.listdir('.'))
             os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/protein_seperated_pdbfiles_testset'))
-            pose_result_file_name="%s.pose_calculated" %protein_file[0:6]
+            pose_result_file_name="%s" %protein_file[0:6]
+            #remove the file previously created since we are opening in append mode
             os.system("rm *pose_calculated")
             file = open(pose_result_file_name,"a")
             # only grab the list of files that match that protein for those poses.
             for pose_file in pose_files:
                 pymol.cmd.do("load %s/%s,pose" %(pose_directory,pose_file))
-                pymol.cmd.do("load %s,complex" %protein_file)
+                pymol.cmd.do("load %s,complexes" %protein_file)
                 # rms = pymol.cmd.do("align pose and name CA,complex and name CA")
-                rms = pymol.cmd.align("pose////CA","complex////CA")
+                # rms = pymol.cmd.do("rms_cur pose////CA,complexes////CA")
+                # print rms
+                #https://pymol.org/dokuwiki/doku.php?id=command:rms_cur
+                #“rms_cur” computes the RMS difference between two atom selections without performing any fitting.
+                rms = pymol.cmd.rms_cur("pose////CA","complexes////CA")
+                print rms
+                # rms = pymol.cmd.align("pose////CA","complexes////CA")
                 # typical rms response (0.0004964197287335992, 967, 1, 0.0004964197287335992, 967, 627.0, 125)
-                native_or_nonnative_value = native_nonnative_checker(rms[0])
+                native_or_nonnative_value = self.native_nonnative_checker(rms)
                 # if rms[0] < 10.0:
                 #     native_or_nonnative = "native"
                 # elif rms[0] > 10.0:
                 #     native_or_nonnative = "nonnative"
-                print "%s %s %s %s" %(protein_file,pose_file,rms[0],native_or_nonnative_value)
-                file.write("%s %s %s %s\n" %(protein_file[0:6],pose_file,rms[0],native_or_nonnative_value))
+                print "%s %s %s %s" %(protein_file,pose_file,rms,native_or_nonnative_value)
+                pose_file_to_store,throwaway = pose_file.split(".",1)
+                pose_file_to_store = pose_file_to_store.strip("g")
+                file.write("%s,%s,%s,%s\n" %(protein_file[0:6],pose_file_to_store,rms,native_or_nonnative_value))
                 pymol.cmd.do("delete %s" %pose_file)
                 pymol.cmd.do("delete %s" %protein_file)
                 pymol.cmd.do("delete pose")
-                pymol.cmd.do("delete complex")
-            os.system("mv %s ~/bioresearch/compbio/files_wip/native_poses") pose_result_file_name
+                pymol.cmd.do("delete complexes")
+            #move the file to where it will eventually be used
+            os.system("mv %s ~/bioresearch/compbio/files_wip/native_poses_testset" %pose_result_file_name)
             #eventually need to just make a directory maker....
-            pymol.cmd.quit()
+        pymol.cmd.quit()
 
-    def native_nonnative_checker(rms_value):
+    def native_nonnative_checker(self,rms_value):
         if rms_value < 3.0:
             native_or_nonnative = "native"
         elif rms_value > 3.0:
