@@ -51,48 +51,56 @@ class energyCalculator(object):
                 hb_energy = 0
                 vdw_energy = 0
                 total_energy = 0
-                testset_protein_categorized_file = open(testset_protein_pose_number)
-                for line in testset_protein_categorized_file:
-                    # print line
-                    # NEED TO CLEAN THIS UP BECAUSE we are running into issues with the amino acid column. Not all the columns have the same amount of spaces.
-                    category = line[0:5].strip(' ')
-                    hborvdw = line[34:37].strip(' ')
-                    nucleotide_base = line[6].strip(' ')
-                    amino_acid = line[25:29].strip(' ')
-                    # print category
-                    # print hborvdw
-                    # print nucleotide_base
-                    # print amino_acid
+                # testset_protein_categorized_file = open(testset_protein_pose_number)
+                with open( testset_protein_pose_number,'rb') as testset_protein_categorized_file_meta:
+                    testset_protein_categorized_file  = csv.reader(testset_protein_categorized_file_meta)
+
+                    for line in testset_protein_categorized_file:
+                        # print line
+                        # NEED TO CLEAN THIS UP BECAUSE we are running into issues with the amino acid column. Not all the columns have the same amount of spaces.
+                        # category = line[0:5].strip(' ')
+                        # hborvdw = line[34:37].strip(' ')
+                        # nucleotide_base = line[6].strip(' ')
+                        # amino_acid = line[25:29].strip(' ')
+                        category = line[0]
+                        hborvdw = line[7]
+                        nucleotide_base = line[1][0]
+                        amino_acid = line[5]
+
+                        # print category
+                        # print hborvdw
+                        # print nucleotide_base
+                        # print amino_acid
 
 
 
-                    ## MAY WANT TO CREATE METADATA FOR IN REGARDS TO WHICH CATEGORY CONTRIBUTE DTHE MOST ENERGY??
-                    ## what it look like with only hydrogenbonding and what did it look like with VanderWaals included.
+                        ## MAY WANT TO CREATE METADATA FOR IN REGARDS TO WHICH CATEGORY CONTRIBUTE DTHE MOST ENERGY??
+                        ## what it look like with only hydrogenbonding and what did it look like with VanderWaals included.
 
+                        try:
+                            bond_energy = statistical_potential_hash[hborvdw][category][nucleotide_base][amino_acid]["statistical_potential"]
+                        except Exception as e:
+                            print "There was an error: %s" %e
+                        if hborvdw == "hb":
+                            hb_energy = hb_energy + bond_energy
+                        elif hborvdw == "vdw":
+                            vdw_energy = hb_energy + bond_energy
+                    if hb_only_or_hb_and_vdw == "hb_only":
+                        vdw_energy = 0;
+                    elif hb_only_or_hb_and_vdw == "vdw_only":
+                        hb_energy = 0;
+                    total_energy = hb_energy + vdw_energy
+
+                    testset_protein_pose_number_to_store,throwaway = testset_protein_pose_number.split('.',1)
+                    testset_protein_pose_number_to_store = testset_protein_pose_number_to_store.strip('g')
                     try:
-                        bond_energy = statistical_potential_hash[hborvdw][category][nucleotide_base][amino_acid]["statistical_potential"]
+                        pose_RMS = native_pose_hash[native_pose_file][testset_protein_pose_number_to_store]['RMS']
+                        pose_nativeness = native_pose_hash[native_pose_file][testset_protein_pose_number_to_store]['nativeness']
                     except Exception as e:
-                        print "There was an error: %s" %e
-                    if hborvdw == "hb":
-                        hb_energy = hb_energy + bond_energy
-                    elif hborvdw == "vdw":
-                        vdw_energy = hb_energy + bond_energy
-                if hb_only_or_hb_and_vdw == "hb_only":
-                    vdw_energy = 0;
-                elif hb_only_or_hb_and_vdw == "vdw_only":
-                    hb_energy = 0;
-                total_energy = hb_energy + vdw_energy
+                        print "There was an error in retrieving the pose RMS: %s" %e
 
-                testset_protein_pose_number_to_store,throwaway = testset_protein_pose_number.split('.',1)
-                testset_protein_pose_number_to_store = testset_protein_pose_number_to_store.strip('g')
-                try:
-                    pose_RMS = native_pose_hash[native_pose_file][testset_protein_pose_number_to_store]['RMS']
-                    pose_nativeness = native_pose_hash[native_pose_file][testset_protein_pose_number_to_store]['nativeness']
-                except Exception as e:
-                    print "There was an error in retrieving the pose RMS: %s" %e
-
-                energy_file.write("%s,%s,%s,%s,%s,%s,%s,%s\n" %(testset_protein,testset_protein_pose_number_to_store,hb_energy,vdw_energy,total_energy,pose_RMS,pose_nativeness,native_pose_file))
-            energy_file.close
+                    energy_file.write("%s,%s,%s,%s,%s,%s,%s,%s\n" %(testset_protein,testset_protein_pose_number_to_store,hb_energy,vdw_energy,total_energy,pose_RMS,pose_nativeness,native_pose_file))
+                energy_file.close
 
     def pose_rankings(self,hb_only_or_hb_and_vdw):
         os.system("mkdir ~/bioresearch/compbio/files_wip/best_rankings")

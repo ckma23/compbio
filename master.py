@@ -25,7 +25,7 @@ from library.hbplus_to_dssr_comparer.hbplus_to_dssr_comparer_testset import HbPl
 from library.bondfinalcount.statistical_potential_calculator import StatisticalPotential as StatisticalPotential
 from library.energy_formation.energy_formation_calculator import energyCalculator as energyCalculator
 
-from library.bondfinalcount.bondcounter import Bondcounter
+from library.bondfinalcount.bondcount import Bondcounter
 from library.ftdockprepper.chain_stripping import FTDockChainStripping
 from library.ftdock_middleware.ftdock_middleware import FtdockMiddleware
 from optparse import OptionParser as optionparser # will need a option parsing library
@@ -112,6 +112,8 @@ elif proinput == "hbplushbcli":
 #need to build hbplus for the testset and complexes
 elif proinput == "hbplusvdwcli":
     hbplusclihelper().hbplusvdwcli()
+
+
 elif proinput == "hbplus_parse_baseset":
     HbPlusProcesser().hbplusprocessedreader("hb")
     HbPlusProcesser().hbplusprocessedreader("vdw")
@@ -121,16 +123,24 @@ elif proinput == "hbplus_parse_baseset":
 #     hbplusprocessedreader("vdw")
 elif proinput == "hbplushbvdwcombine":
     HbPlusProcesser().hbplushbandvdwcombiner()
+
+elif proinput == "hbplus_baseset":
+    hbplusclihelper().hbplushbcli()
+    hbplusclihelper().hbplusvdwcli()
+    HbPlusProcesser().hbplusprocessedreader("hb")
+    HbPlusProcesser().hbplusprocessedreader("vdw")
+    HbPlusProcesser().hbplushbandvdwcombiner()
+
 elif proinput == "dssrcli":
-    dssrclihelper().dssrcli()
+    dssrclihelper().dssrcli_test()
 elif proinput == "dssrparse":
     DssrParser().dssrprocessedreader()
 elif proinput == "hbcategorizedssr":
     HbPlusToDssrComparer().hbplushbvdwtodssrcomparer()
     # hbplushbvdwtodssrcomparer()
 elif proinput == "countbonds":
-    Bondcounter().bondcounter()
-    Bondcounter().total_atom_counter()
+    Bondcounter().file_opener()
+    # Bondcounter().total_atom_counter()
 elif proinput == "statistical_potential":
     StatisticalPotential().statistical_potential()
 
@@ -150,9 +160,7 @@ elif proinput == "ftdockgen":
     FtdockMiddleware().ftdock_kicker()
 elif proinput == "ftdockbuild":
     FtdockMiddleware().ftdock_directory_cleaner("home","cma","Users","curtisma")
-    FtdockMiddleware().ftdock_builder(10)
-
-
+    FtdockMiddleware().ftdock_builder(500)
 
 elif proinput == "hbpluscli_testset":
     HbplusCliTestset().hbpluscli("hbplus_processed_hb_files_testset","hb")
@@ -161,12 +169,14 @@ elif proinput == "hbplusprocess_testset":
     HbPlusProcesserTestSet().hbplusprocessed_file_prepper_reader("hbplus_processed_hb_files_testset","hb")
     HbPlusProcesserTestSet().hbplusprocessed_file_prepper_reader("hbplus_processed_vdw_files_testset","vdw")
     HbPlusProcesserTestSet().hbplushbandvdwcombiner()
+
 elif proinput == "dssrcli_testset":
     DssrCliHelperTestset().dssrcli()
 elif proinput == "dssrparse_testset":
     DssrParserTestSet().dssrprocessedreader()
 elif proinput == "bondcategorizer_testset":
     HbPlusToDssrComparerTestset().hbplushbvdwtodssrcomparer()
+
 elif proinput == "energy_calculate_testset":
     energyCalculator().energy_calculator("")
     energyCalculator().energy_calculator("hb_only")

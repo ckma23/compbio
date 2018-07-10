@@ -54,8 +54,8 @@ class DssrParserjson(object):
               helixf=helixform[h]
           except:
               helixf="end"
-          helixtoappend.append("%s %s %s %s %s %s %s %s %s" %(j,strand1,hnt1cleaned,hindex,hiindex,helixf, "nt1", dssr_base_pair_type, dssr_base_pair_name))
-          helixtoappend.append("%s %s %s %s %s %s %s %s %s" %(j,strand2,hnt2cleaned,hindex,hiindex,helixf, "nt2", dssr_base_pair_type, dssr_base_pair_name))
+          helixtoappend.append("%s,%s,%s,%s,%s,%s,%s,%s,%s" %(j,strand1,hnt1cleaned,hindex,hiindex,helixf, "nt1", dssr_base_pair_type, dssr_base_pair_name))
+          helixtoappend.append("%s,%s,%s,%s,%s,%s,%s,%s,%s" %(j,strand2,hnt2cleaned,hindex,hiindex,helixf, "nt2", dssr_base_pair_type, dssr_base_pair_name))
 
         #   hf=hf+0.5
           h+=1
@@ -71,7 +71,7 @@ class DssrParserjson(object):
                 bulge_nb_cleaned = self.dssrtohbplusstringcleaner(bulges_residue)
                 chain = bulges_residue[0]
                 bulges_residue=bulges_residue[2:]
-                bulgetoappend.append("%s %s %s" %(j,chain,bulge_nb_cleaned))
+                bulgetoappend.append("%s,%s,%s" %(j,chain,bulge_nb_cleaned))
             k+=1
         return bulgetoappend
 
@@ -90,7 +90,7 @@ class DssrParserjson(object):
         # print testing
                 chain = hairpinnb[0]
                 hairpinnb=hairpinnb[2:]
-                hairpintoappend.append("%s %s %s"%(j,chain,dssrnbaddedzeros))
+                hairpintoappend.append("%s,%s,%s"%(j,chain,dssrnbaddedzeros))
             k+=1
         return hairpintoappend
         #we need to add the 0s back in for hbplus...
@@ -107,6 +107,6 @@ class DssrParserjson(object):
         # print testing
                 chain = iloopnb[0]
                 iloopnb=iloopnb[2:]
-                ilooptoappend.append("%s %s %s"%(j,chain,dssrnbaddedzeros))
+                ilooptoappend.append("%s,%s,%s"%(j,chain,dssrnbaddedzeros))
             k+=1
         return ilooptoappend

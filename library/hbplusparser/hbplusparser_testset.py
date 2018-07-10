@@ -42,20 +42,20 @@ class HbPlusProcesserTestSet(object):
                 # print nb
                 # if store[6:9].strip() == aa and store[20:23].strip() == nb:
                             if (store[6:9].strip() == aa and store[20:23].strip() == nb):
-                                info4.append(store[0:6])
-                                info5.append(store[6:9])
-                                info6.append(store[9:13])
-                                info1.append(store[14:20])
-                                info2.append(store[20:23])
-                                info3.append(store[24:27])
+                                info4.append(store[0:6].strip())
+                                info5.append(store[6:9].strip())
+                                info6.append(store[9:13].strip())
+                                info1.append(store[14:20].strip())
+                                info2.append(store[20:23].strip())
+                                info3.append(store[24:27].strip())
                     #appears that we need to account if the amino acid or the nucleotide base is either side. however we need to fix the files so hbplus sorted always have nucelotide base is always on first column.
                             elif (store[6:9].strip() == nb and store[20:23].strip() == aa):
-                                info1.append(store[0:6])
-                                info2.append(store[6:9])
-                                info3.append(store[9:13])
-                                info4.append(store[14:20])
-                                info5.append(store[20:23])
-                                info6.append(store[24:27])
+                                info1.append(store[0:6].strip())
+                                info2.append(store[6:9].strip())
+                                info3.append(store[9:13].strip())
+                                info4.append(store[14:20].strip())
+                                info5.append(store[20:23].strip())
+                                info6.append(store[24:27].strip())
                             # print store[9:13]
                 self.hbplusstorefilewriter(pose,info1,info2,info3,info4,info5,info6,hborvdw,protein)
 
@@ -85,7 +85,7 @@ class HbPlusProcesserTestSet(object):
             strandnb = strandnb[0]
         #strip the space and the -
             cleanednb = self.hbplustodssrnbstringcleaner(cleanednb)
-            file.write("%s %s %s %s %s %s %s\n" %(cleanednb,strandnb,col3[i],col4[i],col5[i],col6[i],hborvdw))
+            file.write("%s,%s,%s,%s,%s,%s,%s\n" %(cleanednb,strandnb,col3[i],col4[i],col5[i],col6[i],hborvdw))
         file.close()
 
     def hbplushbandvdwcombiner(self):

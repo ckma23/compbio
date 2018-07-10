@@ -41,6 +41,8 @@ class StatisticalPotential(object):
                         # print count_all_nb_type_cat_type
                         # print count_all_aa_type_cat_type
 
+                        # LETS MAKE SURE  we are dividing each of the hb by hb and the vdw by vdw
+                        # and not hb/all and vdw/all
                         if bond_counted_hash[vdworhb][cat][nb][aa]["count"] == 0:
                             propensity = 0.001 #DEFAULT POTENTIAL VALUE
                         else:

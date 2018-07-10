@@ -7,67 +7,157 @@ import ConfigParser                                         #import the configPa
 import glob                                                 #import the glob library used for regression grabbing
 import fnmatch
 
-class HbPlusToDssrComparer(object):
 
+### DECISION TREE TWO FOR CATEGORIES ###
+#CAT 1 : Helix => A Form ("A") => canonical basepair ("cW-W" where U to A; C to G; wobble) => check atom type for major groove or minor groove
+#CAT 2 : Helix => A Form ("A") => not a canonical base pair or  canonical basepair atom type is on minor groove
+#CAT 3 : Helix => A Form ("A") => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
+#CAT 4 : Helix => Not A Form ("B","Z",".","x") => canonical basepair ("cW-W" where U to A; C to G; wobble) => check atom type for major groove or minor groove
+#CAT 5 : Helix => Not A Form ("B","Z",".","x") => not a canonical base pair => check atom type for major groove or minor groove
+#CAT 6 : Helix => Not A Form ("B","Z",".","x") => not major groove like
+#CAT 7 : Helix => Not A Form ("B","Z",".","x") => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
+#CAT 8 : Not Helix (Hairpin, Bulge, Loops) => base
+#CAT 9 : Not Helix (Hairpin, Bulge, Loops) => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
+
+## major groove atoms in A are: H61,H62,N6,C6,C5,N7,C8,H8
+## minor groove atoms in A are: N2,C2,C5,C4
+## major groove atoms in U are: O4,C4,C5,H5,C6,H6
+## minor groove atoms in U are: H3,N3,C2,O2,N1
+## major groove atoms in C are: H6,C6,C5,H5,C4,N4,H42,H41,N3
+## minor groove atoms in C are: N1,C2,O2
+## major groove atoms in G are: H1,N2,C6,O6,C5,N7,C8,H8
+## minor groove atoms in G are: N2,C2,C5,C4
+
+class HbPlusToDssrComparer(object):
     def hbplushbvdwtodssrcomparer(self):
       i=0
-      os.chdir('/Users/curtisma/bioresearch/hbplushbvdwcombined')
-      listofprocessedhbplusfiles = os.listdir('.')
-      # listofprocessedhbplusfiles = ["pdb1mnb.hbplushbvdwsorted"]
-      for hbplusfile in listofprocessedhbplusfiles:
-        os.chdir('/Users/curtisma/bioresearch/hbplushbvdwcombined')
-        print hbplusfile
-        hbplusfilestore = open(hbplusfile)
-        hbplusfilestore.close
-        os.chdir('/Users/curtisma/bioresearch')
-        os.system('mkdir bondcategorized') #look into os.makedirs
-        os.chdir(os.path.expanduser('~/bioresearch/bondcategorized'))
-        hbplusfile = hbplusfile.replace("pdb","")
-        hbplusfile = hbplusfile.replace("hbplushbvdwsorted","")
-        hbplusfile+="bondcategorized"
-        os.system('rm %s' %hbplusfile)
-        # for hbline in hbplusfilestore:
-        #     os.chdir('/Users/curtisma/bioresearch/DSSRparsedfiles')
-        #     listofprocesseddssrfiles = os.listdir('.')
-        #     print listofprocesseddssrfiles
-        #     listofprocesseddssrfiles = ["pdb1mnb.dsr"]
-        #     # listofprocesseddssrfiles = ""
-        #     alhs,arhs=hbplusfile.split(".",1)
-        #     print alhs
-        #     for filematch in os.listdir('.'):
-        #         print filematch
-        #         alhs = "*" + alhs + "*"
-        #         if fnmatch.fnmatch(filematch,alhs):
-        #             "HIT"
-        #             print listofprocesseddssrfiles
-        #             listofprocesseddssrfiles = filematch
-        #     #         print listofprocesseddssrfiles
-        #     for dssrfile in listofprocesseddssrfiles:
-        #       os.chdir('/Users/curtisma/bioresearch/DSSRparsedfiles')
-        #       dssrfilestore = open(dssrfile)
-        #       dssrfile=dssrfile.strip("pdb")
-        #       lhs,rhs=dssrfile.split(".",1)
-        #       filenamestring="%s.bondcategorized" %(lhs)
-        #       os.chdir('/Users/curtisma/bioresearch/bondcategorized')
-        #       for dssrline in dssrfilestore:
-        #         dssrcomparer(hbline,dssrline,filenamestring)
-        for hbline in hbplusfilestore:
-            os.chdir('/Users/curtisma/bioresearch/DSSRparsedfiles')
-            # listofprocesseddssrfiles = os.listdir('.')
-            # listofprocesseddssrfiles = ""
+      #move into the directory where there are all hbplus files!
+      os.system("mkdir ~/bioresearch/compbio/files_wip/bondcategorized_baseset")
+      os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/hbplus_hb_vdw_combined_baseset'))
+      #get the list of files
+      list_of_processed_hbplus_files = os.listdir('.')
+    #   list_of_processed_hbplus_files = ["pdb1mnb.hbplushbvdwsorted"]
+      for hbplusfile in list_of_processed_hbplus_files:
+        # reinforce the directory incase this changes at the end of the loop.
+        os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/hbplus_hb_vdw_combined_baseset'))
+        # print hbplusfile
+        #load and open the file of the protein baseset
+        # hbplusfilestore = open(hbplusfile)
+        # NOT SURE IF THIS CLOSE is needed.
+        # hbplusfilestore.close
+        with open(hbplusfile,'rb') as hbplusfilestore:
+            hbplus_filestore = csv.reader(hbplusfilestore)
+            # lets move into the newly created directory
+            os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/bondcategorized_baseset'))
+            hbplusfile = hbplusfile.replace("pdb","")
+            hbplusfile = hbplusfile.replace("hbplushbvdwsorted","")
+            hbplusfile+="bondcategorized"
+            os.system('rm %s' %hbplusfile)
+            os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/DSSRparsed_baseset'))
             alhs,arhs=hbplusfile.split(".",1)
             for filematch in os.listdir('.'):
                 alhs = "*" + alhs + "*"
                 if fnmatch.fnmatch(filematch,alhs):
                     dssrfile = filematch
-            # for dssrfile in listofprocesseddssrfiles:
-            os.chdir('/Users/curtisma/bioresearch/DSSRparsedfiles')
-            dssrfilestore = open(dssrfile)
-            dssrfilestore.close
+                # for dssrfile in listofprocesseddssrfiles:
             storing=dssrfile.strip("pdb")
             lhs,rhs=storing.split(".",1)
             filenamestring="%s.bondcategorized" %(lhs)
-            os.chdir('/Users/curtisma/bioresearch/bondcategorized')
+
+            # REDO THIS SO WE LOAD THE DSSR FILE IN MEMORY INSTEAD OF OPENING EACH TIME!!!!!!!!
+            # OPEN THE DSSR FILE AHEAD OF TIME!!!!!!!
+            for hbline in hbplus_filestore:
+                # print hbline
+                os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/DSSRparsed_baseset'))
+                # find the matching DSSR file name...
+                # alhs,arhs=hbplusfile.split(".",1)
+                # for filematch in os.listdir('.'):
+                #     alhs = "*" + alhs + "*"
+                #     if fnmatch.fnmatch(filematch,alhs):
+                #         dssrfile = filematch
+                # # for dssrfile in listofprocesseddssrfiles:
+                # storing=dssrfile.strip("pdb")
+                # lhs,rhs=storing.split(".",1)
+                # filenamestring="%s.bondcategorized" %(lhs)
+                # os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/DSSRparsed_baseset'))
+                # dssrfilestore = open(dssrfile)
+                # with open(dssrfile,'rb') as dssrfilestore:
+                #     dssr_filestore  = csv.reader(dssrfilestore)
+                    # this line is needed so bond cateogirzer knows where to write to..
+                with open(dssrfile,'rb') as dssrfilestore:
+                    dssr_filestore  = csv.reader(dssrfilestore)
+                    os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/bondcategorized_baseset'))
+                    for dssrline in dssr_filestore:
+                        # print dssrline
+                        # print dssrline[0]
+                        # print dssrline[1]
+                        # print dssrline[2]
+                        self.dssrcomparer(hbline,dssrline,filenamestring)
+
+
+
+
+
+    # def hbplushbvdwtodssrcomparer(self):
+    #   i=0
+    #   #move into the directory where there are all hbplus files!
+    #   os.system("mkdir ~/bioresearch/compbio/files_wip/bondcategorized_baseset")
+    #   os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/hbplus_hb_vdw_combined_baseset'))
+    #   #get the list of files
+    #   list_of_processed_hbplus_files = os.listdir('.')
+    # #   list_of_processed_hbplus_files = ["pdb1mnb.hbplushbvdwsorted"]
+    #   for hbplusfile in list_of_processed_hbplus_files:
+    #     # reinforce the directory incase this changes at the end of the loop.
+    #     os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/hbplus_hb_vdw_combined_baseset'))
+    #     # print hbplusfile
+    #     #load and open the file of the protein baseset
+    #     # hbplusfilestore = open(hbplusfile)
+    #     # NOT SURE IF THIS CLOSE is needed.
+    #     # hbplusfilestore.close
+    #     with open(hbplusfile,'rb') as hbplusfilestore:
+    #         hbplus_filestore = csv.reader(hbplusfilestore)
+    #         # lets move into the newly created directory
+    #         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/bondcategorized_baseset'))
+    #         hbplusfile = hbplusfile.replace("pdb","")
+    #         hbplusfile = hbplusfile.replace("hbplushbvdwsorted","")
+    #         hbplusfile+="bondcategorized"
+    #         os.system('rm %s' %hbplusfile)
+    #
+    #
+    #         # REDO THIS SO WE LOAD THE DSSR FILE IN MEMORY INSTEAD OF OPENING EACH TIME!!!!!!!!
+    #         # OPEN THE DSSR FILE AHEAD OF TIME!!!!!!!
+    #         for hbline in hbplus_filestore:
+    #             # print hbline
+    #             os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/DSSRparsed_baseset'))
+    #             # find the matching DSSR file name...
+    #             alhs,arhs=hbplusfile.split(".",1)
+    #             for filematch in os.listdir('.'):
+    #                 alhs = "*" + alhs + "*"
+    #                 if fnmatch.fnmatch(filematch,alhs):
+    #                     dssrfile = filematch
+    #             # for dssrfile in listofprocesseddssrfiles:
+    #             storing=dssrfile.strip("pdb")
+    #             lhs,rhs=storing.split(".",1)
+    #             filenamestring="%s.bondcategorized" %(lhs)
+    #             os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/DSSRparsed_baseset'))
+    #             # dssrfilestore = open(dssrfile)
+    #             with open(dssrfile,'rb') as dssrfilestore:
+    #                 dssr_filestore  = csv.reader(dssrfilestore)
+    #                 # this line is needed so bond cateogirzer knows where to write to..
+    #                 os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/bondcategorized_baseset'))
+    #                 for dssrline in dssr_filestore:
+    #                     # print dssrline
+    #                     # print dssrline[0]
+    #                     # print dssrline[1]
+    #                     # print dssrline[2]
+    #                     self.dssrcomparer(hbline,dssrline,filenamestring)
+
+
+
+
+            #not sure if this close makes sense?
+            # dssrfilestore.close
+            # IS THIS NECESASRY?
             # print dssrfile
             # print dssrfilestore
             # i+=1
@@ -84,8 +174,12 @@ class HbPlusToDssrComparer(object):
             #     print "%s" %e
             # # print "is it skipping this"
             # WE HAVE TO KEEP THIS A FOR LOOP in case an HB line matches more than once in dsr i.e. can be a hairpin or a helices
-            for dssrline in dssrfilestore:
-              self.dssrcomparer(hbline,dssrline,filenamestring)
+            # for dssrline in dssr_filestore:
+            #     print dssrline
+            #     print dssrline[0]
+            #     print dssrline[1]
+            #     print dssrline[2]
+            #     self.dssrcomparer(hbline,dssrline,filenamestring)
 
     # def dssr_parsed_file_opener(pdbfile):
     #     os.chdir(os.path.expanduser('~/bioresearch/DSSRparsedfiles'))
@@ -94,14 +188,16 @@ class HbPlusToDssrComparer(object):
     #     pdbfile+=".dsr"
     #     dssrfilestore=open(pdbfile)
 
-
+    # result is the category
     def dssrcomparer(self,hbline,dssrline,filenamestring):
-      hblinecompare=hbline.split(' ')
-      dssrcompare=dssrline.strip().split(' ')
+    #   hblinecompare=hbline.split(' ')
+      hblinecompare = hbline
+    #   dssrcompare=dssrline.strip().split(' ')
+      dssrcompare = dssrline
       # this dssrline is returning a really long black space after it
       # print "%s hi" %dssrline
       # note match the 2d structure, check that it is the same chain, then check if it's the same residue name from hbPlus and DSSR
-      if (dssrcompare[0] in ["hairpins","bulges","loops"] and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
+      if (dssrcompare[0] in ["hairpins","bulges","iloops"] and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
         result = self.non_helix_form_comparer(hblinecompare[2].strip())
         self.bondcategorizedwriter(filenamestring,result,hbline,dssrcompare)
       # deprecating stems
@@ -310,7 +406,10 @@ class HbPlusToDssrComparer(object):
 
     def bondcategorizedwriter(self,filenamestring,category,hbline,dssrcompare):
         final_file = open(filenamestring,"a")
-        hbline=hbline.strip('\n')
-        dssrcompare=' '.join(dssrcompare).strip('\n').strip()
-        final_file.write("%s %s %s\n" %(category,hbline,dssrcompare))
+        # hbline=hbline.strip('\n')
+        hbline=','.join(hbline)
+        # dssrcompare=','.join(dssrcompare).strip('\n').strip()
+        dssrcompare=','.join(dssrcompare)
+        #put a comma for the category! This will put all the correct commas now
+        final_file.write("%s,%s,%s\n" %(category,hbline,dssrcompare))
         final_file.close

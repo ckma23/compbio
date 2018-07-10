@@ -18,7 +18,8 @@ class StructureCounter(object):
 
     def structure_counter(self):
         structure_store = StructureCounter().structure_hasher()
-        os.chdir(os.path.expanduser('~/bioresearch/compbio/pdbfiles'))
+        os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/base_complexes_pdb'))
+        # os.chdir(os.path.expanduser('~/bioresearch/compbio/pdbfiles'))
         listofcategorizedfiles = os.listdir('.')
         for pdbfile in listofcategorizedfiles:
             lhs,rhs = pdbfile.split('.')

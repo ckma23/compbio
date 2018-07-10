@@ -3,4 +3,5 @@ bin/x3dna-dssr
 bin/testfiletoignore.txt
 bin/fftw-2.1.5
 bin/ftdock-2-dev2
+bin/dssr-*
 files_wip/*

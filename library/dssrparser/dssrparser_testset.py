@@ -61,6 +61,7 @@ class DssrParserTestSet(object):
       os.system("rm %s" %filenamestring)
       file = open(filenamestring,"a")
       print "%s has been created" %filenamestring
+      print os.getcwd()
       for line in dssrstore:
         file.write("%s\n" %line)
     #   os.chdir('/Users/curtisma/bioresearch')

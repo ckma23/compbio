@@ -22,45 +22,52 @@ class HbPlusToDssrComparerTestset(object):
         for protein_testset_complex in list_of_protein_testset_complexes:
             #make the directory that the generated files will go into individual protein folders.
             os.system("mkdir ~/bioresearch/compbio/files_wip/bondcategorized_testset/%s" %protein_testset_complex)
+            os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/bondcategorized_testset/%s' %protein_testset_complex))
+            #clean up the folder everytime we run this
+            os.system('rm *.bondcategorized')
             os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/hbplus_hb_vdw_combined_testset/%s' %protein_testset_complex))
             listofprocessedhbplusfiles = os.listdir('.')
             for hbplusfile in listofprocessedhbplusfiles:
                 #MAY NEED TO KEEP THIS??
                 os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/hbplus_hb_vdw_combined_testset/%s' %protein_testset_complex))
-                hbplusfilestore = open(hbplusfile)
-                hbplusfilestore.close
-                for hbline in hbplusfilestore:
-                    #MAY NEED TO KEEP THIS??
-                    os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/DSSRparsed_testset/%s'%protein_testset_complex))
-                    # alhs,arhs=hbplusfile.split(".",1)
-                    for filematch in os.listdir('.'):
-                        filename_lhs = hbplusfile + "*"
-                        if fnmatch.fnmatch(filematch,filename_lhs):
-                            dssrfile = filematch
+                # hbplusfilestore = open(hbplusfile)
+                # hbplusfilestore.close
+                with open(hbplusfile,'rb') as hbplus_meta_filestore:
+                    hbplusfilestore = csv.reader(hbplus_meta_filestore)
+                    for hbline in hbplusfilestore:
+                        #MAY NEED TO KEEP THIS??
                         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/DSSRparsed_testset/%s'%protein_testset_complex))
-                        # os.chdir('/Users/curtisma/bioresearch/DSSRparsedfiles')
-                        dssrfilestore = open(dssrfile)
-                        dssrfilestore.close
-                        filename_lhs = filename_lhs.strip("*")
-                        # storing=dssrfile.strip("pdb")
-                        # lhs,rhs=storing.split(".",1)
-                        filenamestring="%s.bondcategorized" %(filename_lhs)
-                        # os.chdir('/Users/curtisma/bioresearch/bondcategorized')
-            # WE HAVE TO KEEP THIS A FOR LOOP in case an HB line matches more than once in dsr i.e. can be a hairpin or a helices
-                        for dssrline in dssrfilestore:
-                            self.dssrcomparer(hbline,dssrline,filenamestring,protein_testset_complex)
+                        # alhs,arhs=hbplusfile.split(".",1)
+                        for filematch in os.listdir('.'):
+                            filename_lhs = hbplusfile + "*"
+                            if fnmatch.fnmatch(filematch,filename_lhs):
+                                dssrfile = filematch
+                            os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/DSSRparsed_testset/%s'%protein_testset_complex))
+                            # os.chdir('/Users/curtisma/bioresearch/DSSRparsedfiles')
+                        with open(dssrfile,'rb') as dssrfilestore:
+                            dssr_filestore  = csv.reader(dssrfilestore)
+                            filename_lhs = filename_lhs.strip("*")
+                            # storing=dssrfile.strip("pdb")
+                            # lhs,rhs=storing.split(".",1)
+                            filenamestring="%s.bondcategorized" %(filename_lhs)
+                            # os.chdir('/Users/curtisma/bioresearch/bondcategorized')
+                # WE HAVE TO KEEP THIS A FOR LOOP in case an HB line matches more than once in dsr i.e. can be a hairpin or a helices
+                            for dssrline in dssr_filestore:
+                                self.dssrcomparer(hbline,dssrline,filenamestring,protein_testset_complex)
 
 
 
     def dssrcomparer(self,hbline,dssrline,filenamestring,protein_testset_complex):
-      hblinecompare=hbline.split(' ')
-      dssrcompare=dssrline.strip().split(' ')
+    #   hblinecompare=hbline.split(' ')
+      hblinecompare=hbline
+    #   dssrcompare=dssrline.strip().split(' ')
+      dssrcompare = dssrline
       # this dssrline is returning a really long black space after it
       # print "%s hi" %dssrline
       # note match the 2d structure, check that it is the same chain, then check if it's the same residue name from hbPlus and DSSR
-      if (dssrcompare[0] in ["hairpins","bulges","loops"] and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
+      if (dssrcompare[0] in ["hairpins","bulges","iloops"] and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
         result = self.non_helix_form_comparer(hblinecompare[2].strip())
-        self.bondcategorizedwriter(filenamestring,result,hbline,dssrcompare)
+        self.bondcategorizedwriter(filenamestring,result,hbline,dssrcompare,protein_testset_complex)
       # deprecating stems
       # elif (dssrcompare[0] == "stems" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
       #   print dssrcompare[0]
@@ -74,6 +81,7 @@ class HbPlusToDssrComparerTestset(object):
             result = self.helix_comparer(dssrcompare[5].strip(),hblinecompare[2].strip(),dssrcompare[7].strip(),residue_type)
         except Exception as e:
             result = "error: %s" %e
+            print result
         self.bondcategorizedwriter(filenamestring,result,hbline,dssrcompare,protein_testset_complex)
 
     def helix_comparer(self,aformmarker,nbatom,dssr_canonical_pair_determinant,nucleotide_residue_type):
@@ -267,8 +275,10 @@ class HbPlusToDssrComparerTestset(object):
     def bondcategorizedwriter(self,filenamestring,category,hbline,dssrcompare,protein_testset_complex):
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/bondcategorized_testset/%s'%protein_testset_complex))
         final_file = open(filenamestring,"a")
-        hbline=hbline.strip('\n')
-        dssrcompare=' '.join(dssrcompare).strip('\n').strip()
-        final_file.write("%s %s %s\n" %(category,hbline,dssrcompare))
+        # hbline=hbline.strip('\n')
+        hbline=','.join(hbline)
+        # dssrcompare=' '.join(dssrcompare).strip('\n').strip()
+        dssrcompare=','.join(dssrcompare)
+        final_file.write("%s,%s,%s\n" %(category,hbline,dssrcompare))
         time.sleep(.05)
         final_file.close
