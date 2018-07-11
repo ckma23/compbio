@@ -49,20 +49,40 @@ class HbPlusToDssrComparer(object):
             hbplus_filestore = csv.reader(hbplusfilestore)
             # lets move into the newly created directory
             os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/bondcategorized_baseset'))
-            hbplusfile = hbplusfile.replace("pdb","")
-            hbplusfile = hbplusfile.replace("hbplushbvdwsorted","")
-            hbplusfile+="bondcategorized"
+            # hbplusfile = hbplusfile.replace("pdb","")
+            # hbplusfile = hbplusfile.replace("hbplushbvdwsorted","")
+            # hbplusfile+="bondcategorized"
             os.system('rm %s' %hbplusfile)
-            os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/DSSRparsed_baseset'))
-            alhs,arhs=hbplusfile.split(".",1)
-            for filematch in os.listdir('.'):
-                alhs = "*" + alhs + "*"
-                if fnmatch.fnmatch(filematch,alhs):
-                    dssrfile = filematch
-                # for dssrfile in listofprocesseddssrfiles:
-            storing=dssrfile.strip("pdb")
-            lhs,rhs=storing.split(".",1)
-            filenamestring="%s.bondcategorized" %(lhs)
+
+            # os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/DSSRparsed_baseset'))
+            # alhs,arhs=hbplusfile.split(".",1)
+            # for filematch in os.listdir('.'):
+            #     alhs = "*" + alhs + "*"
+            #     if fnmatch.fnmatch(filematch,alhs):
+            #         dssrfile = filematch
+            #     # for dssrfile in listofprocesseddssrfiles:
+            # storing=dssrfile.strip("pdb")
+            # lhs,rhs=storing.split(".",1)
+            # hbplusfile_meta = hbplusfile.replace("pdb","")
+            # hbplusfile_meta = hbplusfile_meta.replace("hbplushbvdwsorted","")
+            # alhs,arhs=hbplusfile_metha.split(".",1)
+
+            hbplusfile = hbplusfile.replace("hbplushbvdwsorted","")
+            filenamestring = hbplusfile.replace("pdb","")
+            filenamestring = hbplusfile.replace(".","")
+            filenamestring = "%s.bondcategorized" %filenamestring
+
+            print hbplusfile
+            # hbplushbplusfile = hbplushbplusfile.strip("pdb")
+            #matching dssr_file
+            dssrfile = hbplusfile + "dsr"
+
+            print dssrfile
+
+
+
+            #NEED TO REWRITE THIS MODULE
+            # for filematch in os.listdir('.'):
 
             # REDO THIS SO WE LOAD THE DSSR FILE IN MEMORY INSTEAD OF OPENING EACH TIME!!!!!!!!
             # OPEN THE DSSR FILE AHEAD OF TIME!!!!!!!
@@ -84,15 +104,20 @@ class HbPlusToDssrComparer(object):
                 # with open(dssrfile,'rb') as dssrfilestore:
                 #     dssr_filestore  = csv.reader(dssrfilestore)
                     # this line is needed so bond cateogirzer knows where to write to..
-                with open(dssrfile,'rb') as dssrfilestore:
-                    dssr_filestore  = csv.reader(dssrfilestore)
-                    os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/bondcategorized_baseset'))
-                    for dssrline in dssr_filestore:
-                        # print dssrline
-                        # print dssrline[0]
-                        # print dssrline[1]
-                        # print dssrline[2]
-                        self.dssrcomparer(hbline,dssrline,filenamestring)
+
+                #WRAP A TRY STATEMENT IF the file exists
+                try:
+                    with open(dssrfile,'rb') as dssrfilestore:
+                        dssr_filestore  = csv.reader(dssrfilestore)
+                        os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/bondcategorized_baseset'))
+                        for dssrline in dssr_filestore:
+                            # print dssrline
+                            # print dssrline[0]
+                            # print dssrline[1]
+                            # print dssrline[2]
+                            self.dssrcomparer(hbline,dssrline,filenamestring)
+                except Exception as e:
+                    print "there was an error: %s" %e
 
 
 

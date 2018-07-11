@@ -154,7 +154,7 @@ class HbPlusProcesser(object):
     #   os.system("mkdir hbplushbvdwcombined")
         # os.chdir("/Users/curtisma/bioresearch/hbplushbsortedfiles")
         listofprocessedhbplusfiles = os.listdir('.')
-        listofprocessedhbplusfiles = ["1mnb.bondcategorized"]
+        # listofprocessedhbplusfiles = ["1mnb.bondcategorized"]
         print listofprocessedhbplusfiles
         for i in listofprocessedhbplusfiles:
             os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/hbplus_sorted_hb_files_baseset'))

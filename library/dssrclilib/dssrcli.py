@@ -37,7 +37,7 @@ class dssrclihelper(object):
         #for each of the proteins in the baseset
         for base_complex_pdb in base_complexes_pdbs:
             #lets prep the string to feed into DSSR
-            folder_stringprep=('~/bioresearch/compbio/pdbfiles/%s' %base_complex_pdb)
+            folder_stringprep=('~/bioresearch/compbio/files_wip/base_complexes_pdb/%s' %base_complex_pdb)
             # move into the bin folder where the executable dssr is
             os.chdir(os.path.expanduser('~/bioresearch/compbio/bin'))
             #prepare the json output file name

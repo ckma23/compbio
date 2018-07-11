@@ -135,6 +135,11 @@ elif proinput == "dssrcli":
     dssrclihelper().dssrcli_test()
 elif proinput == "dssrparse":
     DssrParser().dssrprocessedreader()
+
+elif proinput == "dssr_cli_parse_combine":
+    dssrclihelper().dssrcli_test()
+    DssrParser().dssrprocessedreader()
+
 elif proinput == "hbcategorizedssr":
     HbPlusToDssrComparer().hbplushbvdwtodssrcomparer()
     # hbplushbvdwtodssrcomparer()
@@ -143,7 +148,10 @@ elif proinput == "countbonds":
     # Bondcounter().total_atom_counter()
 elif proinput == "statistical_potential":
     StatisticalPotential().statistical_potential()
-
+#smashing it together does not seem to be working
+elif proinput == "bound_count_stat_pot_baseset":
+    Bondcounter().file_opener()
+    StatisticalPotential().statistical_potential()
 
 elif proinput == "pdbsplit":
     FTDockChainStripping().pdbfile_splitter_rna_protein("protein_seperated_pdbfiles_baseset","rna_seperated_pdbfiles_baseset","base_complexes_pdb")
@@ -160,6 +168,7 @@ elif proinput == "ftdockgen":
     FtdockMiddleware().ftdock_kicker()
 elif proinput == "ftdockbuild":
     FtdockMiddleware().ftdock_directory_cleaner("home","cma","Users","curtisma")
+    FtdockMiddleware().ftdock_directory_cleaner("Users","curtisma","home","cma")
     FtdockMiddleware().ftdock_builder(500)
 
 elif proinput == "hbpluscli_testset":
@@ -185,6 +194,7 @@ elif proinput == "energy_calculate_testset_ranking":
     energyCalculator().pose_rankings("")
     energyCalculator().pose_rankings("hb_only")
     energyCalculator().pose_rankings("vdw_only")
+
 elif proinput == "completerun":
     hbplusprocessedreader("hb")
     hbplusprocessedreader("vdw")

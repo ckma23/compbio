@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --job-name=curtis_ma_test
+#SBATCH --job-name=dssrcurtis_ma_test
 #SBATCH --cpus-per-task=8
-#SBATCH --output=ftdock_build.txt
+#SBATCH --output=dssr.txt
 
-python master.py ftdockbuild
+python master.py dssrcli_testset
