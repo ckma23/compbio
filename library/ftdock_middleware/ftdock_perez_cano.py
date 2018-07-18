@@ -10,7 +10,7 @@ class FtdockPerezCano(object):
         # os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/perez_cano_rankings'))
         # os.system("rm *.perez_cano_scored")
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/ftdockresults'))
-        pere_cano_matrix = "~/bioresearch/compbio/bin/ftdock-2-dev2/scripts-2.0.3"
+        pere_cano_matrix = "~/bioresearch/compbio/bin/ftdock-2-dev2/scripts-2.0.3/"
         ftdocked_pdb_files = os.listdir('.')
         for ftdockedpdbfile in ftdocked_pdb_files:
             os.chdir(os.path.expanduser('~/bioresearch/compbio/bin/ftdock-2-dev2/progs-2.0.3'))

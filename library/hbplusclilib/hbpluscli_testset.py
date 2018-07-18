@@ -31,8 +31,10 @@ class HbplusCliTestset(object):
                 lhs_pose,rhs=pose.split(".",1)
                 stringprep=('~/bioresearch/compbio/files_wip/ftdockbuiltposes/%s/%s' %(protein_complex,pose))
                 os.system('%s %s > ~/bioresearch/compbio/logs/hbplus%s.txt &' %(hbpluscommand,stringprep,vdw_or_hb))
+                # want to implement an await solution here same as ftdock, it's memory leaking or thread leaking. Jumping to the mv command
                 # this was having file movement issues as it was flying through the directory
-                time.sleep(.050)
+                time.sleep(.100)
                 os.system("mv %s.%s ~/bioresearch/compbio/files_wip/%s/%s" %(lhs_pose,hb_vdw_file_format,folder_name,protein_complex))
                 # this was having file movement issues as it was flying through the directory
-                time.sleep(.050)
+                time.sleep(.100)
+                os.system("mv Complex* ~/bioresearch/compbio/files_wip/%s/%s" %(folder_name,protein_complex))    

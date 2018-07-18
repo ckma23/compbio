@@ -186,6 +186,8 @@ elif proinput == "dssrparse_testset":
 elif proinput == "bondcategorizer_testset":
     HbPlusToDssrComparerTestset().hbplushbvdwtodssrcomparer()
 
+#run pymol wrapper for the native poses here....
+
 elif proinput == "energy_calculate_testset":
     energyCalculator().energy_calculator("")
     energyCalculator().energy_calculator("hb_only")
@@ -194,6 +196,7 @@ elif proinput == "energy_calculate_testset_ranking":
     energyCalculator().pose_rankings("")
     energyCalculator().pose_rankings("hb_only")
     energyCalculator().pose_rankings("vdw_only")
+
 
 elif proinput == "completerun":
     hbplusprocessedreader("hb")

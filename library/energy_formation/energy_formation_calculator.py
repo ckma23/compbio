@@ -8,6 +8,7 @@ import glob                                                 #import the glob lib
 import fnmatch
 #need the Statistical Potential Hash
 from library.bondfinalcount.statistical_potential_calculator import StatisticalPotential as StatisticalPotential
+from library.energy_formation.energy_balancer import energyknockdown as energyknockdown
 
 class energyCalculator(object):
     #given the protein name, load in the complex # and the RMS and the native or nonnative column

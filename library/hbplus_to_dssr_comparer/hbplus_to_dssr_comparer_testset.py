@@ -38,23 +38,27 @@ class HbPlusToDssrComparerTestset(object):
                         #MAY NEED TO KEEP THIS??
                         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/DSSRparsed_testset/%s'%protein_testset_complex))
                         # alhs,arhs=hbplusfile.split(".",1)
-                        for filematch in os.listdir('.'):
-                            filename_lhs = hbplusfile + "*"
-                            if fnmatch.fnmatch(filematch,filename_lhs):
-                                dssrfile = filematch
-                            os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/DSSRparsed_testset/%s'%protein_testset_complex))
+                        # for filematch in os.listdir('.'):
+                        #     filename_lhs = hbplusfile + "*"
+                        #     if fnmatch.fnmatch(filematch,filename_lhs):
+                        #         dssrfile = filematch
+                        filematch_lhs,throwaway = hbplusfile.split('.',1)
+                        dssrfile = filematch_lhs + ".dsr"
+                            # os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/DSSRparsed_testset/%s'%protein_testset_complex))
                             # os.chdir('/Users/curtisma/bioresearch/DSSRparsedfiles')
-                        with open(dssrfile,'rb') as dssrfilestore:
-                            dssr_filestore  = csv.reader(dssrfilestore)
-                            filename_lhs = filename_lhs.strip("*")
-                            # storing=dssrfile.strip("pdb")
-                            # lhs,rhs=storing.split(".",1)
-                            filenamestring="%s.bondcategorized" %(filename_lhs)
-                            # os.chdir('/Users/curtisma/bioresearch/bondcategorized')
-                # WE HAVE TO KEEP THIS A FOR LOOP in case an HB line matches more than once in dsr i.e. can be a hairpin or a helices
-                            for dssrline in dssr_filestore:
-                                self.dssrcomparer(hbline,dssrline,filenamestring,protein_testset_complex)
-
+                        try:
+                            with open(dssrfile,'rb') as dssrfilestore:
+                                dssr_filestore  = csv.reader(dssrfilestore)
+                                filename_lhs = filename_lhs.strip("*")
+                                # storing=dssrfile.strip("pdb")
+                                # lhs,rhs=storing.split(".",1)
+                                filenamestring="%s.bondcategorized" %(filename_lhs)
+                                # os.chdir('/Users/curtisma/bioresearch/bondcategorized')
+                    # WE HAVE TO KEEP THIS A FOR LOOP in case an HB line matches more than once in dsr i.e. can be a hairpin or a helices
+                                for dssrline in dssr_filestore:
+                                    self.dssrcomparer(hbline,dssrline,filenamestring,protein_testset_complex)
+                        except Exception as e:
+                            print "there was an error: %s" %e
 
 
     def dssrcomparer(self,hbline,dssrline,filenamestring,protein_testset_complex):

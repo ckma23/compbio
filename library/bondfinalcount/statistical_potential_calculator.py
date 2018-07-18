@@ -6,19 +6,21 @@ import math
 from bondcount import Bondcounter
 from structurecount import StructureCounter
 
+from library.energy_formation.energy_balancer import energyknockdown as energyknockdown
+
 class StatisticalPotential(object):
     def statistical_potential(self):
         #lets get all the bonds counted!
         # final_bond_counted_store = Bondcounter().bondcounter()
         bond_counted_hash = Bondcounter().file_opener()
-        print bond_counted_hash
+        # print bond_counted_hash
         #lets get all the nucleotide_base and amino_acid counted!
         # structure_hash = StructureCounter().structure_hasher
 
         structure_counted_hash = StructureCounter().structure_counter()
-        print structure_counted_hash
+        # print structure_counted_hash
         for vdworhb in bond_counted_hash.keys():
-            for cat in bond_counted_hash[vdworhb].keys():
+            for cat in sorted(bond_counted_hash[vdworhb].keys()):
                 for nb in bond_counted_hash[vdworhb][cat].keys():
                     for aa in bond_counted_hash[vdworhb][cat][nb].keys():
                         count_all_pairs_cat = 0
@@ -60,14 +62,30 @@ class StatisticalPotential(object):
                         try:
                             statistical_potential=-1*RT*math.log(propensity)
                         except Exception as e:
-                            print "error in calculating statistical_potential defaulting to 0.001"
+                            # print "error in calculating statistical_potential defaulting to 0.001"
                             propensity = 0.001
                             statistical_potential=-1*RT*math.log(propensity)
 
                         bond_counted_hash[vdworhb][cat][nb][aa]["statistical_potential"] = statistical_potential
-                        print "%s %s %s %s %s" %(vdworhb,cat,nb,aa,bond_counted_hash[vdworhb][cat][nb][aa]["statistical_potential"])
-        print bond_counted_hash
+                        print "%s,%s,%s,%s,%s" %(vdworhb,cat,nb,aa,bond_counted_hash[vdworhb][cat][nb][aa]["statistical_potential"])
+        # print bond_counted_hash
+        balance_stat_potential = self.energy_balancer(bond_counted_hash)
+        print bond_counted_hash["vdw"]["CAT_9"]["A"]
         return bond_counted_hash
+
+    # this is mean to rebalance the statistical_potentials
+    def energy_balancer(self,bond_counted_hash):
+        balance_hash = energyknockdown().energyknockdownretriever()
+        for vdworhb in bond_counted_hash.keys():
+            for cat in sorted(bond_counted_hash[vdworhb].keys()):
+                for nb in bond_counted_hash[vdworhb][cat].keys():
+                    for aa in bond_counted_hash[vdworhb][cat][nb].keys():
+                        bond_counted_hash[vdworhb][cat][nb][aa]["statistical_potential"] = bond_counted_hash[vdworhb][cat][nb][aa]["statistical_potential"] * balance_hash[vdworhb][cat]
+
+        print balance_hash
+        return bond_counted_hash
+
+
 
     def statistical_poential(self,propensity):
         RT=.59

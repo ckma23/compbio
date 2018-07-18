@@ -89,16 +89,16 @@ class Bondcounter(object):
             print number_by_CAT
             for cat in sorted(number_by_CAT.keys()):
                 print "%s,%s" %(cat,number_by_CAT[cat])
-                
+
             print "\nBY NB TO AA BY CAT print friendly %s" %vdworhb
             category=["CAT_1","CAT_2","CAT_3","CAT_4","CAT_5","CAT_6","CAT_7","CAT_8","CAT_9"]
             nucleotide_base =["A","C","U","G"]
             amino_acid=["ARG","ALA","ASN","ASP","GLN","GLU","GLY","CYS","HIS","ILE","LEU","LYS","MET","PHE","PRO","SER","THR","TRP","TYR","VAL"]
             vdw_or_hb=["hb","vdw"]
             for cat in category:
-                for aa in amino_acid:
-                    for nb in nucleotide_base:
-                        print "%s,%s,%s,%s" %(cat,aa,nb,final_bond_counted_store[vdworhb][cat][nb][aa]["count"])
+                for nb in nucleotide_base:
+                    for aa in amino_acid:
+                        print "%s,%s,%s,%s" %(cat,nb,aa,final_bond_counted_store[vdworhb][cat][nb][aa]["count"])
         print "\nBY BONDTYPE %s" %vdworhb
         print number_by_bondtype
 

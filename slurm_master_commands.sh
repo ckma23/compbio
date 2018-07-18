@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --job-name=dssrcurtis_ma_test
+#SBATCH --job-name=stat_pot_curtis_ma_test
 #SBATCH --cpus-per-task=8
-#SBATCH --output=dssr.txt
+#SBATCH --output=stat_pot.txt
 
-python master.py dssrcli_testset
+python master.py statistical_poential
