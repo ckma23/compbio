@@ -159,6 +159,9 @@ elif proinput == "pdbsplit":
 elif proinput == "preprocessftdock":
     FTDockChainStripping().preprocess_ftdock("rna")
     FTDockChainStripping().preprocess_ftdock("protein")
+elif proinput == "testprotein_pdb_combine":
+    FTDockChainStripping().pdb_file_combine_rms_calc()
+
 elif proinput == "copyfilestosjsucluster":
     FTDockChainStripping().file_copier_to_sjsu_cluster_testset("base")
     FTDockChainStripping().file_copier_to_sjsu_cluster_testset("test")
@@ -177,6 +180,8 @@ elif proinput == "hbpluscli_testset":
 elif proinput == "hbplusprocess_testset":
     HbPlusProcesserTestSet().hbplusprocessed_file_prepper_reader("hbplus_processed_hb_files_testset","hb")
     HbPlusProcesserTestSet().hbplusprocessed_file_prepper_reader("hbplus_processed_vdw_files_testset","vdw")
+
+elif prointput == "hbplusprocess_testset_combine"
     HbPlusProcesserTestSet().hbplushbandvdwcombiner()
 
 elif proinput == "dssrcli_testset":
@@ -188,6 +193,12 @@ elif proinput == "bondcategorizer_testset":
 
 #run pymol wrapper for the native poses here....
 
+#native checker
+
+elif proinput == "native_checker":
+    energyCalculator().native_checker_pose_hash_retriever("<protein>")
+
+
 elif proinput == "energy_calculate_testset":
     energyCalculator().energy_calculator("")
     energyCalculator().energy_calculator("hb_only")
@@ -196,7 +207,6 @@ elif proinput == "energy_calculate_testset_ranking":
     energyCalculator().pose_rankings("")
     energyCalculator().pose_rankings("hb_only")
     energyCalculator().pose_rankings("vdw_only")
-
 
 elif proinput == "completerun":
     hbplusprocessedreader("hb")

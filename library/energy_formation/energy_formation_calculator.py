@@ -133,7 +133,7 @@ class energyCalculator(object):
                     native_count=+1
                     # the first native structure should either be the maximum or minumum energy.
             for complex_num in sorted_complex_list:
-                if native_pose_ranking_hash[testset_protein][complex_num]["nativeness"] == "nonnative":
+                if native_pose_ranking_hash[ testset_protein][complex_num]["nativeness"] == "nonnative":
                     # add 1 because the array starts at 0
                     best_rank = float(sorted_complex_list.index(complex_num)+1)/len(sorted_complex_list)
                     best_rank = best_rank * 100

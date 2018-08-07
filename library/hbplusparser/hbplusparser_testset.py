@@ -96,6 +96,8 @@ class HbPlusProcesserTestSet(object):
         # this is much easier accomplished in bash.
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/hbplus_sorted_hb_files_testset'))
         proteins = os.listdir('.')
+        #this is for recovery mode
+        # proteins = ["2pjp","1wpu","1f7u"]
         for protein in proteins:
             os.system("mkdir ~/bioresearch/compbio/files_wip/hbplus_hb_vdw_combined_testset/%s" %protein)
             os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/hbplus_sorted_hb_files_testset/%s' %protein))

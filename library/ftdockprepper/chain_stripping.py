@@ -69,6 +69,45 @@ class FTDockChainStripping(object):
         os.system("mv -i *.parsed ~/bioresearch/compbio/files_wip/%s_seperated_pdbfiles_preprocessperl_testset" %rna_or_protein)
         os.system("mv -i *.fasta ~/bioresearch/compbio/files_wip/%s_seperated_pdbfiles_preprocessperl_testset" %rna_or_protein)
 
+    def pdb_file_combine_rms_calc(self):
+        print "Combining the separated pdb file rna chain and protein chain"
+        os.system("mkdir ~/bioresearch/compbio/files_wip/combined_pdbfiles_testset")
+        os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/protein_seperated_pdbfiles_testset'))
+        proteins = os.listdir('.')
+        for protein in proteins:
+            protein =  protein[0:4]
+            print protein
+            os.system("cat ~/bioresearch/compbio/files_wip/rna_seperated_pdbfiles_testset/%s* >  ~/bioresearch/compbio/files_wip/combined_pdbfiles_testset/%s_combined.pdb" %(protein,protein))
+            os.system("cat ~/bioresearch/compbio/files_wip/protein_seperated_pdbfiles_testset/%s* >> ~/bioresearch/compbio/files_wip/combined_pdbfiles_testset/%s_combined.pdb" %(protein,protein))
+        #lets match based on the protein pdb name sample output: 1jbr_A.pdb
+
+
+    def hbplushbandvdwcombiner(self):
+        print "combining the hbplushb sorted and hbplusvdw sorted into one file"
+        os.system("mkdir ~/bioresearch/compbio/files_wip/hbplus_hb_vdw_combined_testset")
+        #lets just use the command cat hb.txt >> hb_vdw_combined.txt
+        #lets just use the command cat vdw.txt >> hb_vdw_combined.txt
+        # this is much easier accomplished in bash.
+        # os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/hbplus_sorted_hb_files_testset'))
+        # proteins = os.listdir('.')
+        # for protein in proteins:
+        #     os.system("mkdir ~/bioresearch/compbio/files_wip/hbplus_hb_vdw_combined_testset/%s" %protein)
+        #     os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/hbplus_sorted_hb_files_testset/%s' %protein))
+        #     hb_files = os.listdir('.')
+        #     #lets grab the first Complex_*string
+        #     for hbfile_to_be_merged in hb_files:
+        #         #the file name is this "Complex_997g.nb2.vdwsorted", strip out the Complex_997g
+        #         complex_name,rhs=hbfile_to_be_merged.split(".",1)
+        #         os.system("cat ~/bioresearch/compbio/files_wip/hbplus_sorted_hb_files_testset/%s/%s >  ~/bioresearch/compbio/files_wip/hbplus_hb_vdw_combined_testset/%s/%s" %(protein,hbfile_to_be_merged,protein,complex_name))
+        #     os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/hbplus_sorted_vdw_files_testset/%s' %protein))
+        #     vdw_files = os.listdir('.')
+        #     for vdwfile_to_be_merged in vdw_files:
+        #         complex_name,rhs=vdwfile_to_be_merged.split(".",1)
+        #         os.system("cat ~/bioresearch/compbio/files_wip/hbplus_sorted_vdw_files_testset/%s/%s >> ~/bioresearch/compbio/files_wip/hbplus_hb_vdw_combined_testset/%s/%s" %(protein,vdwfile_to_be_merged,protein,complex_name))
+        #
+
+
+
     def file_copier_to_sjsu_cluster_testset(self,baseset_or_testset):
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/%s_complexes_pdb' %baseset_or_testset))
         os.system('scp *.ent blustig@spartan02.sjsu.edu:curtisma/bioresearch/%s_complexes_pdb' %baseset_or_testset)

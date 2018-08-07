@@ -31,18 +31,23 @@ class PymolMiddleware(object):
     def pymol_middleware_test(self):
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip'))
         os.system("mkdir native_poses_testset")
-        os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/protein_seperated_pdbfiles_testset'))
+        os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/combined_pdbfiles_testset'))
+        # os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/protein_seperated_pdbfiles_testset'))
         protein_files = os.listdir('.')
+        # protein_files = ["1e7k_A.pdb"]
+
         #expect some string cleaning
         for protein_file in protein_files:
             protein_file_name_directory = protein_file[0:4]
-            os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/protein_seperated_pdbfiles_testset'))
+            os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/combined_pdbfiles_testset'))
+            # os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/protein_seperated_pdbfiles_testset'))
             pose_directory = os.path.expanduser('~/bioresearch/compbio/files_wip/ftdockbuiltposes/%s' %protein_file_name_directory)
             os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/ftdockbuiltposes/%s' %protein_file_name_directory))
             #sort the pose files after the move.. since they are out of order
             pose_files = sorted(os.listdir('.'))
-            os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/protein_seperated_pdbfiles_testset'))
-            pose_result_file_name="%s" %protein_file[0:6]
+            os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/combined_pdbfiles_testset'))
+            # os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/protein_seperated_pdbfiles_testset'))
+            pose_result_file_name="%s" %protein_file[0:4]
             #remove the file previously created since we are opening in append mode
             os.system("rm *pose_calculated")
             file = open(pose_result_file_name,"a")
@@ -50,7 +55,12 @@ class PymolMiddleware(object):
             for pose_file in pose_files:
                 pymol.cmd.do("load %s/%s,pose" %(pose_directory,pose_file))
                 pymol.cmd.do("load %s,complexes" %protein_file)
-                # rms = pymol.cmd.do("align pose and name CA,complex and name CA")
+                pymol.cmd.do("align pose and name P,complexes and name P")
+                # pymol.cmd.do("align pose and name CA,complex and name CA")
+                # pymol.cmd.do('select ou, /complex//R//')
+                # pymol.cmd.do('select co, /pose//R//')
+                # rms = pymol.cmd.do('rms_cur ou,co')
+                # rms = pymol.cmd.rms_cur(ou,co)
                 # rms = pymol.cmd.do("rms_cur pose////CA,complexes////CA")
                 # print rms
                 #https://pymol.org/dokuwiki/doku.php?id=command:rms_cur
@@ -78,9 +88,9 @@ class PymolMiddleware(object):
         pymol.cmd.quit()
 
     def native_nonnative_checker(self,rms_value):
-        if rms_value < 3.0:
+        if rms_value < 10.0:
             native_or_nonnative = "native"
-        elif rms_value > 3.0:
+        elif rms_value > 10.0:
             native_or_nonnative = "nonnative"
         return native_or_nonnative
 

@@ -438,3 +438,28 @@ class HbPlusToDssrComparer(object):
         #put a comma for the category! This will put all the correct commas now
         final_file.write("%s,%s,%s\n" %(category,hbline,dssrcompare))
         final_file.close
+
+    def culledchain(self,complex_name,rna_chain,protein_chain):
+        culledfile = open("culledfile.txt")
+        #culledhash = {"Complex1":{"RNA":[A,B,C],"Protein":[D,F]},"Complex1":{"RNA":[A,B,C],"Protein":[D,F]}}
+        # {
+        # "Complex1":
+        #     {
+        #         "Rna":[A,B,C],
+        #         "Protein":[D,F]
+        #     },
+        # "Complex2":
+        #     {
+        #     "Rna":[E,G],
+        #     "Protein":[A,C]
+        #     }
+        # }
+        culledhash = {}
+        for line in culledfile:
+            # culledhash[line[0:1]] = {"RNA":[line]
+
+
+            if rna_chain in culledfile[complex_name]["Rna"] and protein_chain in culledfile[complex_name]["Protein"]:
+                return "culled"
+            else:
+                return "notculled"
