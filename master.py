@@ -113,7 +113,6 @@ elif proinput == "hbplushbcli":
 elif proinput == "hbplusvdwcli":
     hbplusclihelper().hbplusvdwcli()
 
-
 elif proinput == "hbplus_parse_baseset":
     HbPlusProcesser().hbplusprocessedreader("hb")
     HbPlusProcesser().hbplusprocessedreader("vdw")
@@ -181,7 +180,7 @@ elif proinput == "hbplusprocess_testset":
     HbPlusProcesserTestSet().hbplusprocessed_file_prepper_reader("hbplus_processed_hb_files_testset","hb")
     HbPlusProcesserTestSet().hbplusprocessed_file_prepper_reader("hbplus_processed_vdw_files_testset","vdw")
 
-elif prointput == "hbplusprocess_testset_combine"
+elif proinput == "hbplusprocess_testset_combine":
     HbPlusProcesserTestSet().hbplushbandvdwcombiner()
 
 elif proinput == "dssrcli_testset":

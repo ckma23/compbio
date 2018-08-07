@@ -77,7 +77,7 @@ class PymolMiddleware(object):
                 print "%s %s %s %s" %(protein_file,pose_file,rms,native_or_nonnative_value)
                 pose_file_to_store,throwaway = pose_file.split(".",1)
                 pose_file_to_store = pose_file_to_store.strip("g")
-                file.write("%s,%s,%s,%s\n" %(protein_file[0:6],pose_file_to_store,rms,native_or_nonnative_value))
+                file.write("%s,%s,%s,%s\n" %(protein_file[0:4],pose_file_to_store,rms,native_or_nonnative_value))
                 pymol.cmd.do("delete %s" %pose_file)
                 pymol.cmd.do("delete %s" %protein_file)
                 pymol.cmd.do("delete pose")

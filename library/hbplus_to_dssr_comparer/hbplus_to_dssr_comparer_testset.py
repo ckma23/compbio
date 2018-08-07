@@ -19,6 +19,7 @@ class HbPlusToDssrComparerTestset(object):
         # need to grab all the protein names from the test set
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/hbplus_hb_vdw_combined_testset'))
         list_of_protein_testset_complexes = os.listdir('.')
+        #list_of_protein_testset_complexes = [""]
         for protein_testset_complex in list_of_protein_testset_complexes:
             #make the directory that the generated files will go into individual protein folders.
             os.system("mkdir ~/bioresearch/compbio/files_wip/bondcategorized_testset/%s" %protein_testset_complex)
@@ -284,5 +285,7 @@ class HbPlusToDssrComparerTestset(object):
         # dssrcompare=' '.join(dssrcompare).strip('\n').strip()
         dssrcompare=','.join(dssrcompare)
         final_file.write("%s,%s,%s\n" %(category,hbline,dssrcompare))
-        time.sleep(.05)
+        #need to confirm why there is a timer here
+        # time.sleep(.005)
+        # time.sleep(.05)
         final_file.close
