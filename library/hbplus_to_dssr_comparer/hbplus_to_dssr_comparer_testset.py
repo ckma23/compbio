@@ -43,17 +43,18 @@ class HbPlusToDssrComparerTestset(object):
                         #     filename_lhs = hbplusfile + "*"
                         #     if fnmatch.fnmatch(filematch,filename_lhs):
                         #         dssrfile = filematch
-                        filematch_lhs,throwaway = hbplusfile.split('.',1)
+                        filematch_lhs = hbplusfile
+                        # filematch_lhs,throwaway = hbplusfile.split('.',1)
                         dssrfile = filematch_lhs + ".dsr"
                             # os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/DSSRparsed_testset/%s'%protein_testset_complex))
                             # os.chdir('/Users/curtisma/bioresearch/DSSRparsedfiles')
                         try:
                             with open(dssrfile,'rb') as dssrfilestore:
                                 dssr_filestore  = csv.reader(dssrfilestore)
-                                filename_lhs = filename_lhs.strip("*")
+                                # filename_lhs = filename_lhs.strip("*")
                                 # storing=dssrfile.strip("pdb")
                                 # lhs,rhs=storing.split(".",1)
-                                filenamestring="%s.bondcategorized" %(filename_lhs)
+                                filenamestring="%s.bondcategorized" %(filematch_lhs)
                                 # os.chdir('/Users/curtisma/bioresearch/bondcategorized')
                     # WE HAVE TO KEEP THIS A FOR LOOP in case an HB line matches more than once in dsr i.e. can be a hairpin or a helices
                                 for dssrline in dssr_filestore:
