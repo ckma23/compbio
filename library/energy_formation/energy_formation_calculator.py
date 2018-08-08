@@ -15,24 +15,24 @@ class energyCalculator(object):
     def native_checker_pose_hash_retriever(self,protein_name_string):
         # move into the native_poses directory which has all the native poses
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/native_poses_testset'))
-        native_pose_files = os.listdir('.')
-        for native_pose_file in native_pose_files:
-            # fileregex_match = protein_name_string + "*"
-            # if fnmatch.fnmatch(native_pose_file,fileregex_match):
-            #     print "HIT!"
-            #     native_posefile = native_pose_file
-            native_pose_hash = {}
-            native_pose_hash[native_pose_file] = {}
-            with open( native_pose_file,'rb') as posefile:
-                pose_file  = csv.reader(posefile)
-                for line in pose_file:
+        # native_pose_files = os.listdir('.')
+        # for native_pose_file in native_pose_files:
+        native_pose_file = protein_name_string
+        # fileregex_match = protein_name_string + "*"
+        # if fnmatch.fnmatch(native_pose_file,fileregex_match):
+        #     native_posefile = native_pose_file
+        native_pose_hash = {}
+        native_pose_hash[native_pose_file] = {}
+        with open( native_pose_file,'rb') as posefile:
+            pose_file  = csv.reader(posefile)
+            for line in pose_file:
                     #line[0] should be the protein name
                     #line[1] is the Complex Number
                     #line[2] is the RMS
                     #line[3] is the native or nonnative
-                    native_pose_hash[native_pose_file][line[1]] = {}
-                    native_pose_hash[native_pose_file][line[1]] = {"RMS":line[2],"nativeness":line[3]}
-            return native_pose_hash , native_pose_file
+                native_pose_hash[native_pose_file][line[1]] = {}
+                native_pose_hash[native_pose_file][line[1]] = {"RMS":line[2],"nativeness":line[3]}
+        return native_pose_hash , native_pose_file
 
         print "Checking if the structure is native"
 
