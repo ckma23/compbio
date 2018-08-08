@@ -110,6 +110,7 @@ class energyCalculator(object):
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/energy_calculations_testset%s' %hb_only_or_hb_and_vdw))
         testset_proteins = os.listdir('.')
         for testset_protein in testset_proteins:
+            print testset_protein
             os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/energy_calculations_testset%s' %hb_only_or_hb_and_vdw))
             native_pose_ranking_hash = {}
             native_pose_ranking_hash[testset_protein] = {}
@@ -122,22 +123,26 @@ class energyCalculator(object):
             # print native_pose_ranking_hash[testset_protein].keys
             sorted_complex_list = sorted(native_pose_ranking_hash[testset_protein].keys(), key=lambda x: (float(native_pose_ranking_hash[testset_protein][x]["energy"])))
             print sorted_complex_list
+            native_count = 0
             for complex_num in sorted_complex_list:
                 print complex_num
                 print native_pose_ranking_hash[testset_protein][complex_num]["energy"]
                 value_index = sorted_complex_list.index(complex_num)
                 print value_index
-                native_count = 0
-                if native_pose_ranking_hash[testset_protein][complex_num]["nativeness"] == "nonnative":
+                if native_pose_ranking_hash[testset_protein][complex_num]["nativeness"] == "native":
                     print "These structures are native"
-                    native_count=+1
+                    native_count+=1
+                    print "HIT"
+                    print native_count
                     # the first native structure should either be the maximum or minumum energy.
             for complex_num in sorted_complex_list:
-                if native_pose_ranking_hash[ testset_protein][complex_num]["nativeness"] == "nonnative":
+                if native_pose_ranking_hash[ testset_protein][complex_num]["nativeness"] == "native":
                     # add 1 because the array starts at 0
                     best_rank = float(sorted_complex_list.index(complex_num)+1)/len(sorted_complex_list)
                     best_rank = best_rank * 100
                     break
+            if native_count == 0:
+                best_rank = 0
             print "%s,%s,%s" %(testset_protein,native_count,best_rank)
             os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/best_rankings'))
             file_name_string_prepper = "%srankings" %hb_only_or_hb_and_vdw
