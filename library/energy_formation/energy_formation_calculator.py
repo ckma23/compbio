@@ -81,7 +81,10 @@ class energyCalculator(object):
 
                         try:
                             bond_energy = statistical_potential_hash[hborvdw][category][nucleotide_base][amino_acid]["statistical_potential"]
+                            print bond_energy
                             bond_energy = energy_knockdown_hash[hborvdw][category]*bond_energy
+                            print energy_knockdown_hash[hborvdw][category]
+                            print bond_energy
                             # print energy_knockdown_hash[hborvdw][category]
                             # print type(energy_knockdown_hash)
                             # print energy_knockdown_hash
@@ -90,7 +93,7 @@ class energyCalculator(object):
                         if hborvdw == "hb":
                             hb_energy = hb_energy + bond_energy
                         elif hborvdw == "vdw":
-                            vdw_energy = hb_energy + bond_energy
+                            vdw_energy = vdw_energy + bond_energy
                     if hb_only_or_hb_and_vdw == "hb_only":
                         vdw_energy = 0;
                     elif hb_only_or_hb_and_vdw == "vdw_only":

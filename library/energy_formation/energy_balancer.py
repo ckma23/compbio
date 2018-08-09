@@ -5,27 +5,27 @@ class Energyknockdown(object):
         energy_knockdown_hash = {
         "hb":
           {
-          "CAT_1":.8,
-          "CAT_2":.8,
-          "CAT_3":.8,
-          "CAT_4":.8,
-          "CAT_5":.8,
-          "CAT_6":.8,
-          "CAT_7":.8,
-          "CAT_8":.8,
-          "CAT_9":.8
+          "CAT_1":.9,
+          "CAT_2":.9,
+          "CAT_3":.9,
+          "CAT_4":.9,
+          "CAT_5":.9,
+          "CAT_6":.9,
+          "CAT_7":.9,
+          "CAT_8":.9,
+          "CAT_9":.9
         },
           "vdw":
           {
-          "CAT_1":.2,
-          "CAT_2":.2,
-          "CAT_3":.2,
-          "CAT_4":.2,
-          "CAT_5":.2,
-          "CAT_6":.2,
-          "CAT_7":.2,
-          "CAT_8":.2,
-          "CAT_9":.2
+          "CAT_1":.1,
+          "CAT_2":.1,
+          "CAT_3":.1,
+          "CAT_4":.1,
+          "CAT_5":.1,
+          "CAT_6":.1,
+          "CAT_7":.1,
+          "CAT_8":.1,
+          "CAT_9":.1
           }
         }
 
