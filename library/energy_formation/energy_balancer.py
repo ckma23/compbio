@@ -1,6 +1,6 @@
 import json
 
-class energyknockdown(object):
+class Energyknockdown(object):
     def energyknockdownretriever(self):
         energy_knockdown_hash = {
         "hb":

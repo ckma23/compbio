@@ -200,12 +200,12 @@ elif proinput == "native_checker":
 
 elif proinput == "energy_calculate_testset":
     energyCalculator().energy_calculator("")
-    energyCalculator().energy_calculator("hb_only")
-    energyCalculator().energy_calculator("vdw_only")
+#    energyCalculator().energy_calculator("hb_only")
+#    energyCalculator().energy_calculator("vdw_only")
 elif proinput == "energy_calculate_testset_ranking":
     energyCalculator().pose_rankings("")
-    energyCalculator().pose_rankings("hb_only")
-    energyCalculator().pose_rankings("vdw_only")
+#    energyCalculator().pose_rankings("hb_only")
+#    energyCalculator().pose_rankings("vdw_only")
 
 elif proinput == "completerun":
     hbplusprocessedreader("hb")

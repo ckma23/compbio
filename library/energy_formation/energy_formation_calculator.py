@@ -8,7 +8,7 @@ import glob                                                 #import the glob lib
 import fnmatch
 #need the Statistical Potential Hash
 from library.bondfinalcount.statistical_potential_calculator import StatisticalPotential as StatisticalPotential
-from library.energy_formation.energy_balancer import energyknockdown as energyknockdown
+from library.energy_formation.energy_balancer import Energyknockdown as Energyknockdown
 
 class energyCalculator(object):
     #given the protein name, load in the complex # and the RMS and the native or nonnative column
@@ -42,6 +42,7 @@ class energyCalculator(object):
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/bondcategorized_testset'))
         testset_proteins = os.listdir('.')
         for testset_protein in testset_proteins:
+            energy_knockdown_hash = Energyknockdown().energyknockdownretriever()
             native_pose_hash, native_pose_file = self.native_checker_pose_hash_retriever(testset_protein)
             os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/energy_calculations_testset%s' %hb_only_or_hb_and_vdw))
             os.system("rm %s" %testset_protein)
@@ -80,6 +81,10 @@ class energyCalculator(object):
 
                         try:
                             bond_energy = statistical_potential_hash[hborvdw][category][nucleotide_base][amino_acid]["statistical_potential"]
+                            bond_energy = energy_knockdown_hash[hborvdw][category]*bond_energy
+                            # print energy_knockdown_hash[hborvdw][category]
+                            # print type(energy_knockdown_hash)
+                            # print energy_knockdown_hash
                         except Exception as e:
                             print "There was an error: %s" %e
                         if hborvdw == "hb":

@@ -6,7 +6,7 @@ import math
 from bondcount import Bondcounter
 from structurecount import StructureCounter
 
-from library.energy_formation.energy_balancer import energyknockdown as energyknockdown
+from library.energy_formation.energy_balancer import Energyknockdown as Energyknockdown
 
 class StatisticalPotential(object):
     def statistical_potential(self):
@@ -56,7 +56,11 @@ class StatisticalPotential(object):
                             # print numerator
                             # print first_denom
                             # print second_denom
-                        RT=.59
+                        if vdworhb == "hb":
+                            RT=.59
+                        # DEVELOP DIFFERENT POTENTIALS FOR HB OR VDW
+                        elif vdworhb == "vdw":
+                            RT=.59
                         # print bond_counted_hash[vdworhb][cat][nb][aa]["count"]
                         # print propensity
                         try:
@@ -69,7 +73,7 @@ class StatisticalPotential(object):
                         bond_counted_hash[vdworhb][cat][nb][aa]["statistical_potential"] = statistical_potential
                         print "%s,%s,%s,%s,%s" %(vdworhb,cat,nb,aa,bond_counted_hash[vdworhb][cat][nb][aa]["statistical_potential"])
         # print bond_counted_hash
-        balance_stat_potential = self.energy_balancer(bond_counted_hash)
+        # balance_stat_potential = self.energy_balancer(bond_counted_hash)
         print bond_counted_hash["vdw"]["CAT_9"]["A"]
         return bond_counted_hash
 
