@@ -13,11 +13,12 @@ class FtdockMiddleware(object):
         testset_pdb_files = os.listdir('.')
         # check that if this file EXISTS then kick off next ftdock, if not hold!
         for pdbfile in testset_pdb_files:
+            print pdbfile
             pdbfile = pdbfile.strip("pdb")
-            pdbfile = pdbfile[0:3]
+            pdbfile = pdbfile[0:4]
             print pdbfile
             os.chdir(os.path.expanduser('~/bioresearch/compbio/bin/ftdock-2-dev2/progs-2.0.3'))
-            os.system("./ftdock -noelec -static ~/bioresearch/compbio/files_wip/rna_seperated_pdbfiles_preprocessperl_testset/%s_*.parsed -mobile ~/bioresearch/compbio/files_wip/protein_seperated_pdbfiles_preprocessperl_testset/%s_*.parsed -out ~/bioresearch/compbio/files_wip/ftdockresults/%sftdock.out > ~/bioresearch/compbio/library/ftdock_middleware/output &" %(pdbfile,pdbfile,pdbfile))
+            os.system("./ftdock -noelec -mobile ~/bioresearch/compbio/files_wip/rna_seperated_pdbfiles_preprocessperl_testset/%s_*.parsed -static ~/bioresearch/compbio/files_wip/protein_seperated_pdbfiles_preprocessperl_testset/%s_*.parsed -out ~/bioresearch/compbio/files_wip/ftdockresults/%sftdock.out > ~/bioresearch/compbio/library/ftdock_middleware/output &" %(pdbfile,pdbfile,pdbfile))
             os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/ftdockresults'))
             boolean = True
             while boolean:
@@ -68,15 +69,15 @@ class FtdockMiddleware(object):
             os.system("mkdir ~/bioresearch/compbio/files_wip/ftdockbuiltposes/%s" %testset_ftdocked_pdbfile[0:4])
             os.chdir(os.path.expanduser('~/bioresearch/compbio/bin/ftdock-2-dev2/progs-2.0.3'))
             os.system("./build -in ~/bioresearch/compbio/files_wip/ftdockresults/%s -b1 1 -b2 %s > ~/bioresearch/compbio/logs/ftdock_middleware.txt" %(testset_ftdocked_pdbfile,build_number))
-            os.system("mv Complex_* ~/bioresearch/compbio/files_wip/ftdockbuiltposes/%s" %testset_ftdocked_pdbfile[0:4])
+            # os.system("mv Complex_* ~/bioresearch/compbio/files_wip/ftdockbuiltposes/%s" %testset_ftdocked_pdbfile[0:4])
             # os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/ftdockbuiltposes'))
             #
             # os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/ftdockbuiltposes/%s' %testset_ftdocked_pdbfile[0:4]))
             # # os.system("rm Complex*.pdb")
             # os.chdir(os.path.expanduser('~/bioresearch/compbio/bin/ftdock-2-dev2/progs-2.0.3'))
-            # for numb in range(1,55):
-            #     os.system("mv Complex_%i* ~/bioresearch/compbio/files_wip/ftdockbuiltposes/%s" %(numb,testset_ftdocked_pdbfile[0:4]))
-            #
-            # os.system("mv Complex*.pdb ~/bioresearch/compbio/files_wip/ftdockbuiltposes/%s" %testset_ftdocked_pdbfile[0:4])
+            for numb in range(1,55):
+                os.system("mv Complex_%i* ~/bioresearch/compbio/files_wip/ftdockbuiltposes/%s" %(numb,testset_ftdocked_pdbfile[0:4]))
+
+            os.system("mv Complex*.pdb ~/bioresearch/compbio/files_wip/ftdockbuiltposes/%s" %testset_ftdocked_pdbfile[0:4])
 
         time.sleep(5)

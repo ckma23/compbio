@@ -82,6 +82,9 @@ class DssrParser(object):
             print baseset_pdb_filename
             data = json.load(open(dssr_process_file))
             # dssroutputcategories = ["stems","junction","hairpins","torsions","stacks","splays","pairs","multiplets","helices","bulges","atom2bases"]
+
+
+            #might want to add one more for junction!!!
             dssroutputcategories = ["helices","iloops","hairpins","bulges"]
             for rna_secondary_structure_type in dssroutputcategories:
                 print rna_secondary_structure_type

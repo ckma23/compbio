@@ -31,7 +31,8 @@ class PymolMiddleware(object):
     def pymol_middleware_test(self):
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip'))
         os.system("mkdir native_poses_testset")
-        os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/combined_pdbfiles_testset'))
+        os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/cleaned_pdbfiles_testset_bound'))
+        # os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/combined_pdbfiles_testset'))
         # os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/protein_seperated_pdbfiles_testset'))
         protein_files = os.listdir('.')
         # protein_files = ["1e7k_A.pdb"]
@@ -39,13 +40,13 @@ class PymolMiddleware(object):
         #expect some string cleaning
         for protein_file in protein_files:
             protein_file_name_directory = protein_file[0:4]
-            os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/combined_pdbfiles_testset'))
+            os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/cleaned_pdbfiles_testset_bound'))
             # os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/protein_seperated_pdbfiles_testset'))
             pose_directory = os.path.expanduser('~/bioresearch/compbio/files_wip/ftdockbuiltposes/%s' %protein_file_name_directory)
             os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/ftdockbuiltposes/%s' %protein_file_name_directory))
             #sort the pose files after the move.. since they are out of order
             pose_files = sorted(os.listdir('.'))
-            os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/combined_pdbfiles_testset'))
+            os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/cleaned_pdbfiles_testset_bound'))
             # os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/protein_seperated_pdbfiles_testset'))
             pose_result_file_name="%s" %protein_file[0:4]
             #remove the file previously created since we are opening in append mode

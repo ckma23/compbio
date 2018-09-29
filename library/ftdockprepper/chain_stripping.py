@@ -58,6 +58,7 @@ class FTDockChainStripping(object):
     def preprocess_ftdock(self,rna_or_protein):
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/'))
         os.system('mkdir %s_seperated_pdbfiles_preprocessperl_testset' %rna_or_protein)
+        os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/%s_seperated_pdbfiles_preprocessperl_testset' %rna_or_protein))
         os.system('rm *.parsed')
         os.system('rm *.fasta')
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/%s_seperated_pdbfiles_testset' %rna_or_protein))
@@ -110,8 +111,8 @@ class FTDockChainStripping(object):
 
     def file_copier_to_sjsu_cluster_testset(self,baseset_or_testset):
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/%s_complexes_pdb' %baseset_or_testset))
-        os.system('scp *.ent blustig@spartan02.sjsu.edu:curtisma/bioresearch/%s_complexes_pdb' %baseset_or_testset)
+        os.system('scp *.ent cma@spartan02.sjsu.edu:bioresearch/compbio/files_wip/%s_complexes_pdb' %baseset_or_testset)
 
     def file_copier_to_sjsu_cluster(self,rna_or_protein):
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/%s_seperated_pdbfiles_preprocessperl_testset' %rna_or_protein))
-        os.system('scp *.parsed blustig@spartan02.sjsu.edu:curtisma/bioresearch/%s_pre_processedperl_seperated_pdbfiles_testset' %rna_or_protein)
+        os.system('scp *.parsed cma@spartan02.sjsu.edu:curtisma/bioresearch/%s_pre_processedperl_seperated_pdbfiles_testset' %rna_or_protein)

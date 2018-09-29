@@ -1,0 +1,9 @@
+Your thresholds for culling selected PDB list:
+  Sequence percentage identity: <= 25
+  Resolution                  : 0.0 ~ 3.0
+  R-factor                    : 0.3
+  Sequence length             : 40 ~ 10000
+  Non X-ray entries: Excluded
+  CA-only entries: Excluded
+  Cull PDB by entry
+  Cull chains within entries  : No

@@ -12,6 +12,8 @@ from Bio import *                                           #use the BioPython P
 from Bio.PDB import *                                       #more specifically import the BioPython PDB library
 from helper.biopythonpdbretriever import FileRetriever      #from the helper folder biopythonpdbretriever.py import FileRetriever class
 from helper.PDBRestService import PDBRestServicehelper
+from library.culling_helper.cull_helper import CullHelper
+from metadata_folder.testset_hashstore import TestsetHashstore
 from library.hbplusclilib.hbpluscli import hbplusclihelper
 from library.hbplusclilib.hbpluscli_testset import HbplusCliTestset as HbplusCliTestset  #This is just placeholder for now.
 from library.hbplusparser.hbplusparser import HbPlusProcesser as HbPlusProcesser
@@ -95,17 +97,34 @@ def helpoutput():
 # neighborSearcher(testprotein,3.0)
 # aminoacidmatcher()
 
-#from the system take the second argument
+#from the system take the second argument can switch this out with optparse
 proinput=str(sys.argv[1])
 #default help menu
 if proinput == "help":
     helpoutput()
 elif proinput == "initialize":
     directory_builder()
+elif proinput == "cullhelp":
+    CullHelper().cullhelper("structures_of_interest.csv")
+
 #function to split the pdb files into rna only and protein only
+elif proinput == "parse_testset_list":
+    TestsetHashstore().testset_list_prepare("protein","test_complexes_pdb_protein_unbound.csv")
+    TestsetHashstore().testset_list_prepare("rna","test_complexes_pdb_rna_unbound.csv")
+
+elif proinput == "chainstrip_testset_pdb":
+    #note that the way the code is written. only run once, it does not clear the directory
+    TestsetHashstore().file_cleaner_based_on_chain("files_wip/test_complexes_pdb_protein_unbound","protein")
+    TestsetHashstore().file_cleaner_based_on_chain("files_wip/test_complexes_pdb_rna_unbound","rna")
+    TestsetHashstore().pdbfile_native_fileprepper_rna_protein("files_wip/test_complexes_pdb","protein")
+    TestsetHashstore().pdbfile_native_fileprepper_rna_protein("files_wip/test_complexes_pdb","rna")
+
 elif proinput == "pdbfileretriever":
     pdbfileretriever("structures_of_interest.csv","files_wip/base_complexes_pdb")
-    pdbfileretriever("test_complexes_pdb.csv","files_wip/test_complexes_pdb")
+    pdbfileretriever("test_complexes_pdb_complex_bound.csv","files_wip/test_complexes_pdb")
+    pdbfileretriever("test_complexes_pdb_protein_unbound.csv","files_wip/test_complexes_pdb_protein_unbound")
+    pdbfileretriever("test_complexes_pdb_rna_unbound.csv","files_wip/test_complexes_pdb_rna_unbound")
+
 #need to build hbplus initially for the baseset
 elif proinput == "hbplushbcli":
     hbplusclihelper().hbplushbcli()
@@ -163,19 +182,20 @@ elif proinput == "testprotein_pdb_combine":
 
 elif proinput == "copyfilestosjsucluster":
     FTDockChainStripping().file_copier_to_sjsu_cluster_testset("base")
-    FTDockChainStripping().file_copier_to_sjsu_cluster_testset("test")
-    FTDockChainStripping().file_copier_to_sjsu_cluster("rna")
-    FTDockChainStripping().file_copier_to_sjsu_cluster("protein")
+    # FTDockChainStripping().file_copier_to_sjsu_cluster_testset("test")
+    # FTDockChainStripping().file_copier_to_sjsu_cluster("rna")
+    # FTDockChainStripping().file_copier_to_sjsu_cluster("protein")
 elif proinput == "ftdockgen":
     FtdockMiddleware().ftdock_kicker()
 elif proinput == "ftdockbuild":
-    FtdockMiddleware().ftdock_directory_cleaner("home","cma","Users","curtisma")
-    FtdockMiddleware().ftdock_directory_cleaner("Users","curtisma","home","cma")
-    FtdockMiddleware().ftdock_builder(500)
+    # FtdockMiddleware().ftdock_directory_cleaner("home","cma","Users","curtisma")
+    # FtdockMiddleware().ftdock_directory_cleaner("Users","curtisma","home","cma")
+    FtdockMiddleware().ftdock_builder(50373)
 
 elif proinput == "hbpluscli_testset":
     HbplusCliTestset().hbpluscli("hbplus_processed_hb_files_testset","hb")
     HbplusCliTestset().hbpluscli("hbplus_processed_vdw_files_testset","vdw")
+
 elif proinput == "hbplusprocess_testset":
     HbPlusProcesserTestSet().hbplusprocessed_file_prepper_reader("hbplus_processed_hb_files_testset","hb")
     HbPlusProcesserTestSet().hbplusprocessed_file_prepper_reader("hbplus_processed_vdw_files_testset","vdw")
@@ -196,7 +216,6 @@ elif proinput == "bondcategorizer_testset":
 
 elif proinput == "native_checker":
     energyCalculator().native_checker_pose_hash_retriever("<protein>")
-
 
 elif proinput == "energy_calculate_testset":
     energyCalculator().energy_calculator("")
