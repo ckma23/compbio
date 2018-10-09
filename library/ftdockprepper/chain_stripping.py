@@ -65,7 +65,7 @@ class FTDockChainStripping(object):
         list_of_pdb_files = os.listdir('.')
         os.chdir(os.path.expanduser('~/bioresearch/compbio/bin/ftdock-2-dev2/scripts-2.0.3'))
         for pdbfile in list_of_pdb_files:
-            os.system("/usr/bin/perl preprocess-pdb.perl -pdb /Users/curtisma/bioresearch/compbio/files_wip/%s_seperated_pdbfiles_testset/%s" %(rna_or_protein,pdbfile))
+            os.system("/usr/bin/perl preprocess-pdb.perl -pdb ~/bioresearch/compbio/files_wip/%s_seperated_pdbfiles_testset/%s" %(rna_or_protein,pdbfile))
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/%s_seperated_pdbfiles_testset' %rna_or_protein))
         os.system("mv -i *.parsed ~/bioresearch/compbio/files_wip/%s_seperated_pdbfiles_preprocessperl_testset" %rna_or_protein)
         os.system("mv -i *.fasta ~/bioresearch/compbio/files_wip/%s_seperated_pdbfiles_preprocessperl_testset" %rna_or_protein)

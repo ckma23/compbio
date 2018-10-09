@@ -11,6 +11,7 @@ class FtdockMiddleware(object):
         # os.system("rm *.dat")
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/test_complexes_pdb'))
         testset_pdb_files = os.listdir('.')
+        #testset_pdb_files = [ ]
         # check that if this file EXISTS then kick off next ftdock, if not hold!
         for pdbfile in testset_pdb_files:
             print pdbfile
