@@ -16,6 +16,7 @@ class StatisticalPotential(object):
         # print bond_counted_hash
         #lets get all the nucleotide_base and amino_acid counted!
         # structure_hash = StructureCounter().structure_hasher
+        stat_potential_file = open("statistical_potential_results.csv" %file_path,"w")
 
         structure_counted_hash = StructureCounter().structure_counter()
         nb_learning_set_sum = 0
@@ -85,7 +86,9 @@ class StatisticalPotential(object):
                             statistical_potential=-1*RT*math.log(propensity)
 
                         bond_counted_hash[vdworhb][cat][nb][aa]["statistical_potential"] = statistical_potential
-                        print "%s,%s,%s,%s,%s" %(vdworhb,cat,nb,aa,bond_counted_hash[vdworhb][cat][nb][aa]["statistical_potential"])
+                        line = "%s,%s,%s,%s,%s" %(vdworhb,cat,nb,aa,bond_counted_hash[vdworhb][cat][nb][aa]["statistical_potential"])
+                        print line
+                        stat_potential_file.write(line)
         # print bond_counted_hash
         # balance_stat_potential = self.energy_balancer(bond_counted_hash)
         print "All the AA in the learning set"
@@ -94,6 +97,7 @@ class StatisticalPotential(object):
         print nb_learningset
         print "Specific potentials vdw, cat_9,A "
         print bond_counted_hash["vdw"]["CAT_9"]["A"]
+        stat_potential_file.close()
         return bond_counted_hash
 
     # this is mean to rebalance the statistical_potentials
