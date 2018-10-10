@@ -85,13 +85,13 @@ class DssrParser(object):
 
 
             #might want to add one more for junction!!!
-            dssroutputcategories = ["helices","iloops","hairpins","bulges"]
+            dssroutputcategories = ["helices","iloops","hairpins","bulges","junctions"]
             for rna_secondary_structure_type in dssroutputcategories:
                 print rna_secondary_structure_type
                 try:
                     # print(data[j])
                     if rna_secondary_structure_type == "hairpins":
-                        hairpinresult=DssrParserjson().hairpindssrparser(data,rna_secondary_structure_type)
+                        hairpinresult=DssrParserjson().dssrhairpinParser(data,rna_secondary_structure_type)
                         for line in hairpinresult:
                             dssrstore.append(line)
                     # deprecating stems
@@ -110,6 +110,10 @@ class DssrParser(object):
                     elif rna_secondary_structure_type == "iloops":
                         iloopsresult=DssrParserjson().dssriloopsParser(data,rna_secondary_structure_type)
                         for line in iloopsresult:
+                            dssrstore.append(line)
+                    elif rna_secondary_structure_type == "junctions":
+                        junctions_result=DssrParserjson().dssrjunctionsParser(data,rna_secondary_structure_type)
+                        for line in junctions_result:
                             dssrstore.append(line)
                   # reminder when parsing helix structures must take into the account strand 1 and strand 2 these residue structures are the helices
                 except Exception as e:

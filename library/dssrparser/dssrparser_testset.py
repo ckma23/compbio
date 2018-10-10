@@ -23,13 +23,13 @@ class DssrParserTestSet(object):
                 print lhs
                 data = json.load(open(i))
                 # dssroutputcategories = ["stems","junction","hairpins","torsions","stacks","splays","pairs","multiplets","helices","bulges","atom2bases"]
-                dssroutputcategories = ["helices","iloops","hairpins","bulges"]
+                dssroutputcategories = ["helices","iloops","hairpins","bulges","junctions"]
                 for j in dssroutputcategories:
                     print j
                     try:
                         # print(data[j])
                         if j == "hairpins":
-                            hairpinresult=DssrParserjson().hairpindssrparser(data,j)
+                            hairpinresult=DssrParserjson().dssrhairpinParser(data,j)
                             for line in hairpinresult:
                                 dssrstore.append(line)
                         # deprecating stems
@@ -48,6 +48,10 @@ class DssrParserTestSet(object):
                         elif j == "iloops":
                             iloopsresult=DssrParserjson().dssriloopsParser(data,j)
                             for line in iloopsresult:
+                                dssrstore.append(line)
+                        elif j == "junctions":
+                            junctionsresult=DssrParserjson().dssrjunctionsParser(data,j)
+                            for line in junctionsresult:
                                 dssrstore.append(line)
                       # reminder when parsing helix structures must take into the account strand 1 and strand 2 these residue structures are the helices
                     except Exception as e:

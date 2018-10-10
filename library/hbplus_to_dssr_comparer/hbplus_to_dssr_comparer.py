@@ -222,7 +222,7 @@ class HbPlusToDssrComparer(object):
       # this dssrline is returning a really long black space after it
       # print "%s hi" %dssrline
       # note match the 2d structure, check that it is the same chain, then check if it's the same residue name from hbPlus and DSSR
-      if (dssrcompare[0] in ["hairpins","bulges","iloops"] and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
+      if (dssrcompare[0] in ["hairpins","bulges","iloops","junctions"] and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
         result = self.non_helix_form_comparer(hblinecompare[2].strip())
         self.bondcategorizedwriter(filenamestring,result,hbline,dssrcompare)
       # deprecating stems

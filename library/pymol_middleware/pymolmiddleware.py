@@ -60,17 +60,10 @@ class PymolMiddleware(object):
         identifier_uppercase = identifier.upper()
         for native in testset_retrieve_hash.keys():
             if identifier_uppercase == native[0:4]:
-                # print native[0:4]
-                # print native[5]
-                # print native[7]
                 native_protein_chain = native[5]
                 native_rna_chain = native[7]
-                pose_protein_chain = testset_retrieve_hash[native]["protein"][5]                
+                pose_protein_chain = testset_retrieve_hash[native]["protein"][5]
                 pose_rna_chain = testset_retrieve_hash[native]["rna"][5]
-                # print testset_retrieve_hash[native]["rna"][0:4]
-                # print testset_retrieve_hash[native]["rna"][5]
-                # print testset_retrieve_hash[native]["protein"][0:4]
-                # print testset_retrieve_hash[native]["protein"][5]
         return native_rna_chain, native_protein_chain, pose_rna_chain, pose_protein_chain
 
     def pymol_middleware_test(self):

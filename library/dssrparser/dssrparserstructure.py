@@ -76,7 +76,7 @@ class DssrParserjson(object):
         return bulgetoappend
 
 
-    def hairpindssrparser(self,data,j):
+    def dssrhairpinParser(self,data,j):
       # need to check how many hairpins there are... it's only going through one right now..
       # print data[j][0]["nts_long"]
         hairpintoappend=[]
@@ -94,6 +94,19 @@ class DssrParserjson(object):
             k+=1
         return hairpintoappend
         #we need to add the 0s back in for hbplus...
+
+    def dssrjunctionsParser(self,data,j):
+        junctiontoappend=[]
+        k=0
+        while k <len(data[j]):
+            junctionnt=data[j][k]["nts_long"]
+            for junctionnb in junctionnt.split(","):
+                dssjunctionsaddedzeros = self.dssrtohbplusstringcleaner(junctionnb)
+                chain = junctionnb[0]
+                junctionnb = junctionnb[2:]
+                junctiontoappend.append("%s,%s,%s"%(j,chain,dssjunctionsaddedzeros))
+            k+=1
+        return junctiontoappend
 
     def dssriloopsParser(self,data,j):
         ilooptoappend=[]
