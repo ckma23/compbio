@@ -16,7 +16,7 @@ class StatisticalPotential(object):
         # print bond_counted_hash
         #lets get all the nucleotide_base and amino_acid counted!
         # structure_hash = StructureCounter().structure_hasher
-        stat_potential_file = open("statistical_potential_results.csv" %file_path,"w")
+        stat_potential_file = open("statistical_potential_results.csv","w")
 
         structure_counted_hash = StructureCounter().structure_counter()
         nb_learning_set_sum = 0
@@ -24,9 +24,9 @@ class StatisticalPotential(object):
         nucleotide_base = ["A","C","U","G"]
         amino_acid = ["ARG","ALA","ASN","ASP","GLN","GLU","GLY","CYS","HIS","ILE","LEU","LYS","MET","PHE","PRO","SER","THR","TRP","TYR","VAL"]
         for nb_learningset in nucleotide_base:
-            nb_learningset_sum += structure_counted_hash[nb_learningset]
+            nb_learning_set_sum += structure_counted_hash[nb_learningset]
         for aa_learningset in amino_acid:
-            aa_learningset_sum += structure_counted_hash[aa_learningset]
+            aa_learning_set_sum += structure_counted_hash[aa_learningset]
         # print structure_counted_hash
         for vdworhb in bond_counted_hash.keys():
             for cat in sorted(bond_counted_hash[vdworhb].keys()):
@@ -63,9 +63,9 @@ class StatisticalPotential(object):
                             # as 10/8/18 rebuilding the potentials
                             # first_denom=round(float(count_all_nb_type_cat_type)/structure_counted_hash[nb],3)
                             # second_denom=round(float(count_all_aa_type_cat_type)/structure_counted_hash[aa],3)
-                            first_denom=round(float(structure_counted_hash[nb])/nb_learningset_sum,3)
-                            second_denom=round(float(structure_counted_hash[aa])/aa_learningset_sum,3)
-                            propensity = numerator/(first_denom+second_denom)
+                            first_denom=round(float(structure_counted_hash[nb])/nb_learning_set_sum,3)
+                            second_denom=round(float(structure_counted_hash[aa])/aa_learning_set_sum,3)
+                            propensity = numerator/(first_denom*second_denom)
                             # print "start"
                             # print numerator
                             # print first_denom
@@ -92,9 +92,9 @@ class StatisticalPotential(object):
         # print bond_counted_hash
         # balance_stat_potential = self.energy_balancer(bond_counted_hash)
         print "All the AA in the learning set"
-        print aa_learningset
+        print aa_learning_set_sum
         print "All the NB in the learning set"
-        print nb_learningset
+        print nb_learning_set_sum
         print "Specific potentials vdw, cat_9,A "
         print bond_counted_hash["vdw"]["CAT_9"]["A"]
         stat_potential_file.close()
