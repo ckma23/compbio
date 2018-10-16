@@ -36,9 +36,18 @@ class energyCalculator(object):
 
         print "Checking if the structure is native"
 
+    def retrieve_statistical_potential(self):
+        stat_potential_file_path = os.path.join(os.path.expanduser('~/bioresearch/compbio/metadata_folder/'),"statistical_potential.json")
+        stat_pot_file = open(stat_potential_file_path)
+        stat_pot_file_string = stat_pot_file.read()
+        stat_pot_hash = json.loads(stat_pot_file_string)
+        print stat_pot_hash
+        return stat_pot_hash
+
     def energy_calculator(self,hb_only_or_hb_and_vdw):
         os.system("mkdir ~/bioresearch/compbio/files_wip/energy_calculations_testset%s" %hb_only_or_hb_and_vdw)
-        statistical_potential_hash = StatisticalPotential().statistical_potential()
+        # statistical_potential_hash = StatisticalPotential().statistical_potential()
+        statistical_potential_hash = self.retrieve_statistical_potential()
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/bondcategorized_testset'))
         testset_proteins = os.listdir('.')
         for testset_protein in testset_proteins:
@@ -74,11 +83,12 @@ class energyCalculator(object):
                         # print nucleotide_base
                         # print amino_acid
 
-
-
                         ## MAY WANT TO CREATE METADATA FOR IN REGARDS TO WHICH CATEGORY CONTRIBUTE DTHE MOST ENERGY??
                         ## what it look like with only hydrogenbonding and what did it look like with VanderWaals included.
 
+                        #need to reset bonding energy here because as noticed with the exception bond_energy wasn't being accepted and the
+                        # last known energy was applied to the exception.
+                        bond_energy = 0
                         try:
                             bond_energy = statistical_potential_hash[hborvdw][category][nucleotide_base][amino_acid]["statistical_potential"]
                             print bond_energy
@@ -94,6 +104,8 @@ class energyCalculator(object):
                             hb_energy = hb_energy + bond_energy
                         elif hborvdw == "vdw":
                             vdw_energy = vdw_energy + bond_energy
+                        print hb_energy
+                        print vdw_energy
                     if hb_only_or_hb_and_vdw == "hb_only":
                         vdw_energy = 0;
                     elif hb_only_or_hb_and_vdw == "vdw_only":
@@ -107,8 +119,9 @@ class energyCalculator(object):
                         pose_nativeness = native_pose_hash[native_pose_file][testset_protein_pose_number_to_store]['nativeness']
                     except Exception as e:
                         print "There was an error in retrieving the pose RMS: %s" %e
-
-                    energy_file.write("%s,%s,%s,%s,%s,%s,%s,%s\n" %(testset_protein,testset_protein_pose_number_to_store,hb_energy,vdw_energy,total_energy,pose_RMS,pose_nativeness,native_pose_file))
+                    line = "%s,%s,%s,%s,%s,%s,%s,%s\n" %(testset_protein,testset_protein_pose_number_to_store,hb_energy,vdw_energy,total_energy,pose_RMS,pose_nativeness,native_pose_file)
+                    print line
+                    energy_file.write(line)
                 energy_file.close
 
     def pose_rankings(self,hb_only_or_hb_and_vdw):
@@ -144,7 +157,7 @@ class energyCalculator(object):
                     print native_count
                     # the first native structure should either be the maximum or minumum energy.
             for complex_num in sorted_complex_list:
-                if native_pose_ranking_hash[ testset_protein][complex_num]["nativeness"] == "native":
+                if native_pose_ranking_hash[testset_protein][complex_num]["nativeness"] == "native":
                     # add 1 because the array starts at 0
                     best_rank = float(sorted_complex_list.index(complex_num)+1)/len(sorted_complex_list)
                     best_rank = best_rank * 100

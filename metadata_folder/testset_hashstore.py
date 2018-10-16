@@ -11,7 +11,7 @@ class TestsetHashstore:
         "1WPU_A_C":{"protein":"1WPV_A","rna":"1WPU_C"},
         "2QUX_A_C":{"protein":"2QUD_A","rna":"2QUX_C"},
         "2JEA_A_C":{"protein":"2JE6_A","rna":"2JEA_C"},
-        "2FMT_A_C":{"protein":"1FTM_A","rna":"3CW5_A"},
+        "2FMT_A_C":{"protein":"1FMT_A","rna":"3CW5_A"},
         "1MFQ_C_A":{"protein":"1QB2_B","rna":"1L9A_B"},
         "1U0B_B_A":{"protein":"1L17_A","rna":"1B23_R"},
         "1EC6_A_D":{"protein":"1DTJ_A","rna":"1EC6_D"},

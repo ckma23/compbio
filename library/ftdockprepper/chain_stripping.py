@@ -69,7 +69,7 @@ class FTDockChainStripping(object):
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/%s_seperated_pdbfiles_testset' %rna_or_protein))
         os.system("mv -i *.parsed ~/bioresearch/compbio/files_wip/%s_seperated_pdbfiles_preprocessperl_testset" %rna_or_protein)
         os.system("mv -i *.fasta ~/bioresearch/compbio/files_wip/%s_seperated_pdbfiles_preprocessperl_testset" %rna_or_protein)
-
+# this is deprectaed
     def pdb_file_combine_rms_calc(self):
         print "Combining the separated pdb file rna chain and protein chain"
         os.system("mkdir ~/bioresearch/compbio/files_wip/combined_pdbfiles_testset")

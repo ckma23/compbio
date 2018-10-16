@@ -8,6 +8,26 @@ import glob                                                 #import the glob lib
 import fnmatch
 
 
+### DECISION TREE FOR CATEGORIES ###
+#CAT 1 : Helix => A Form ("A") => major grove => major groove like => canonical basepair (U to A; C to G) => check atom type
+#CAT 2 : Helix => A Form ("A") => not major grove => not a canonical base pair (U to G) => check atom type
+#CAT 3 : Helix => A Form ("A") => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
+#CAT 4 : Helix => Not A Form ("B","Z",".","x") => major groove like => canonical basepair (U to A; C to G)
+#CAT 5 : Helix => Not A Form ("B","Z",".","x") => major groove like => not a canonical base pair (U to G)
+#CAT 6 : Helix => Not A Form ("B","Z",".","x") => not major groove like
+#CAT 7 : Helix => Not A Form ("B","Z",".","x") => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
+#CAT 8 : Not Helix (Hairpin, Bulge, Loops) => base
+#CAT 9 : Not Helix (Hairpin, Bulge, Loops) => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
+
+# assumptions is that A Form Helix must likely only be a canonical base pair or wobble pair.
+# thus if it's not a canonical basepair then check
+# CAT 1 or CAT 2
+# check atom type in A-form and which atom types are major groove in A-form and which ones are not; thus CAT 1 or CAT 2
+# CAT 4 or CAT 5 or CAT 6
+# CAT 4: canonical base pair is CAT 4 by cW-w
+# CAT 5: non cW-w and check the atom if it's in the major groove or minor groove
+# CAT 6: non cW-w and atom is not in major groove
+
 ### DECISION TREE TWO FOR CATEGORIES ###
 #CAT 1 : Helix => A Form ("A") => canonical basepair ("cW-W" where U to A; C to G; wobble) => check atom type for major groove or minor groove
 #CAT 2 : Helix => A Form ("A") => not a canonical base pair or  canonical basepair atom type is on minor groove
@@ -16,8 +36,8 @@ import fnmatch
 #CAT 5 : Helix => Not A Form ("B","Z",".","x") => not a canonical base pair => check atom type for major groove or minor groove
 #CAT 6 : Helix => Not A Form ("B","Z",".","x") => not major groove like
 #CAT 7 : Helix => Not A Form ("B","Z",".","x") => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
-#CAT 8 : Not Helix (Hairpin, Bulge, Loops) => base
-#CAT 9 : Not Helix (Hairpin, Bulge, Loops) => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
+#CAT 8 : Not Helix (Hairpin, Bulge, Loops, Junctions) => base
+#CAT 9 : Not Helix (Hairpin, Bulge, Loops, Junctions) => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
 
 ## major groove atoms in A are: H61,H62,N6,C6,C5,N7,C8,H8
 ## minor groove atoms in A are: N2,C2,C5,C4

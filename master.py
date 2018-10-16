@@ -10,12 +10,15 @@ import fnmatch                                              #import the fnmatch 
 from pprint import pprint                                   #pprint for json
 from Bio import *                                           #use the BioPython Python library
 from Bio.PDB import *                                       #more specifically import the BioPython PDB library
+from optparse import OptionParser as optionparser           # will need a option parsing library
+
 from helper.biopythonpdbretriever import FileRetriever      #from the helper folder biopythonpdbretriever.py import FileRetriever class
-from helper.PDBRestService import PDBRestServicehelper
+from helper.PDBRestService import PDBRestServicehelper      #from the helper folder PDBRestService import FileRetriever class
+from metadata_folder.testset_hashstore import TestsetHashstore #from the metadata_folder folder testset_hashstore import FileRetriever class
+
 from library.culling_helper.cull_helper import CullHelper
-from metadata_folder.testset_hashstore import TestsetHashstore
 from library.hbplusclilib.hbpluscli import hbplusclihelper
-from library.hbplusclilib.hbpluscli_testset import HbplusCliTestset as HbplusCliTestset  #This is just placeholder for now.
+from library.hbplusclilib.hbpluscli_testset import HbplusCliTestset as HbplusCliTestset
 from library.hbplusparser.hbplusparser import HbPlusProcesser as HbPlusProcesser
 from library.hbplusparser.hbplusparser_testset import HbPlusProcesserTestSet as HbPlusProcesserTestSet
 from library.dssrclilib.dssrcli import dssrclihelper
@@ -26,11 +29,9 @@ from library.hbplus_to_dssr_comparer.hbplus_to_dssr_comparer import HbPlusToDssr
 from library.hbplus_to_dssr_comparer.hbplus_to_dssr_comparer_testset import HbPlusToDssrComparerTestset as HbPlusToDssrComparerTestset
 from library.bondfinalcount.statistical_potential_calculator import StatisticalPotential as StatisticalPotential
 from library.energy_formation.energy_formation_calculator import energyCalculator as energyCalculator
-
 from library.bondfinalcount.bondcount import Bondcounter
 from library.ftdockprepper.chain_stripping import FTDockChainStripping
 from library.ftdock_middleware.ftdock_middleware import FtdockMiddleware
-from optparse import OptionParser as optionparser # will need a option parsing library
 
 def directory_builder():
     os.chdir(os.path.expanduser('~/bioresearch/compbio'))
@@ -39,7 +40,7 @@ def directory_builder():
     #make the work in progress folder directories used
     os.system("mkdir files_wip")
 
-def pdbfileretriever(configuration_file,folder_path_name):
+def pdb_file_retriever(configuration_file,folder_path_name):
     with open(configuration_file,'rb') as csvfile:
         csvstore = csv.reader(csvfile,delimiter = ',')
         for structure in csvstore:
@@ -47,98 +48,57 @@ def pdbfileretriever(configuration_file,folder_path_name):
             # note: had to strip the string as it was returning ['<string>'] for []
             FileRetriever().fileretrieving(''.join(structure),folder_path_name)
 
-### DECISION TREE FOR CATEGORIES ###
-#CAT 1 : Helix => A Form ("A") => major grove => major groove like => canonical basepair (U to A; C to G) => check atom type
-#CAT 2 : Helix => A Form ("A") => not major grove => not a canonical base pair (U to G) => check atom type
-#CAT 3 : Helix => A Form ("A") => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
-#CAT 4 : Helix => Not A Form ("B","Z",".","x") => major groove like => canonical basepair (U to A; C to G)
-#CAT 5 : Helix => Not A Form ("B","Z",".","x") => major groove like => not a canonical base pair (U to G)
-#CAT 6 : Helix => Not A Form ("B","Z",".","x") => not major groove like
-#CAT 7 : Helix => Not A Form ("B","Z",".","x") => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
-#CAT 8 : Not Helix (Hairpin, Bulge, Loops) => base
-#CAT 9 : Not Helix (Hairpin, Bulge, Loops) => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
-
-# assumptions is that A Form Helix must likely only be a canonical base pair or wobble pair.
-# thus if it's not a canonical basepair then check
-# CAT 1 or CAT 2
-# check atom type in A-form and which atom types are major groove in A-form and which ones are not; thus CAT 1 or CAT 2
-# CAT 4 or CAT 5 or CAT 6
-# CAT 4: canonical base pair is CAT 4 by cW-w
-# CAT 5: non cW-w and check the atom if it's in the major groove or minor groove
-# CAT 6: non cW-w and atom is not in major groove
-
-
-### DECISION TREE TWO FOR CATEGORIES ###
-#CAT 1 : Helix => A Form ("A") => canonical basepair ("cW-W" where U to A; C to G; wobble) => check atom type for major groove or minor groove
-#CAT 2 : Helix => A Form ("A") => not a canonical base pair or  canonical basepair atom type is on minor groove
-#CAT 3 : Helix => A Form ("A") => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
-#CAT 4 : Helix => Not A Form ("B","Z",".","x") => canonical basepair ("cW-W" where U to A; C to G; wobble) => check atom type for major groove or minor groove
-#CAT 5 : Helix => Not A Form ("B","Z",".","x") => not a canonical base pair => check atom type for major groove or minor groove
-#CAT 6 : Helix => Not A Form ("B","Z",".","x") => not major groove like
-#CAT 7 : Helix => Not A Form ("B","Z",".","x") => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
-#CAT 8 : Not Helix (Hairpin, Bulge, Loops) => base
-#CAT 9 : Not Helix (Hairpin, Bulge, Loops) => backbone ("C1\'","C2\'","C3\'","C4\'","C5\'","O3\'","O4\'","O5\'","H1\'","H2\'","H3\'","H4\'","H5\'","H5\'\'","P","OP1","OP2","OP3")
-
-## major groove atoms in A are: H61,H62,N6,C6,C5,N7,C8,H8
-## minor groove atoms in A are: N2,C2,C5,C4
-## major groove atoms in U are: O4,C4,C5,H5,C6,H6
-## minor groove atoms in U are: H3,N3,C2,O2,N1
-## major groove atoms in C are: H6,C6,C5,H5,C4,N4,H42,H41,N3
-## minor groove atoms in C are: N1,C2,O2
-## major groove atoms in G are: H1,N2,C6,O6,C5,N7,C8,H8
-## minor groove atoms in G are: N2,C2,C5,C4
-
-def helpoutput():
+def help_output():
   print "\nWelcome to the Computatinal Biology RNA-Protein Interaction help section\n"
   print "\nThe following commands are available:\n"
   print "\ndssrcli \nfileretriever \nhbplushbcli \nhbplusvdwcli \ndssrprocessedreader \nhbplusprocessedreader\n"
 
-# testprotein = structureRetriever('1mnb','pdbfiles/pdb1mnb.ent')
-# neighborSearcher(testprotein,3.0)
-# aminoacidmatcher()
-
 #from the system take the second argument can switch this out with optparse
 proinput=str(sys.argv[1])
+
 #default help menu
 if proinput == "help":
-    helpoutput()
+    help_output()
+
+#build out the needed directories
 elif proinput == "initialize":
     directory_builder()
 elif proinput == "cullhelp":
     CullHelper().cullhelper("structures_of_interest.csv")
 
-#function to split the pdb files into rna only and protein only
+#function to split the pdb files into rna only and protein only since we'll need to grab the unbound/bound protein
 elif proinput == "parse_testset_list":
     TestsetHashstore().testset_list_prepare("protein","test_complexes_pdb_protein_unbound.csv")
     TestsetHashstore().testset_list_prepare("rna","test_complexes_pdb_rna_unbound.csv")
 
+#note that the way the code is written. only run once, it does not clear the directory
 elif proinput == "chainstrip_testset_pdb":
-    #note that the way the code is written. only run once, it does not clear the directory
     TestsetHashstore().file_cleaner_based_on_chain("files_wip/test_complexes_pdb_protein_unbound","protein")
     TestsetHashstore().file_cleaner_based_on_chain("files_wip/test_complexes_pdb_rna_unbound","rna")
     TestsetHashstore().pdbfile_native_fileprepper_rna_protein("files_wip/test_complexes_pdb","protein")
     TestsetHashstore().pdbfile_native_fileprepper_rna_protein("files_wip/test_complexes_pdb","rna")
 
+# grab the actual pdb files from the PDB database
 elif proinput == "pdbfileretriever":
-    pdbfileretriever("structures_of_interest.csv","files_wip/base_complexes_pdb")
-    pdbfileretriever("test_complexes_pdb_complex_bound.csv","files_wip/test_complexes_pdb")
-    pdbfileretriever("test_complexes_pdb_protein_unbound.csv","files_wip/test_complexes_pdb_protein_unbound")
-    pdbfileretriever("test_complexes_pdb_rna_unbound.csv","files_wip/test_complexes_pdb_rna_unbound")
+    pdb_file_retriever("structures_of_interest.csv","files_wip/base_complexes_pdb")
+    pdb_file_retriever("test_complexes_pdb_complex_bound.csv","files_wip/test_complexes_pdb")
+    pdb_file_retriever("test_complexes_pdb_protein_unbound.csv","files_wip/test_complexes_pdb_protein_unbound")
+    pdb_filer_etriever("test_complexes_pdb_rna_unbound.csv","files_wip/test_complexes_pdb_rna_unbound")
 
-#need to build hbplus initially for the baseset
+#run hbplus initially for the baseset in hydrogen bonding mode
 elif proinput == "hbplushbcli":
     hbplusclihelper().hbplushbcli()
-#need to build hbplus for the testset and complexes
+
+#run hbplus initially for the baseset in van der Waals mode
 elif proinput == "hbplusvdwcli":
     hbplusclihelper().hbplusvdwcli()
 
+#process the hbplus baseset hydrogne bonding and van der Waals results into the needed format
 elif proinput == "hbplus_parse_baseset":
     HbPlusProcesser().hbplusprocessedreader("hb")
     HbPlusProcesser().hbplusprocessedreader("vdw")
-# elif proinput == "hbplushbparse":
-#     hbplusprocessedreader("hb")
-# elif proinput == "hbplusvdwparse":
-#     hbplusprocessedreader("vdw")
+
+#combine the hbplus baseset hydrogen bonding and van der Waals results into a single file
 elif proinput == "hbplushbvdwcombine":
     HbPlusProcesser().hbplushbandvdwcombiner()
 
@@ -160,13 +120,15 @@ elif proinput == "dssr_cli_parse_combine":
 
 elif proinput == "hbcategorizedssr":
     HbPlusToDssrComparer().hbplushbvdwtodssrcomparer()
-    # hbplushbvdwtodssrcomparer()
+
+#method to only count the bounds
 elif proinput == "countbonds":
     Bondcounter().file_opener()
     # Bondcounter().total_atom_counter()
 elif proinput == "statistical_potential":
     StatisticalPotential().statistical_potential()
-#smashing it together does not seem to be working
+
+#Running it together does not seem to be working
 elif proinput == "bound_count_stat_pot_baseset":
     Bondcounter().file_opener()
     StatisticalPotential().statistical_potential()
@@ -177,6 +139,7 @@ elif proinput == "pdbsplit":
 elif proinput == "preprocessftdock":
     FTDockChainStripping().preprocess_ftdock("rna")
     FTDockChainStripping().preprocess_ftdock("protein")
+# this is deprectaed
 elif proinput == "testprotein_pdb_combine":
     FTDockChainStripping().pdb_file_combine_rms_calc()
 
@@ -190,7 +153,7 @@ elif proinput == "ftdockgen":
 elif proinput == "ftdockbuild":
     # FtdockMiddleware().ftdock_directory_cleaner("home","cma","Users","curtisma")
     # FtdockMiddleware().ftdock_directory_cleaner("Users","curtisma","home","cma")
-    FtdockMiddleware().ftdock_builder(50373)
+    FtdockMiddleware().ftdock_builder(1073)
 
 elif proinput == "hbpluscli_testset":
     HbplusCliTestset().hbpluscli("hbplus_processed_hb_files_testset","hb")
@@ -204,7 +167,7 @@ elif proinput == "hbplusprocess_testset_combine":
     HbPlusProcesserTestSet().hbplushbandvdwcombiner()
 
 elif proinput == "dssrcli_testset":
-    DssrCliHelperTestset().dssrcli()
+    DssrCliHelperTestset().dssrcli_revamped()
 elif proinput == "dssrparse_testset":
     DssrParserTestSet().dssrprocessedreader()
 elif proinput == "bondcategorizer_testset":

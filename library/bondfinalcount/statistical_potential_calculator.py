@@ -3,6 +3,7 @@ from Bio.PDB import *                                       #more specifically i
 import os
 import numpy as np
 import math
+import json
 from bondcount import Bondcounter
 from structurecount import StructureCounter
 
@@ -16,8 +17,8 @@ class StatisticalPotential(object):
         # print bond_counted_hash
         #lets get all the nucleotide_base and amino_acid counted!
         # structure_hash = StructureCounter().structure_hasher
-
         structure_counted_hash = StructureCounter().structure_counter()
+
         nb_learning_set_sum = 0
         aa_learning_set_sum = 0
         nucleotide_base = ["A","C","U","G"]
@@ -87,6 +88,9 @@ class StatisticalPotential(object):
                         bond_counted_hash[vdworhb][cat][nb][aa]["statistical_potential"] = statistical_potential
                         line = "%s,%s,%s,%s,%s" %(vdworhb,cat,nb,aa,bond_counted_hash[vdworhb][cat][nb][aa]["statistical_potential"])
                         print line
+        stat_potential_file_path = os.path.join(os.path.expanduser('~/bioresearch/compbio/metadata_folder/'),"statistical_potential.json")
+        with open (stat_potential_file_path ,'w') as stat_pot_file:
+            json.dump(bond_counted_hash,stat_pot_file)
         # print bond_counted_hash
         # balance_stat_potential = self.energy_balancer(bond_counted_hash)
         print "All the AA in the learning set"
@@ -97,7 +101,7 @@ class StatisticalPotential(object):
         print bond_counted_hash["vdw"]["CAT_9"]["A"]
         return bond_counted_hash
 
-    # this is mean to rebalance the statistical_potentials
+    # this is meant to rebalance the statistical_potentials
     def energy_balancer(self,bond_counted_hash):
         balance_hash = energyknockdown().energyknockdownretriever()
         for vdworhb in bond_counted_hash.keys():
@@ -109,8 +113,6 @@ class StatisticalPotential(object):
         print balance_hash
         return bond_counted_hash
 
-
-
     def statistical_poential(self,propensity):
         RT=.59
         statistical_potential=-1*RT*math.log(propensity)
@@ -121,6 +123,3 @@ class StatisticalPotential(object):
     #numerator = count of arg-guanine in Cat 1/count of all pairs in Cat 1
     #first demoninator = count of arg in Cat 1/count of all Arg in learning set
     #second denominator = count of guanine in Cat 1/ count of all guanine in learning set
-
-
-# statistical_potential()

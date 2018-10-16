@@ -17,7 +17,7 @@ class TestsetHashstore:
         "1WPU_A_C":{"protein":"1WPV_A","rna":"1WPU_C"},
         "2QUX_A_C":{"protein":"2QUD_A","rna":"2QUX_C"},
         "2JEA_A_C":{"protein":"2JE6_A","rna":"2JEA_C"},
-        "2FMT_A_C":{"protein":"1FTM_A","rna":"3CW5_A"},
+        "2FMT_A_C":{"protein":"1FMT_A","rna":"3CW5_A"}, 
         "1MFQ_C_A":{"protein":"1QB2_B","rna":"1L9A_B"},
         "1U0B_B_A":{"protein":"1L17_A","rna":"1B23_R"},
         "1EC6_A_D":{"protein":"1DTJ_A","rna":"1EC6_D"},
@@ -105,11 +105,18 @@ class PymolMiddleware(object):
                 # as of 10-09-18 since protein is static and rna is mobile
                 # align the pose and complex by alpha carbon
                 # note that poses are the 50373 and complexes are the "native" need to change syntax
-
+                # pymol.cmd.do("align pose and name CA and chain %s,complexes and name CA and chain %s" %(pose_protein_chain_use,native_protein_chain_use))
+                # no need to align by chain, lets jsut align by the alpha carbons
                 pymol.cmd.do("align pose and name CA,complexes and name CA")
                 # grab all the RNA atoms could also align by Phosphate probably not
+                # pymol.cmd.do('select complex_atoms, /complex//%s//P' %native_rna_chain_use)
                 pymol.cmd.do('select complex_atoms, /complex//%s//' %native_rna_chain_use)
+                # now as of 10/10/2018 found out that if the chain identifiers don't match pymol will throw an error ExecutiveRMS-Error: No atoms selected.
+                # https://pymolwiki.org/index.php/Fit
+                # therefore we actually need the rna chains to have the same identifier
+                # pymol.cmd.do('select pose_atoms, /pose//%s//P' %pose_rna_chain_use)
                 pymol.cmd.do('select pose_atoms, /pose//%s//' %pose_rna_chain_use)
+                pymol.cmd.do('alter pose_atoms, chain="%s"' %native_rna_chain_use)
                 rms = pymol.cmd.rms_cur("pose_atoms","complex_atoms")
                 # rms = pymol.cmd.do('rms_cur ou,co')
                 # rms = pymol.cmd.rms_cur(ou,co)

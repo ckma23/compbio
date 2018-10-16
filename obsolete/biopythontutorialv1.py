@@ -78,17 +78,17 @@ def hbplusprocessedhbreader():
               info1.append(store[14:20])
               info2.append(store[20:23])
               info3.append(store[24:27])
-            #appears that we need to account if the amino acid or the nucleotide base is either side. however we need to fix the files so hbplus sorted always have nucelotide base is always on first column.  
+            #appears that we need to account if the amino acid or the nucleotide base is either side. however we need to fix the files so hbplus sorted always have nucelotide base is always on first column.
             elif (store[6:9].strip() == nb and store[20:23].strip() == aa):
               info1.append(store[0:6])
               info2.append(store[6:9])
               info3.append(store[9:12])
               info4.append(store[14:20])
               info5.append(store[20:23])
-              info6.append(store[24:27]) 
+              info6.append(store[24:27])
     print hbplushbprocessedfile
     print totalaanb
-  hbplushbstorefilewriter(hbplushbprocessedfile,info1,info2,info3,info4,info5,info6) 
+  hbplushbstorefilewriter(hbplushbprocessedfile,info1,info2,info3,info4,info5,info6)
   for i in range(len(info1)):
     print "%s %s %s %s %s %s" %(info1[i],info2[i],info3[i],info4[i],info5[i],info6[i])
 
@@ -150,3 +150,7 @@ def hbplusprocessedhbreader():
 #     hbplusfilestore = open(hbplusfile)
 #     for hbline in hbplusfilestore:
 #       dssrcomparer(hbline)
+
+# testprotein = structureRetriever('1mnb','pdbfiles/pdb1mnb.ent')
+# neighborSearcher(testprotein,3.0)
+# aminoacidmatcher()

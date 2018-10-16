@@ -27,6 +27,7 @@ class Bondcounter(object):
         # print nucleotide_base_amino_acid["hb"]["CAT_1"]["A"].keys()
         return nucleotide_base_amino_acid
 
+    # this can be deprecated also.
     def culledchain(self,complex_name,rna_chain,protein_chain):
         culledfile = open("culledfile.txt")
         #culledhash = {"Complex1":{"RNA":[A,B,C],"Protein":[D,F]},"Complex1":{"RNA":[A,B,C],"Protein":[D,F]}}
