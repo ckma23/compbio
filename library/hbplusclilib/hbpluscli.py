@@ -2,7 +2,7 @@ import os as os #import the python os library
 import csv as csv #import the python csv library
 import re #provides regular expression matching
 
-class hbplusclihelper(object):
+class HbPlusCliHelper(object):
     def __init__(self):
         self.listoffiles = []
 

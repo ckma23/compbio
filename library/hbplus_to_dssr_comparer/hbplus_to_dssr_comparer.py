@@ -72,7 +72,7 @@ class HbPlusToDssrComparer(object):
             # hbplusfile = hbplusfile.replace("pdb","")
             # hbplusfile = hbplusfile.replace("hbplushbvdwsorted","")
             # hbplusfile+="bondcategorized"
-            os.system('rm %s' %hbplusfile)
+            # os.system('rm %s' %hbplusfile)
 
             # os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/DSSRparsed_baseset'))
             # alhs,arhs=hbplusfile.split(".",1)
@@ -98,7 +98,11 @@ class HbPlusToDssrComparer(object):
             dssrfile = hbplusfile + "dsr"
 
             print dssrfile
-
+            # for each of the hbplus files please go ahead and make a bondcategorized file even if nothing matches
+            file_name_altogether = os.path.expanduser('~/bioresearch/compbio/files_wip/bondcategorized_baseset/%s' %filenamestring)
+            # because this is a first write "w", it will over-write anything previously, then later on we go ahead and append
+            create_file = open(file_name_altogether,"w")
+            create_file.close
 
 
             #NEED TO REWRITE THIS MODULE

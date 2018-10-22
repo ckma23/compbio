@@ -9,6 +9,7 @@ class HbPlusProcesserTestSet(object):
         os.system('mkdir ~/bioresearch/compbio/files_wip/hbplus_sorted_%s_files_testset' %hborvdw)
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/%s' %folder_path))
         list_of_processed_protein_files = os.listdir('.')
+        list_of_processed_protein_files = ["1e7k"]
         for protein in list_of_processed_protein_files:
             os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/hbplus_sorted_%s_files_testset' %hborvdw))
             os.system('mkdir %s'%protein)

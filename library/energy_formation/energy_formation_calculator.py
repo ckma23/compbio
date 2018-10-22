@@ -10,7 +10,7 @@ import fnmatch
 from library.bondfinalcount.statistical_potential_calculator import StatisticalPotential as StatisticalPotential
 from library.energy_formation.energy_balancer import Energyknockdown as Energyknockdown
 
-class energyCalculator(object):
+class EnergyCalculator(object):
     #given the protein name, load in the complex # and the RMS and the native or nonnative column
     def native_checker_pose_hash_retriever(self,protein_name_string):
         # move into the native_poses directory which has all the native poses

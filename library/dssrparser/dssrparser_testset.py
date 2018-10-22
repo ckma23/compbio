@@ -68,4 +68,3 @@ class DssrParserTestSet(object):
       print os.getcwd()
       for line in dssrstore:
         file.write("%s\n" %line)
-    #   os.chdir('/Users/curtisma/bioresearch')

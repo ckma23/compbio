@@ -1,7 +1,7 @@
 import os
 
 class CullHelper:
-    def cullhelper(self,structure_file_name):
+    def cull_helper(self,structure_file_name):
         os.chdir(os.path.expanduser('~/bioresearch/compbio/metadata_folder'))
         #open the culled_file
         culled_file = open("culled_proteins.txt")

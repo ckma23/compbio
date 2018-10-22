@@ -19,7 +19,7 @@ class HbPlusToDssrComparerTestset(object):
         # need to grab all the protein names from the test set
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/hbplus_hb_vdw_combined_testset'))
         list_of_protein_testset_complexes = os.listdir('.')
-        #list_of_protein_testset_complexes = [""]
+        list_of_protein_testset_complexes = ["1e7k"]
         for protein_testset_complex in list_of_protein_testset_complexes:
             #make the directory that the generated files will go into individual protein folders.
             os.system("mkdir ~/bioresearch/compbio/files_wip/bondcategorized_testset/%s" %protein_testset_complex)
@@ -29,10 +29,18 @@ class HbPlusToDssrComparerTestset(object):
             os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/hbplus_hb_vdw_combined_testset/%s' %protein_testset_complex))
             listofprocessedhbplusfiles = os.listdir('.')
             for hbplusfile in listofprocessedhbplusfiles:
+
                 #MAY NEED TO KEEP THIS??
                 os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/hbplus_hb_vdw_combined_testset/%s' %protein_testset_complex))
                 # hbplusfilestore = open(hbplusfile)
                 # hbplusfilestore.close
+                # for each of the hbplus files please go ahead and make a bondcategorized file even if nothing matches
+                filematch_lhs = hbplusfile
+                filenamestring = "%s.bondcategorized" %(filematch_lhs)
+                file_name_altogether = os.path.expanduser('~/bioresearch/compbio/files_wip/bondcategorized_testset/%s/%s' %(protein_testset_complex,filenamestring))
+                create_file = open(file_name_altogether,"a")
+                create_file.close
+
                 with open(hbplusfile,'rb') as hbplus_meta_filestore:
                     hbplusfilestore = csv.reader(hbplus_meta_filestore)
                     for hbline in hbplusfilestore:
@@ -50,7 +58,7 @@ class HbPlusToDssrComparerTestset(object):
                             # os.chdir('/Users/curtisma/bioresearch/DSSRparsedfiles')
                         try:
                             with open(dssrfile,'rb') as dssrfilestore:
-                                dssr_filestore  = csv.reader(dssrfilestore)
+                                dssr_filestore = csv.reader(dssrfilestore)
                                 # filename_lhs = filename_lhs.strip("*")
                                 # storing=dssrfile.strip("pdb")
                                 # lhs,rhs=storing.split(".",1)

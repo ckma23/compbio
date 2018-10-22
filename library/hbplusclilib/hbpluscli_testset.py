@@ -11,6 +11,7 @@ class HbplusCliTestset(object):
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/ftdockbuiltposes'))
 
         list_of_protein_complexes = os.listdir('.')
+        list_of_protein_complexes = ["1e7k"]
         if vdw_or_hb == "hb":
             hbpluscommand = "./hbplus"
             hb_vdw_file_format = "hb2"
@@ -37,4 +38,4 @@ class HbplusCliTestset(object):
                 os.system("mv %s.%s ~/bioresearch/compbio/files_wip/%s/%s" %(lhs_pose,hb_vdw_file_format,folder_name,protein_complex))
                 # this was having file movement issues as it was flying through the directory
                 time.sleep(.100)
-                os.system("mv Complex* ~/bioresearch/compbio/files_wip/%s/%s" %(folder_name,protein_complex))    
+                os.system("mv Complex* ~/bioresearch/compbio/files_wip/%s/%s" %(folder_name,protein_complex))
