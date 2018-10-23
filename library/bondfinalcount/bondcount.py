@@ -10,6 +10,7 @@ class Bondcounter(object):
         # returns a prepared hash of based on hydrogen bonding or Vander Waals, which category, which nucleotide_base, which amino_acid
         nucleotide_base_amino_acid = {}
         category=["CAT_1","CAT_2","CAT_3","CAT_4","CAT_5","CAT_6","CAT_7","CAT_8","CAT_9"]
+        # category=["CAT_1","CAT_2","CAT_3","CAT_4","CAT_5","CAT_6","CAT_7","CAT_8","CAT_9","CAT_10","CAT_11"]
         nucleotide_base =["A","C","U","G"]
         amino_acid=["ARG","ALA","ASN","ASP","GLN","GLU","GLY","CYS","HIS","ILE","LEU","LYS","MET","PHE","PRO","SER","THR","TRP","TYR","VAL"]
         vdw_or_hb=["hb","vdw"]
@@ -92,6 +93,7 @@ class Bondcounter(object):
         for vdworhb in final_bond_counted_store.keys():
 
             number_by_CAT = {"CAT_1":0,"CAT_2":0,"CAT_3":0,"CAT_4":0,"CAT_5":0,"CAT_6":0,"CAT_7":0,"CAT_8":0,"CAT_9":0}
+            # number_by_CAT = {"CAT_1":0,"CAT_2":0,"CAT_3":0,"CAT_4":0,"CAT_5":0,"CAT_6":0,"CAT_7":0,"CAT_8":0,"CAT_9":0,"CAT_10":0,"CAT_11":0}
             number_by_NB_in_all_CAT = {"A":0,"U":0,"C":0,"G":0}
             number_by_NB_to_AA_in_all_CAT = {"A":{"ARG":0,"ALA":0,"ASN":0,"ASP":0,"GLN":0,"GLU":0,"GLY":0,"CYS":0,"HIS":0,"ILE":0,"LEU":0,"LYS":0,"MET":0,"PHE":0,"PRO":0,"SER":0,"THR":0,"TRP":0,"TYR":0,"VAL":0},"U":{"ARG":0,"ALA":0,"ASN":0,"ASP":0,"GLN":0,"GLU":0,"GLY":0,"CYS":0,"HIS":0,"ILE":0,"LEU":0,"LYS":0,"MET":0,"PHE":0,"PRO":0,"SER":0,"THR":0,"TRP":0,"TYR":0,"VAL":0},"C":{"ARG":0,"ALA":0,"ASN":0,"ASP":0,"GLN":0,"GLU":0,"GLY":0,"CYS":0,"HIS":0,"ILE":0,"LEU":0,"LYS":0,"MET":0,"PHE":0,"PRO":0,"SER":0,"THR":0,"TRP":0,"TYR":0,"VAL":0},"G":{"ARG":0,"ALA":0,"ASN":0,"ASP":0,"GLN":0,"GLU":0,"GLY":0,"CYS":0,"HIS":0,"ILE":0,"LEU":0,"LYS":0,"MET":0,"PHE":0,"PRO":0,"SER":0,"THR":0,"TRP":0,"TYR":0,"VAL":0}}
             for cat in final_bond_counted_store[vdworhb].keys():
@@ -115,6 +117,7 @@ class Bondcounter(object):
                 print "%s,%s" %(cat,number_by_CAT[cat])
 
             print "\nBY NB TO AA BY CAT print friendly %s" %vdworhb
+            # category=["CAT_1","CAT_2","CAT_3","CAT_4","CAT_5","CAT_6","CAT_7","CAT_8","CAT_9","CAT_10","CAT_11"]
             category=["CAT_1","CAT_2","CAT_3","CAT_4","CAT_5","CAT_6","CAT_7","CAT_8","CAT_9"]
             nucleotide_base =["A","C","U","G"]
             amino_acid=["ARG","ALA","ASN","ASP","GLN","GLU","GLY","CYS","HIS","ILE","LEU","LYS","MET","PHE","PRO","SER","THR","TRP","TYR","VAL"]

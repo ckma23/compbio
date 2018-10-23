@@ -21,7 +21,7 @@ from library.hbplusclilib.hbpluscli import HbplusCliHelper
 from library.hbplusclilib.hbpluscli_testset import HbplusCliTestset as HbplusCliTestset
 from library.hbplusparser.hbplusparser import HbPlusProcesser as HbPlusProcesser
 from library.hbplusparser.hbplusparser_testset import HbPlusProcesserTestSet as HbPlusProcesserTestSet
-from library.dssrclilib.dssrcli import DssrCliHelper()
+from library.dssrclilib.dssrcli import DssrCliHelper
 from library.dssrclilib.dssrcli_testset import DssrCliHelperTestset as DssrCliHelperTestset
 from library.dssrparser.dssrparser import DssrParser as DssrParser
 from library.dssrparser.dssrparser_testset import DssrParserTestSet
@@ -88,12 +88,12 @@ elif prog_input == "pdbfileretriever":
     pdb_filer_etriever("test_complexes_pdb_rna_unbound.csv","files_wip/test_complexes_pdb_rna_unbound")
 
 #run hbplus initially for the baseset in hydrogen bonding mode
-elif prog_input == "hbplushbcli":
-    HbPlusCliHelper().hbplushbcli()
+elif prog_input == "hbplus_hb_cli_baseset":
+    HbPlusCliHelper().hbplus_hb_cli()
 
 #run hbplus initially for the baseset in van der Waals mode
-elif prog_input == "hbplusvdwcli":
-    HbPlusCliHelper().hbplusvdwcli()
+elif prog_input == "hbplus_vdw_cli_baseset":
+    HbPlusCliHelper().hbplus_vdw_cli()
 
 #process the hbplus baseset hydrogne bonding and van der Waals results into the needed format
 elif prog_input == "hbplus_parse_baseset":
@@ -105,8 +105,8 @@ elif prog_input == "hbplushbvdwcombine":
     HbPlusProcesser().hbplushbandvdwcombiner()
 
 elif prog_input == "hbplus_baseset":
-    HbPlusCliHelper().hbplushbcli()
-    HbPlusCliHelper().hbplusvdwcli()
+    HbPlusCliHelper().hbplus_hb_cli()
+    HbPlusCliHelper().hbplus_vdw_cli()
     HbPlusProcesser().hbplusprocessedreader("hb")
     HbPlusProcesser().hbplusprocessedreader("vdw")
     HbPlusProcesser().hbplushbandvdwcombiner()
@@ -120,7 +120,7 @@ elif prog_input == "dssr_cli_parse_baseset_combine":
     DssrCliHelper().dssrcli()
     DssrParser().dssrprocessedreader()
 
-elif prog_input == "hbcategorizedssr":
+elif prog_input == "hbcategorizedssr_baseset":
     HbPlusToDssrComparer().hbplushbvdwtodssrcomparer()
 
 #method to only count the bounds
@@ -176,7 +176,6 @@ elif prog_input == "bondcategorizer_testset":
     HbPlusToDssrComparerTestset().hbplushbvdwtodssrcomparer()
 
 #run pymol wrapper for the native poses here....
-
 #this is decprecated
 elif prog_input == "native_checker":
     EnergyCalculator().native_checker_pose_hash_retriever("<protein>")

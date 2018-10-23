@@ -97,6 +97,18 @@ class HbPlusToDssrComparerTestset(object):
             result = "error: %s" %e
             print result
         self.bondcategorizedwriter(filenamestring,result,hbline,dssrcompare,protein_testset_complex)
+        
+    #the last thing we might want to match is if we can't find anything at all!
+    #   else:
+    #       result = self.non_helix_form_comparer(hblinecompare[2].strip())
+    #       result = self.nocategory_comparer(hblinecompare[2].strip())
+    #       self.bondcategorizedwriter(filenamestring,result,hbline,dssrcompare)
+    # def nocategory_comparer(self,backboneatom):
+    #     nhfplaceholder = self.backbonechecker(backboneatom)
+    #     if nhfplaceholder == "backbone":
+    #         return "CAT_10"
+    #     elif nhfplaceholder == "base":
+    #         return "CAT_11"
 
     def helix_comparer(self,aformmarker,nbatom,dssr_canonical_pair_determinant,nucleotide_residue_type):
         # will need to build a separate one for hydrogen bond and one for vanderwaals

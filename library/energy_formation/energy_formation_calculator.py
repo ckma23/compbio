@@ -37,24 +37,32 @@ class EnergyCalculator(object):
         print "Checking if the structure is native"
 
     def retrieve_statistical_potential(self):
+        #create the file_path to the statistical potential json hash
         stat_potential_file_path = os.path.join(os.path.expanduser('~/bioresearch/compbio/metadata_folder/'),"statistical_potential.json")
+        #open the statistical_potentials which are stored as json
         stat_pot_file = open(stat_potential_file_path)
+        #read method on the file converts the file object into the string
         stat_pot_file_string = stat_pot_file.read()
+        #since it is a string now can use json loads method to convert this into a Python hash
         stat_pot_hash = json.loads(stat_pot_file_string)
         print stat_pot_hash
+        #return the statistical potential hash now to the caller.
         return stat_pot_hash
 
     def energy_calculator(self,hb_only_or_hb_and_vdw):
         os.system("mkdir ~/bioresearch/compbio/files_wip/energy_calculations_testset%s" %hb_only_or_hb_and_vdw)
         # statistical_potential_hash = StatisticalPotential().statistical_potential()
+        #grab the statistical_potential_hash
         statistical_potential_hash = self.retrieve_statistical_potential()
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/bondcategorized_testset'))
+        # for each of the proteins in the testset
         testset_proteins = os.listdir('.')
         for testset_protein in testset_proteins:
             energy_knockdown_hash = Energyknockdown().energyknockdownretriever()
             native_pose_hash, native_pose_file = self.native_checker_pose_hash_retriever(testset_protein)
             os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/energy_calculations_testset%s' %hb_only_or_hb_and_vdw))
             os.system("rm %s" %testset_protein)
+            #create the energy_file where this is needed to be populated
             energy_file = open(testset_protein,"a")
             os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/bondcategorized_testset/%s' %testset_protein))
             testset_protein_poses = os.listdir('.')
@@ -64,11 +72,11 @@ class EnergyCalculator(object):
                 total_energy = 0
                 # testset_protein_categorized_file = open(testset_protein_pose_number)
                 with open( testset_protein_pose_number,'rb') as testset_protein_categorized_file_meta:
-                    testset_protein_categorized_file  = csv.reader(testset_protein_categorized_file_meta)
+                    testset_protein_categorized_file = csv.reader(testset_protein_categorized_file_meta)
 
                     for line in testset_protein_categorized_file:
                         # print line
-                        # NEED TO CLEAN THIS UP BECAUSE we are running into issues with the amino acid column. Not all the columns have the same amount of spaces.
+                        # use strip() as not all the columns have the same amount of spaces.
                         # category = line[0:5].strip(' ')
                         # hborvdw = line[34:37].strip(' ')
                         # nucleotide_base = line[6].strip(' ')

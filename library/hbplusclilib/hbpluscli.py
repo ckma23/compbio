@@ -2,7 +2,7 @@ import os as os #import the python os library
 import csv as csv #import the python csv library
 import re #provides regular expression matching
 
-class HbPlusCliHelper(object):
+class HbplusCliHelper(object):
     def __init__(self):
         self.listoffiles = []
 
@@ -11,13 +11,12 @@ class HbPlusCliHelper(object):
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/base_complexes_pdb'))
         self.listoffiles = os.listdir('.')
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip'))
-        # os.chdir('/Users/curtisma/bioresearch/')
         os.system('mkdir %s'%folder)
         os.chdir(os.path.expanduser('~/bioresearch/compbio/bin/hbplus'))
         # os.chdir('/Users/curtisma/bioresearch/hbplus')
 
     # run hbplus in hydrogen bond mode
-    def hbplushbcli(self):
+    def hbplus_hb_cli(self):
         self.foldersetup("hbplus_processed_hb_files_baseset")
         print self.listoffiles
         for f in self.listoffiles:
@@ -30,8 +29,7 @@ class HbPlusCliHelper(object):
             print f
 
     # run hbplus in van der Waal mode
-    def hbplusvdwcli(self):
-        # self.foldersetup("hbplusprocessedvdwfiles_baseset")
+    def hbplus_vdw_cli(self):
         self.foldersetup("hbplus_processed_vdw_files_baseset")
         for f in self.listoffiles:
             # stringprep=('~/bioresearch/compbio/pdbfiles/%s' %f)

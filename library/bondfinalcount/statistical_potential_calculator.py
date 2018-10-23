@@ -116,7 +116,7 @@ class StatisticalPotential(object):
     def statistical_poential(self,propensity):
         RT=.59
         statistical_potential=-1*RT*math.log(propensity)
-        return statistical_poential
+        return statistical_potential
 
 # def all_pair_counter():
     # first denom = bond_counted_hash["hb"]["CAT_1"]["A"]["GUA"]/
