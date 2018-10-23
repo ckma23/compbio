@@ -65,13 +65,26 @@ class HbPlusToDssrComparerTestset(object):
                                 filenamestring="%s.bondcategorized" %(filematch_lhs)
                                 # os.chdir('/Users/curtisma/bioresearch/bondcategorized')
                     # WE HAVE TO KEEP THIS A FOR LOOP in case an HB line matches more than once in dsr i.e. can be a hairpin or a helices
+
+                                ## this can be removed 10-22-2018
+                                hbline_matcher = 0
                                 for dssrline in dssr_filestore:
-                                    self.dssrcomparer(hbline,dssrline,filenamestring,protein_testset_complex)
+                                    #self.dssrcomparer(hbline,dssrline,filenamestring,protein_testset_complex)
+                                    
+                                    hbline_meta = self.dssrcomparer(hbline,dssrline,filenamestring,protein_testset_complex)
+                                    hbline_matcher += hbline_meta
+                                if hbline_matcher == 0:
+                                    try:
+                                        self.no_category_comparer(hbline,filenamestring,protein_testset_complex)
+                                    except Exception as e:
+                                        print "there was an error with the catch_all categorization: %s" %e
                         except Exception as e:
                             print "there was an error: %s" %e
 
 
     def dssrcomparer(self,hbline,dssrline,filenamestring,protein_testset_complex):
+      ## This can be removed 10-22-2018
+      matcher = 0
     #   hblinecompare=hbline.split(' ')
       hblinecompare=hbline
     #   dssrcompare=dssrline.strip().split(' ')
@@ -82,6 +95,8 @@ class HbPlusToDssrComparerTestset(object):
       if (dssrcompare[0] in ["hairpins","bulges","iloops","junctions"] and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
         result = self.non_helix_form_comparer(hblinecompare[2].strip())
         self.bondcategorizedwriter(filenamestring,result,hbline,dssrcompare,protein_testset_complex)
+        ## This can be removed 10-22-2018
+        matcher = 1
       # deprecating stems
       # elif (dssrcompare[0] == "stems" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
       #   print dssrcompare[0]
@@ -97,7 +112,25 @@ class HbPlusToDssrComparerTestset(object):
             result = "error: %s" %e
             print result
         self.bondcategorizedwriter(filenamestring,result,hbline,dssrcompare,protein_testset_complex)
-        
+        ## This can be removed 10-22-2018
+        matcher = 1
+      return matcher
+
+    #this can be deleted Oct-22-2018
+    def no_category_comparer(self,hbline,filenamestring,protein_testset_complex):
+        hblinecompare = hbline
+        result = self.non_helix_form_comparer(hblinecompare[2].strip())
+        dssrline = ["DSSR_unresolved"]
+        self.bondcategorizedwriter(filenamestring,result,hbline,dssrline,protein_testset_complex)
+
+#if we need more categories it is here
+    # def no_category_comparer(self,backboneatom):
+    #     nhfplaceholder = self.backbonechecker(backboneatom)
+    #     if nhfplaceholder == "backbone":
+    #         return "CAT_10"
+    #     elif nhfplaceholder == "base":
+    #         return "CAT_11"
+
     #the last thing we might want to match is if we can't find anything at all!
     #   else:
     #       result = self.non_helix_form_comparer(hblinecompare[2].strip())

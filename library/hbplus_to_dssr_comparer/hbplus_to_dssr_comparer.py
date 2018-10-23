@@ -142,24 +142,21 @@ class HbPlusToDssrComparer(object):
 
                         ## this can be removed 10-22-2018
                         hbline_matcher = 0
-
-
                         for dssrline in dssr_filestore:
                             # print dssrline
                             # print dssrline[0]
                             # print dssrline[1]
                             # print dssrline[2]
-                            self.dssrcomparer(hbline,dssrline,filenamestring)
+                            #self.dssrcomparer(hbline,dssrline,filenamestring)
                             ## this can be removed 10-22-2018
-                            hbline_matcher = self.dssrcomparer(hbline,dssrline,filenamestring)
-                            hbline_matcher += hbline_matcher
+                            hbline_meta = self.dssrcomparer(hbline,dssrline,filenamestring)
+                            hbline_matcher += hbline_meta
                         ## this can be removed 10-22-2018
-                        if matcher == 0:
+                        if hbline_matcher == 0:
                             try:
-                                result = self.no_category_comparer(hbline[2].strip())
-                                self.bondcategorizedwriter(filenamestring,result,hbline,dssrcompare)
+                                self.no_category_comparer(hbline,filenamestring)
                             except Exception as e:
-                                print "there was an error with the catch_all categorization: %s" %e    
+                                print "there was an error with the catch_all categorization: %s" %e
                 except Exception as e:
                     print "there was an error: %s" %e
 
@@ -178,7 +175,7 @@ class HbPlusToDssrComparer(object):
         result = self.non_helix_form_comparer(hblinecompare[2].strip())
         self.bondcategorizedwriter(filenamestring,result,hbline,dssrcompare)
         ## This can be removed 10-22-2018
-        matcher += 1
+        matcher = 1
       # deprecating stems
       # elif (dssrcompare[0] == "stems" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
       #   print dssrcompare[0]
@@ -195,7 +192,7 @@ class HbPlusToDssrComparer(object):
             print result
         self.bondcategorizedwriter(filenamestring,result,hbline,dssrcompare)
         ## This can be removed 10-22-2018
-        matcher += 1
+        matcher = 1
       return matcher
 
     #the last thing we might want to match is if we can't find anything at all!
@@ -206,7 +203,7 @@ class HbPlusToDssrComparer(object):
     def no_category_comparer(self,hbline,filenamestring):
         hblinecompare = hbline
         result = self.non_helix_form_comparer(hblinecompare[2].strip())
-        dssrline = "DSSR_unresolved\n"
+        dssrline = ["DSSR_unresolved"]
         self.bondcategorizedwriter(filenamestring,result,hbline,dssrline)
 
 #if we need more categories it is here
@@ -294,6 +291,7 @@ class HbPlusToDssrComparer(object):
                 #     elif not_a_form_base_mg_placeholder == "not_major_groove":
                 #         return "CAT_6"
         elif aformmarker in ["end"]:
+                #could implement categorizations to handle the SHEAR 
                 return "SHEAR"
 
     def not_a_form_checker(self,dssr_canonical_pair_determinant):
