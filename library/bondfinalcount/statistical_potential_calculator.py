@@ -39,15 +39,6 @@ class StatisticalPotential(object):
                             for amino_acid in bond_counted_hash[vdworhb][cat][nb].keys():
                                 count_all_pairs_cat += bond_counted_hash[vdworhb][cat][nucleotide_base][amino_acid]["count"]
 
-                        # for whatever nucleotide_base we are on, count all the nucleotide base in CAT_1
-                        # as of 10/8/2018 don't believe this is needed
-                        # for amino_acid_cat in bond_counted_hash[vdworhb][cat][nb].keys():
-                        #     count_all_nb_type_cat_type += bond_counted_hash[vdworhb][cat][nb][amino_acid_cat]["count"]
-                        #
-                        # # for whichever amino_acid we are one, count all the amino acids base in CAT_1
-                        # # as of 10/8/2018 don't believe this is needed
-                        # for nucleotide_base_cat in bond_counted_hash[vdworhb][cat].keys():
-                        #     count_all_aa_type_cat_type += bond_counted_hash[vdworhb][cat][nucleotide_base_cat][aa]["count"]
                         # one of the numbers have to be a float!
                         # print bond_counted_hash[vdworhb][cat][nb][aa]["count"]
                         # print type(bond_counted_hash[vdworhb][cat][nb][aa]["count"])

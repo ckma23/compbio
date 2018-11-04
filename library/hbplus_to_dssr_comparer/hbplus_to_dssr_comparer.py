@@ -138,8 +138,6 @@ class HbPlusToDssrComparer(object):
                         #if the hbline finds a match great, if not we will need to store this into CAT 8 or CAT 9
                         #so first of all after opening the entire dssr file and if nothing matches then we can send it
                         #to just the atom sorter
-
-
                         ## this can be removed 10-22-2018
                         hbline_matcher = 0
                         for dssrline in dssr_filestore:
@@ -179,7 +177,7 @@ class HbPlusToDssrComparer(object):
       # deprecating stems
       # elif (dssrcompare[0] == "stems" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
       #   print dssrcompare[0]
-      elif (dssrcompare[0] == "helices" and hblinecompare[1].strip() == dssrcompare[1].strip() and hblinecompare[0].strip() == dssrcompare[2].strip()):
+      elif (dssrcompare[0] == "helices" and str(hblinecompare[1].strip()) == str(dssrcompare[1].strip()) and str(hblinecompare[0].strip()) == str(dssrcompare[2].strip())):
         try:
             # send the cW-W which is dssrcompare[7].strip()
             # send the residue type which is hblinecompare[0][0]
@@ -291,7 +289,7 @@ class HbPlusToDssrComparer(object):
                 #     elif not_a_form_base_mg_placeholder == "not_major_groove":
                 #         return "CAT_6"
         elif aformmarker in ["end"]:
-                #could implement categorizations to handle the SHEAR 
+                #could implement categorizations to handle the SHEAR
                 return "SHEAR"
 
     def not_a_form_checker(self,dssr_canonical_pair_determinant):

@@ -4,7 +4,7 @@ import re #provides regular expression matching
 import json
 
 class DssrParserjson(object):
-    # we need to add 0's back in... from dssr to hbplus comparison
+    #add 0's back in... from dssr to hbplus comparison
     def dssrtohbplusstringcleaner(self,dssnbtobecleaned):
     #   print dssnbtobecleaned
       rhs = dssnbtobecleaned[3:]
@@ -18,11 +18,6 @@ class DssrParserjson(object):
       elif len(rhs) == 3:
         # rhs.join("0",rhs)
         rhs="0"+rhs
-        # print rhs
-      # elif len(rhs) ==4:
-      #   rhs.join("0",rhs)
-      #   rhs="0"+rhs
-      # consider the case where the residue name is 5 digits 99999
       dssncleaned=lhs+rhs
       # print dssncleaned
       return dssncleaned
@@ -53,10 +48,15 @@ class DssrParserjson(object):
           try:
               helixf=helixform[h]
           except:
-              helixf="end"
+              #at  the end. Inherit the last helix type!
+              # AACUUG
+              # GUGAAA
+              # ..AA.
+              # AG/AU is .; AU/CG is . ; CG/UA is A ; UA/UA is A; UA/GA is .
+              helixf=helixform[h-1]
+              #helixf="end"
           helixtoappend.append("%s,%s,%s,%s,%s,%s,%s,%s,%s" %(j,strand1,hnt1cleaned,hindex,hiindex,helixf, "nt1", dssr_base_pair_type, dssr_base_pair_name))
           helixtoappend.append("%s,%s,%s,%s,%s,%s,%s,%s,%s" %(j,strand2,hnt2cleaned,hindex,hiindex,helixf, "nt2", dssr_base_pair_type, dssr_base_pair_name))
-
         #   hf=hf+0.5
           h+=1
         k+=1
@@ -77,7 +77,6 @@ class DssrParserjson(object):
 
 
     def dssrhairpinParser(self,data,j):
-      # need to check how many hairpins there are... it's only going through one right now..
       # print data[j][0]["nts_long"]
         hairpintoappend=[]
         k = 0
@@ -85,7 +84,6 @@ class DssrParserjson(object):
             hairpinnt=data[j][k]["nts_long"]
       #hairpinnt is a comma separated string #"B.U13,B.C14,B.A15,B.U16,B.U17,B.A18"
             for hairpinnb in hairpinnt.split(","):
-        #we are stripping B. for now lets assume RNA is always the Bstrand
                 dssrnbaddedzeros = self.dssrtohbplusstringcleaner(hairpinnb)
         # print testing
                 chain = hairpinnb[0]
@@ -93,7 +91,7 @@ class DssrParserjson(object):
                 hairpintoappend.append("%s,%s,%s"%(j,chain,dssrnbaddedzeros))
             k+=1
         return hairpintoappend
-        #we need to add the 0s back in for hbplus...
+        #add the 0s back in for hbplus.
 
     def dssrjunctionsParser(self,data,j):
         junctiontoappend=[]
@@ -113,11 +111,9 @@ class DssrParserjson(object):
         k=0
         while k <len(data[j]):
             iloopnt=data[j][k]["nts_long"]
-      #hairpinnt is a comma separated string #"B.U13,B.C14,B.A15,B.U16,B.U17,B.A18"
+            #hairpinnt is a comma separated string #"B.U13,B.C14,B.A15,B.U16,B.U17,B.A18"
             for iloopnb in iloopnt.split(","):
-        #we are stripping B. for now lets assume RNA is always the Bstrand
                 dssrnbaddedzeros = self.dssrtohbplusstringcleaner(iloopnb)
-        # print testing
                 chain = iloopnb[0]
                 iloopnb=iloopnb[2:]
                 ilooptoappend.append("%s,%s,%s"%(j,chain,dssrnbaddedzeros))

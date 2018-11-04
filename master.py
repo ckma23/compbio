@@ -103,7 +103,7 @@ elif prog_input == "hbplus_parse_baseset":
 #combine the hbplus baseset hydrogen bonding and van der Waals results into a single file
 elif prog_input == "hbplushbvdwcombine":
     HbPlusProcesser().hbplushbandvdwcombiner()
-
+ 
 elif prog_input == "hbplus_baseset":
     HbPlusCliHelper().hbplus_hb_cli()
     HbPlusCliHelper().hbplus_vdw_cli()
@@ -120,7 +120,7 @@ elif prog_input == "dssr_cli_parse_baseset_combine":
     DssrCliHelper().dssrcli()
     DssrParser().dssrprocessedreader()
 
-elif prog_input == "hbcategorizedssr_baseset":
+elif prog_input == "bondcategorizer_baseset":
     HbPlusToDssrComparer().hbplushbvdwtodssrcomparer()
 
 #method to only count the bounds

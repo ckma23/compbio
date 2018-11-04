@@ -6,12 +6,6 @@ from Bio.PDB import PDBList
 class FileRetriever (object):
     def fileretrieving(self,string,foldername):
         print "Downloading the %s pdb files now!" %string
-        #lets make the directory here too prior to it being made manually
-        # os.mkr
-        # os.system('mkdir pdb_test_complexes')
-        # os.system('mkdir %s') %filedirectory
-        # os.path.expanduser('~/bioresearch/compbio/pdbfiles')
-        # filedir='/Users/curtisma/bioresearch/compbio/pdbfiles'
         filedir= "%s" %(os.path.expanduser('~/bioresearch/compbio/%s')) %foldername
         pdbl = PDBList()
         # note the file_format can be taken in as http://biopython.org/DIST/docs/api/Bio.PDB.PDBList%27.PDBList-class.html cif,pdb,etc

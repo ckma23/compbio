@@ -51,7 +51,7 @@ class DssrParser(object):
                         junctions_result=DssrParserjson().dssrjunctionsParser(data,rna_secondary_structure_type)
                         for line in junctions_result:
                             dssrstore.append(line)
-                  # reminder when parsing helix structures must take into the account strand 1 and strand 2 these residue structures are the helices
+                  # parsing helix structures must take into the account strand 1 and strand 2 these residue structures are the helices
                 except Exception as e:
                     print "There was an exception likely null %s" %e
             self.dssrstorefilewriter(baseset_pdb_filename,dssrstore)

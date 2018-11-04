@@ -91,11 +91,6 @@ class EnergyCalculator(object):
                         # print nucleotide_base
                         # print amino_acid
 
-                        ## MAY WANT TO CREATE METADATA FOR IN REGARDS TO WHICH CATEGORY CONTRIBUTE DTHE MOST ENERGY??
-                        ## what it look like with only hydrogenbonding and what did it look like with VanderWaals included.
-
-                        #need to reset bonding energy here because as noticed with the exception bond_energy wasn't being accepted and the
-                        # last known energy was applied to the exception.
                         bond_energy = 0
                         try:
                             bond_energy = statistical_potential_hash[hborvdw][category][nucleotide_base][amino_acid]["statistical_potential"]
@@ -161,7 +156,6 @@ class EnergyCalculator(object):
                 if native_pose_ranking_hash[testset_protein][complex_num]["nativeness"] == "native":
                     print "These structures are native"
                     native_count+=1
-                    print "HIT"
                     print native_count
                     # the first native structure should either be the maximum or minumum energy.
             for complex_num in sorted_complex_list:
@@ -178,8 +172,3 @@ class EnergyCalculator(object):
             rank_file = open(file_name_string_prepper,"a")
             rank_file.write("%s,%s,%s\n" %(testset_protein,native_count,best_rank))
             rank_file.close
-            # sorted(your_list, key=lambda x: (your_dict[x]['downloads'], your_dict[x]['date']))
-
-            # for complex_number in native_pose_ranking_hash[testset_protein].keys():
-            #     if native_pose_ranking_hash[testset_protein][complex_number]["nativeness"] == "native":
-            #         print complex_number

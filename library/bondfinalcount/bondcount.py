@@ -28,30 +28,6 @@ class Bondcounter(object):
         # print nucleotide_base_amino_acid["hb"]["CAT_1"]["A"].keys()
         return nucleotide_base_amino_acid
 
-    # this can be deprecated also.
-    def culledchain(self,complex_name,rna_chain,protein_chain):
-        culledfile = open("culledfile.txt")
-        #culledhash = {"Complex1":{"RNA":[A,B,C],"Protein":[D,F]},"Complex1":{"RNA":[A,B,C],"Protein":[D,F]}}
-        # {
-        # "Complex1":
-        #     {
-        #         "Rna":[A,B,C],
-        #         "Protein":[D,F]
-        #     },
-        # "Complex2":
-        #     {
-        #     "Rna":[E,G],
-        #     "Protein":[A,C]
-        #     }
-        # }
-        culledhash = {}
-        # for line in culledfile:
-        #
-        # for rna_chain in culledfile[complex_name["RNA"]
-        #     if rna_chain =
-        #
-        # if culledfile[complex_name]["RNA"] =
-
     def file_opener(self):
         final_bond_counted_store = Bondcounter().bondcounter()
         # os.chdir(os.path.expanduser('~/bioresearch/bondcategorized'))
@@ -79,10 +55,6 @@ class Bondcounter(object):
                     # hborvdw = line[34:37].strip(' ')
                     # nucleotide_base = line[6]
                     # amino_acid = line[25:28]
-                    # we should switch this to spaces..
-                    # final_bond_counted_store[hborvdw][category][nucleotide_base][amino_acid]["count"]+=1
-
-                    # WE NEED TO CLEAN THIS PART UP MISSING ALOT OF CAT types here!!
                     try:
                         final_bond_counted_store[hborvdw][category][nucleotide_base][amino_acid]["count"]+=1
                     except Exception as e:

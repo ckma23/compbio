@@ -3,10 +3,6 @@ import time
 
 class FtdockMiddleware(object):
     def ftdock_kicker (self):
-        # os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/rna_seperated_pdbfiles_preprocessperl_testset'))
-        # rna_seperated_pdbfiles = os.listdir()
-        # os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/protein_seperated_pdbfiles_preprocessperl_testset'))
-        # protein_seperated_pdbfiles = os.listdir()
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/ftdockresults'))
         # os.system("rm *.dat")
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/test_complexes_pdb'))
@@ -33,17 +29,7 @@ class FtdockMiddleware(object):
                     print "Not in there yet! Sleeping!"
                     boolean = True
                     time.sleep(60)
-    #it turns out that the .out files have a callout where to find the static and mobile strings it came from.. for example...
-    # Curtiss-MacBook-Pro:ftdockresults curtisma$ cat 1ec6ftdock.out | head -8
-    # FTDOCK data file
-    #
-    # Global Scan
-    #
-    # Command line controllable values
-    # Static molecule                    :: /home/cma/bioresearch/compbio/files_wip/rna_seperated_pdbfiles_preprocessperl_testset/1ec6_C.parsed
-    # Mobile molecule                    :: /home/cma/bioresearch/compbio/files_wip/protein_seperated_pdbfiles_preprocessperl_testset/1ec6_A.parsed
-    #
-    # Curtiss-MacBook-Pro:ftdockresults curtisma$
+
     def ftdock_directory_cleaner(self,root_path_cluster,user_path_cluster,root_path_local,user_path_local):
         os.chdir(os.path.expanduser('~/bioresearch/compbio/files_wip/ftdockresults'))
         ftdock_file_cleans = os.listdir('.')

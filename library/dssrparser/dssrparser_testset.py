@@ -53,7 +53,7 @@ class DssrParserTestSet(object):
                             junctionsresult=DssrParserjson().dssrjunctionsParser(data,j)
                             for line in junctionsresult:
                                 dssrstore.append(line)
-                      # reminder when parsing helix structures must take into the account strand 1 and strand 2 these residue structures are the helices
+                      # when parsing helix structures must take into the account strand 1 and strand 2 these residue structures are the helices
                     except Exception as e:
                         print "There was an exception likely null %s" %e
                 # print dssrstore

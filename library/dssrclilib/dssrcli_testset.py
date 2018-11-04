@@ -18,10 +18,8 @@ class DssrCliHelperTestset(object):
                 os.system('./x3dna-dssr input=%s -o=%s.json -json > ~/bioresearch/compbio/logs/DSSR.log' %(stringprep,lhs))
                 # can remove all the auxiliary dssr-complimentary files since we are using the json one anyways.
                 os.system('rm dssr-*')
-                # this was having file movement issues as it was flying through the directory
                 time.sleep(.050)
                 os.system('mv *.json ~/bioresearch/compbio/files_wip/DSSRprocessed_testset/%s' %(testprotein))
-                # this was having file movement issues as it was flying through the directory
                 time.sleep(.050)
 
     def dssrcli_revamped(self):

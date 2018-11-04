@@ -70,7 +70,7 @@ class HbPlusToDssrComparerTestset(object):
                                 hbline_matcher = 0
                                 for dssrline in dssr_filestore:
                                     #self.dssrcomparer(hbline,dssrline,filenamestring,protein_testset_complex)
-                                    
+
                                     hbline_meta = self.dssrcomparer(hbline,dssrline,filenamestring,protein_testset_complex)
                                     hbline_matcher += hbline_meta
                                 if hbline_matcher == 0:
